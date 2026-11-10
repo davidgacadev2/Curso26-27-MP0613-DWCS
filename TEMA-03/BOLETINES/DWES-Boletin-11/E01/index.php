@@ -28,6 +28,7 @@ echo "<br>" . "<br>";
 // código como el siguiente, que tiene que revisar qué tipo 
 // de objeto es para saber como procesarlo.
 // ---------------------------
+// ---------------------------
 // NOTA: si en vez de haber creado 3 métodos distintos cambiarCuerdas,
 //  limpiarTubo, ajustarTensores hubieramos creado un único método
 //   mantenerInstrumento (por ejemplo) no tendríamos este problema
