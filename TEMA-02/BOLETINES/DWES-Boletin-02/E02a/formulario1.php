@@ -2,6 +2,7 @@
 /*
  * ===== CORRECCIONES (revisión de las soluciones del tema 2) =====
  * - XSS: $_SERVER['PHP_SELF'] cambiado por $_SERVER['SCRIPT_NAME'].
+ * ======
  */
 echo <<<SALIDA
 <div class="entrada">
