@@ -1,0 +1,18 @@
+/* TAREA-02 AVANZADA: Cuatro en raya — estilos */
+body { font-family: Arial, Helvetica, sans-serif; background: #eef1f7; color: #222; margin: 2em; max-width: 50em; }
+h1 { color: #1f3f86; }
+.errores { background: #fde2e2; border: 1px solid #c62828; color: #8e1b1b; padding: 0.8em 2em; }
+.configuracion label { display: block; margin: 0.5em 0; }
+.configuracion p label { display: inline; margin-right: 1.5em; }
+.mensaje { font-weight: bold; }
+.final { font-size: 1.25em; font-weight: bold; color: #2e7d32; }
+.tablero { background: #1f3f86; border-radius: 10px; padding: 6px; border-spacing: 6px; }
+.tablero th button { width: 3em; font-weight: bold; cursor: pointer; }
+.tablero td { padding: 0; }
+.tablero span, .jugadores .ficha { display: inline-block; width: 3em; height: 3em; border-radius: 50%; background: #fff; vertical-align: middle; }
+.jugadores .ficha { width: 1.1em; height: 1.1em; border: 1px solid #555; }
+.ficha.R { background: #d32f2f; }
+.ficha.A { background: #fbc02d; }
+.tablero .ultima { box-shadow: 0 0 0 3px #fff inset; }
+.tablero .ganadora { box-shadow: 0 0 0 4px #43a047, 0 0 10px 3px #a5d6a7; }
+.historial { columns: 3; font-size: 0.9em; }

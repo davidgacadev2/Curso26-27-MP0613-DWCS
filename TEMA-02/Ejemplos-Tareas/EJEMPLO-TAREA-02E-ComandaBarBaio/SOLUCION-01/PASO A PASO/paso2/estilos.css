@@ -1,0 +1,16 @@
+/* TAREA-02 BÁSICA: Comanda del Bar Baio — estilos */
+body { font-family: Arial, Helvetica, sans-serif; background: #f7f3ec; color: #222; margin: 2em; max-width: 52em; }
+h1 { color: #7a3e12; }
+.errores { background: #fde2e2; border: 1px solid #c62828; color: #8e1b1b; padding: 0.8em 2em; }
+fieldset { background: #fff; border: 1px solid #d8c7b0; margin: 0.8em 0; }
+legend { font-weight: bold; color: #7a3e12; }
+.producto { display: flex; justify-content: space-between; max-width: 26em; margin: 0.3em 0; }
+.ticket { background: #fff; border: 1px dashed #7a3e12; padding: 0.5em 1.5em 1em; margin-top: 1.5em; max-width: 34em; }
+.ticket table { border-collapse: collapse; width: 100%; }
+.ticket th, .ticket td { padding: 0.25em 0.5em; text-align: left; }
+.ticket .numero { text-align: right; }
+.ticket .categoria th { background: #f1e6d6; }
+.ticket .subtotal td { font-style: italic; border-bottom: 1px solid #d8c7b0; }
+.ticket .total td { font-weight: bold; border-top: 2px solid #7a3e12; }
+.ticket .iva td { color: #666; font-size: 0.9em; }
+.nota { background: #fff6c4; padding: 0.4em 0.8em; }
