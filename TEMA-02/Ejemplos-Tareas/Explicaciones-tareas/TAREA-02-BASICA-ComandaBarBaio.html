@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comanda del Bar Baio (TAREA-02, nivel básico): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="comanda-del-bar-baio-tarea-02-nivel-basico-como-se-llega-a-la-solucion-paso-a-paso">Comanda del Bar Baio
+    (TAREA-02, nivel básico): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-la-carta-el-formulario-pegajoso-y-la-validacion">3.2.- Paso 2: la carta, el formulario
+              pegajoso y la validación</a></li>
+          <li><a href="#33-paso-3-el-ticket-agrupado-por-categorias">3.3.- Paso 3: el ticket, agrupado por
+              categorías</a></li>
+          <li><a href="#34-paso-4-solucion-completa-promociones-total-e-iva">3.4.- Paso 4 (solución completa):
+              promociones, total e IVA</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-BASICA-ComandaBarBaio/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-BASICA-ComandaBarBaio/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-BASICA-ComandaBarBaio/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-BASICA-ComandaBarBaio/SOLUCION-01/PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p><strong>Juan</strong> le pasa a <strong>María</strong> el encargo del Bar Baio: una página para la tableta de la
+      barra que saque el ticket
+      de cada mesa. María ya está calculando mentalmente el 3x2 de los cafés cuando <strong>Carlos</strong> se asoma a
+      su pantalla:
+      "Empieza por lo aburrido. En mi primera aplicación el camarero dejaba campos vacíos, escribía <code>-1</code> o
+      <code>abc</code>, y la
+      cuenta salía rota". María toma nota: antes del ticket hay que tener un formulario que <strong>nunca</strong> se
+      fíe de lo que
+      llega, porque todo lo que viene de un formulario es texto, aunque parezca un número.</p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso1&quot; &quot;PASO A PASO/paso2&quot;
+</code></pre>
+  <p>(desde la carpeta <code>SOLUCION-01</code>; en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 8 requisitos (R1…R8) que <a
+      href="DOCUMENTACION/TAREA-02-BASICA-ComandaBarBaio/Requisitos.md">Requisitos.md</a>
+    convierte en 8 requisitos funcionales comprobables. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>La carta</td>
+          <td>R1 · RF-01, RNF-04</td>
+          <td>Un fichero que <strong>devuelve</strong> un array; el formulario y el ticket se generan a partir de él.
+          </td>
+        </tr>
+        <tr>
+          <td>Recoger la comanda</td>
+          <td>R2, R3 · RF-02, RF-03</td>
+          <td>Un campo <code>cantidad[codigo]</code> por producto, formulario <strong>pegajoso</strong> y
+            <strong>todos</strong> los errores a la vez.</td>
+        </tr>
+        <tr>
+          <td>Calcular el ticket</td>
+          <td>R4, R5, R6 · RF-04…RF-06</td>
+          <td>Líneas agrupadas por categoría, 3x2 en cafés, descuento de socio, total y desglose del IVA.</td>
+        </tr>
+        <tr>
+          <td>Cerrar y no romperse</td>
+          <td>R7, R8 · RF-07, RF-08</td>
+          <td>Nota al pie, <em>Nueva comanda</em>, salida escapada y ningún aviso de PHP con ninguna entrada.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son tres: <strong>sin estado</strong> (RNF-03: ni
+    <code>$_SESSION</code> ni
+    ficheros; cada envío trae la comanda completa), <strong>los cálculos en funciones</strong> (RNF-05: el HTML no
+    calcula) y
+    <strong>los límites como constantes</strong> (RNF-06: mesas, unidades, longitud de la nota, IVA y promociones).
+  </p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <p>Al leer con calma aparecen preguntas. Conviene escribir la respuesta <strong>antes</strong> de programar:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Un campo de cantidad vacío es un error?</td>
+          <td>No: cuenta como 0 (lo dice R3). Se convierte en <code>'0'</code> antes de validarlo.</td>
+        </tr>
+        <tr>
+          <td>Si hay una cantidad mal escrita y ninguna bien, ¿se dice también "La comanda está vacía"?</td>
+          <td>No: sobra, el problema es la cantidad mal escrita. Una variable <code>$hayMal</code> lo evita.</td>
+        </tr>
+        <tr>
+          <td>¿Sobre qué se calcula el 10 % del socio?</td>
+          <td>Sobre lo que queda <strong>después</strong> del 3x2 (R5). Con la comanda del ejemplo son 1,95 € y no 2,08
+            €.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo se calcula el IVA si los precios ya lo incluyen?</td>
+          <td>Base = total / 1,10 redondeada, e IVA = total − base. Así base + IVA da <strong>exactamente</strong> el
+            total.</td>
+        </tr>
+        <tr>
+          <td>¿Cuándo se redondea?</td>
+          <td>En cada importe: línea, subtotal, suma, promoción, descuento, total y base (<code>round(..., 2)</code>).
+          </td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa con <code>cantidad[inventado]=5</code>?</td>
+          <td>Se ignora: se recorre <strong>la carta</strong>, no lo que llega.</td>
+        </tr>
+        <tr>
+          <td>¿Qué hace <em>Nueva comanda</em>?</td>
+          <td>Es un enlace a <code>index.php</code> (una petición GET): el formulario sale vacío porque no se envía
+            nada.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). Así quien
+      corrija sabrá que no es un olvido, y tú no cambiarás de criterio a mitad de la tarea.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son ejemplos concretos de entrada y salida. Escríbelos en
+    una tabla
+    antes de programar: serán las pruebas de cada paso.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Abrir la página</td>
+          <td>Campo <code>cantidad[cafe]</code> y el texto "Empanada de zamburiñas (3,20 €)"</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><em>Calcular</em> sin escribir nada</td>
+          <td>"La mesa debe ser un número entero entre 1 y 12." y "La comanda está vacía: pide al menos un producto."
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Mesa 13, café <code>x</code>, zumo 21, nota de 81 caracteres</td>
+          <td>Cuatro errores (entre ellos "«Café» … (has escrito «x»)" y "(tiene 81)"), <strong>no</strong> sale "La
+            comanda está vacía" y los campos conservan <code>13</code> y <code>x</code></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><code>mesa[]=1</code> y <code>cantidad=abc</code></td>
+          <td>Errores ("Las cantidades no tienen el formato correcto.") <strong>sin avisos de PHP</strong></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Mesa 7 y café 2, los dos con espacios delante y detrás; zumo 1</td>
+          <td>"Ticket de la mesa 7", "Subtotal Bebidas", total 5,10 €, base 4,64 €, IVA 0,46 €; no sale Raciones</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Mesa 4, 4 cafés, 2 tostadas, 1 pulpo, socio</td>
+          <td>Suma 20,80 €; "(1 gratis)" −1,30 €; socio −1,95 €; TOTAL 17,55 €; base 15,95 €; IVA 1,60 €; casilla
+            <code>checked</code></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Mesa 12, 6 cafés y 20 pulpos</td>
+          <td>Pulpo 240,00 €, "(2 gratis)" −2,60 € y total 245,20 €</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Nota "Sin sal"</td>
+          <td>"Nota para la cocina: Sin sal"</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Nota <code>&lt;script&gt;alert(1)&lt;/script&gt;</code></td>
+          <td>En el código fuente aparece <code>&amp;lt;script&amp;gt;</code> y nunca <code>&lt;script&gt;alert</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 4 y 9 son <strong>maliciosos</strong>: el 4 no se puede provocar con el formulario normal, hay que editar
+    el HTML con
+    F12 o enviar la petición con <code>curl</code>. Que estén en la lista desde el principio obliga a pensar en ellos al
+    escribir
+    la validación, no después.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada clic en <em>Calcular el ticket</em> es una petición nueva y el
+    script empieza desde
+    cero. En esta tarea eso no es un problema, porque <strong>no hay nada que recordar</strong>: el formulario envía la
+    comanda
+    completa cada vez, y el formulario pegajoso se limita a devolverla escrita. Es el caso más sencillo posible, y
+    conviene darse cuenta de ello antes de buscar dónde "guardar" nada.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Carta</td>
+          <td>array <code>código =&gt; [nombre, categoria, precio]</code></td>
+          <td><code>carta.php</code> (<code>return [...]</code>)</td>
+          <td>Datos fijos, separados del código (RNF-04)</td>
+        </tr>
+        <tr>
+          <td>Mesa</td>
+          <td>int (o el texto escrito, si no vale)</td>
+          <td>campo <code>mesa</code></td>
+          <td>Llega en cada envío</td>
+        </tr>
+        <tr>
+          <td>Cantidades</td>
+          <td>array <code>código =&gt; int</code> (o el texto escrito, si no vale)</td>
+          <td>campos <code>cantidad[codigo]</code></td>
+          <td>PHP los recibe todos juntos en <code>$_POST['cantidad']</code></td>
+        </tr>
+        <tr>
+          <td>Socio</td>
+          <td>bool</td>
+          <td>casilla <code>socio</code></td>
+          <td>Sin marcar <strong>no se envía</strong>: <code>isset()</code></td>
+        </tr>
+        <tr>
+          <td>Nota</td>
+          <td>string</td>
+          <td>campo <code>nota</code></td>
+          <td>Opcional, como mucho 80 caracteres</td>
+        </tr>
+        <tr>
+          <td>Líneas, subtotales, promoción, total, IVA</td>
+          <td>—</td>
+          <td><strong>se calculan</strong></td>
+          <td>Dependen solo de las cantidades y la carta</td>
+        </tr>
+        <tr>
+          <td>Errores</td>
+          <td>array</td>
+          <td>variable</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La comanda queda como un array asociativo:</p>
+  <pre><code class="language-php">['mesa' =&gt; 4, 'cantidades' =&gt; ['cafe' =&gt; 4, 'colacao' =&gt; 0, /* … */ 'tostada' =&gt; 2, /* … */ 'pulpo' =&gt; 1, /* … */], 'socio' =&gt; true, 'nota' =&gt; '']
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Recorre la carta, no lo que llega.</strong> Si el bucle fuera
+      <code>foreach ($_POST['cantidad'] as ...)</code>, un campo inventado
+      (<code>cantidad[inventado]=5</code>) entraría en la comanda, y un producto cuyo campo se hubiera borrado con F12
+      faltaría.
+      Recorriendo <code>$carta</code>, la comanda tiene <strong>siempre una cantidad por cada producto de la
+        carta</strong>, ni una más ni una
+      menos. Esa garantía es la que permite, en los pasos 3 y 4, escribir <code>$cantidades[$codigo]</code> sin
+      <code>??</code> y sin miedo a
+      un aviso de PHP.</p>
+  </div>
+
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Tres ficheros con una responsabilidad cada uno: <code>carta.php</code> (datos), <code>funciones.php</code> (lógica,
+    sin HTML) e
+    <code>index.php</code> (decide qué hacer y muestra la página). <code>index.php</code> sigue la estructura de siempre
+    de los apuntes:
+  </p>
+  <pre><code class="language-text">1. Inicializar          -&gt; cargar funciones y carta; comanda vacía, sin errores y sin ticket
+2. Recibir y validar    -&gt; ¿se ha pulsado &quot;Calcular&quot;? validarComanda() devuelve [comanda, errores]
+3. Procesar             -&gt; si no hay errores: líneas por categoría, suma y totales
+4. Preparar la vista    -&gt; agrupar la carta por categorías para dibujar el formulario
+5. Mostrar la página    -&gt; errores, formulario pegajoso y, si lo hay, el ticket (sin lógica, solo variables)
+</code></pre>
+  <p>Cada tarea del paso 3 es una función pequeña que <strong>recibe</strong> lo que necesita y
+    <strong>devuelve</strong> un resultado (sin
+    <code>echo</code>). El paso 1 ya escribe sus firmas como TODO:
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>e()</code></td>
+          <td>Escapar para el HTML</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarComanda()</code></td>
+          <td><code>$_POST</code> y la carta → <code>[comanda, errores]</code>, con todos los errores a la vez</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>euros()</code></td>
+          <td><code>1234.5</code> → <code>"1.234,50 €"</code></td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>lineasTicket()</code></td>
+          <td>Cantidades y carta → líneas agrupadas por categoría</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>subtotal()</code></td>
+          <td>Suma de los importes de unas líneas</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>calcularTotales()</code></td>
+          <td>Promoción 3x2, descuento de socio, total, base e IVA</td>
+          <td>4</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Fíjate en que <code>validarComanda()</code> devuelve <strong>dos</strong> cosas a la vez, la comanda y los
+      errores, en un array que se
+      desempaqueta así: <code>[$comanda, $errores] = validarComanda($_POST, $carta);</code>. Es más claro que devolver
+      los errores
+      y modificar la comanda por referencia, y deja la función fácil de probar: entra un array y sale un array.</p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>La página es muy sencilla y tiene tres estados (<em>evento [condición] / acción</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>(cualquiera)</td>
+          <td>abrir la página o <em>Nueva comanda</em> (GET)</td>
+          <td>comanda vacía</td>
+          <td>Formulario vacío</td>
+        </tr>
+        <tr>
+          <td>Formulario</td>
+          <td><em>Calcular el ticket</em> [hay errores]</td>
+          <td>mostrar <strong>todos</strong> los errores; formulario pegajoso</td>
+          <td>Formulario con errores</td>
+        </tr>
+        <tr>
+          <td>Formulario</td>
+          <td><em>Calcular el ticket</em> [sin errores]</td>
+          <td>líneas, suma y totales</td>
+          <td>Formulario + ticket</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dibujarlo deja claro algo que el enunciado da por supuesto: el ticket se muestra <strong>debajo</strong> del
+    formulario (que
+    sigue relleno), así que el camarero puede corregir una cantidad y volver a calcular sin escribir de nuevo toda la
+    comanda.</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden no es
+    casual:
+    primero lo que permite <strong>recoger bien</strong> los datos, después lo que permite <strong>ver</strong> el
+    ticket y al final los
+    <strong>cálculos</strong> que dependen de todo lo anterior.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs y esqueleto HTML</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>La carta, constantes, <code>e()</code>, <code>validarComanda()</code> y el formulario pegajoso</td>
+          <td>R1, R2, R3, R8</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><code>euros()</code>, <code>lineasTicket()</code>, <code>subtotal()</code> y el ticket hasta la suma</td>
+          <td>R4, R6 (formato)</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td><strong>Solución completa:</strong> <code>calcularTotales()</code>, la nota y <em>Nueva comanda</em></td>
+          <td>R5, R6, R7</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> Aunque la tarea es básica, mezcla validación, agrupación y cálculos de
+    dinero, y es fácil
+    empezar por el 3x2 (lo más vistoso) y olvidar que antes hace falta una comanda válida. Los TODO son el
+    <strong>plan</strong>
+    escrito dentro del propio código: en <code>index.php</code>, uno por cada parte de la estructura,
+    <strong>anidados</strong> según
+    dependen unos de otros; en <code>funciones.php</code>, la <strong>firma</strong> de cada función con lo que recibe y
+    lo que devuelve:</p>
+  <pre><code class="language-php">// TODO: botón &quot;Calcular&quot;: validar la comanda
+    // TODO: si es correcta, preparar el ticket: líneas por categoría y suma
+        // TODO: promoción 3x2, descuento de socio y desglose del IVA
+</code></pre>
+  <pre><code class="language-php">// TODO: función calcularTotales(array $comanda, array $carta, float $suma): array -&gt; promoción, descuento, total e IVA
+</code></pre>
+  <p>La sangría de los TODO de <code>index.php</code> ya dice mucho del diseño: los totales solo se calculan si hay
+    ticket, y solo
+    hay ticket si la comanda es correcta. El HTML también se marca con TODOs (errores, campos, ticket, nota): es la
+    "maqueta" de esta tarea.</p>
+  <p><strong>Decisión clave.</strong> <code>carta.php</code> no escribe nada: su único TODO es <em>devolver la
+      carta</em>. Y <code>calcularTotales()</code> recibe
+    la <code>$suma</code> ya calculada, en lugar de volver a recorrer las líneas: cada función hace <strong>una</strong>
+    cosa.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título "Bar Baio — Comanda" y el botón <em>Calcular el ticket</em>, que todavía no hace
+      nada, y
+      <strong>no hay errores de PHP</strong>. Con la extensión <em>Todo Tree</em> de VS Code verás la lista de lo que
+      queda por hacer. A
+      partir de ahora, cada TODO que se programa se borra.
+    </p>
+  </div>
+
+  <h3 id="32-paso-2-la-carta-el-formulario-pegajoso-y-la-validacion">3.2.- Paso 2: la carta, el formulario pegajoso y la
+    validación</h3>
+  <p><strong>Objetivo.</strong> Generar el formulario a partir de la carta, validar en el servidor todo lo que llega y
+    devolver el
+    formulario relleno (R1, R2, R3 y la parte de R8 que toca a la entrada).</p>
+  <p><strong>Por qué ahora.</strong> Sin una comanda <strong>válida</strong> no hay ticket que calcular, y todos los
+    cálculos de los pasos 3 y 4
+    darán por hecho que las cantidades son enteros de 0 a 20. Si la validación se dejara para el final, habría que
+    revisar cada cálculo para ver qué pasa con un <code>abc</code>.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>carta.php</code> <strong>devuelve</strong> el array y <code>index.php</code> lo recoge con
+      <code>$carta = require __DIR__ . '/carta.php';</code>.</li>
+    <li>Las constantes <code>MESAS</code>, <code>MAX_UNIDADES</code> y <code>MAX_NOTA</code>. Las de las promociones y
+      el IVA se dejan para el paso 4:
+      cada constante aparece en el paso en que se usa.</li>
+    <li>Los valores iniciales de <code>index.php</code>: una comanda vacía con
+      <code>array_fill_keys(array_keys($carta), 0)</code>, es decir,
+      un 0 para cada producto de la carta. Así el formulario se dibuja igual la primera vez que después de enviarlo.
+    </li>
+    <li><code>validarComanda()</code>, con el mismo patrón para cada campo: comprobar que es un <strong>string</strong>,
+      quitar los espacios y
+      validar con
+      <code>filter_var(..., FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; ..., 'max_range' =&gt; ...]])</code>:
+    </li>
+  </ul>
+  <pre><code class="language-php">// validarComanda() (paso 2, funciones.php)
+$textoMesa = is_string($datos['mesa'] ?? null) ? trim($datos['mesa']) : '';
+$mesa = filter_var($textoMesa, FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 1, 'max_range' =&gt; MESAS]]);
+</code></pre>
+  <ul>
+    <li>Para las cantidades, primero se comprueba que <code>$datos['cantidad']</code> es un array (si no, "Las
+      cantidades no tienen
+      el formato correcto.") y después se recorre <strong>la carta</strong>. Si una cantidad no vale, se guarda
+      <strong>lo escrito</strong> en
+      lugar del número (ver el código debajo de esta lista): el formulario pegajoso necesita devolver el <code>x</code>,
+      no un 0.</li>
+    <li>La nota se mide con <code>mb_strlen()</code> y el mensaje dice cuántos caracteres tiene ("(tiene 81)").</li>
+    <li><code>'socio' =&gt; isset($datos['socio'])</code>: una casilla sin marcar no se envía.</li>
+    <li>En la vista, la carta se agrupa por categorías
+      (<code>$categorias[$producto['categoria']][$codigo] = $producto;</code>) y
+      se dibuja un <code>&lt;fieldset&gt;</code> por categoría. Todos los <code>value</code> pasan por <code>e()</code>,
+      y la casilla lleva <code>checked</code> si
+      <code>$comanda['socio']</code> es verdadero.
+    </li>
+  </ul>
+  <pre><code class="language-php">// validarComanda() (paso 2, funciones.php)
+if ($cantidad === false) {
+    $errores[] = &quot;La cantidad de «{$producto['nombre']}» debe ser un entero entre 0 y &quot; . MAX_UNIDADES
+        . &quot; (has escrito «{$texto}»).&quot;;
+    $cantidades[$codigo] = $texto;                   // se guarda lo escrito, para el formulario pegajoso
+    $hayMal = true;
+}
+</code></pre>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Escribir <code>if (!$cantidad)</code> en lugar de <code>if ($cantidad === false)</code>.
+      <code>filter_var('0', FILTER_VALIDATE_INT)</code>
+      devuelve el entero <code>0</code>, que es <em>falso</em> para PHP: con <code>!</code> un 0 se tomaría como un
+      error. Lo mismo pasa con
+      <code>empty($texto)</code>, que da <code>true</code> para el texto <code>'0'</code>. Por eso se compara con
+      <code>=== ''</code> y <code>=== false</code>.
+    </p>
+  </div>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>¿Por qué <code>is_string()</code> antes de <code>trim()</code>? Porque cualquiera puede enviar
+      <code>mesa[]=1</code> y entonces <code>$_POST['mesa']</code>
+      es un <strong>array</strong>. <code>trim()</code> de un array lanza un <code>TypeError</code> en PHP 8 y la página
+      se rompe. Con
+      <code>is_string($datos['mesa'] ?? null)</code> el array se trata como un campo vacío y sale el error normal de la
+      mesa.
+      El <code>?? null</code> evita, además, el aviso <em>Undefined array key</em> si el campo no llega.
+    </p>
+  </div>
+
+  <p><strong>Una decisión que el ticket agradecerá.</strong> Si hay errores, <code>$comanda['cantidades']</code> puede
+    tener textos (<code>'x'</code>)
+    mezclados con enteros. No es un problema, porque el ticket <strong>solo</strong> se calcula si
+    <code>$errores === []</code>, y en ese caso
+    todas las cantidades son enteros. Por eso, en este paso, una comanda correcta <strong>no muestra nada
+      todavía</strong>: ni
+    errores ni ticket.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 a 4. Envía el formulario vacío, luego la mesa 13 con un café <code>x</code>, un zumo 21 y una nota larga:
+      deben salir
+      los cuatro errores y los campos deben conservar lo escrito. Con F12, cambia <code>name="mesa"</code> por
+      <code>name="mesa[]"</code>:
+      error de la mesa, sin avisos. Con el depurador, pon un punto de ruptura en <code>validarComanda()</code> y mira
+      cómo llega
+      <code>$datos['cantidad']</code> y cómo se convierte en <code>$cantidades</code>.
+    </p>
+  </div>
+
+  <h3 id="33-paso-3-el-ticket-agrupado-por-categorias">3.3.- Paso 3: el ticket, agrupado por categorías</h3>
+  <p><strong>Objetivo.</strong> Con una comanda correcta, mostrar la tabla del ticket: líneas agrupadas por categoría en
+    el orden de
+    la carta, el subtotal de cada una y la suma (R4), con los importes bien formateados (R6).</p>
+  <p><strong>Por qué ahora.</strong> Es lo que se <strong>ve</strong>, y permite comprobar a ojo que las cuentas básicas
+    (unidades × precio) son
+    correctas antes de añadir descuentos que las complican. Si la suma está mal, el total del paso 4 también lo estará.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>euros()</code>: <code>number_format($importe, 2, ',', '.') . ' €'</code>. Un único sitio para el formato
+      del dinero.</li>
+    <li><code>lineasTicket()</code> recorre de nuevo <strong>la carta</strong> (así se respeta su orden) y se salta los
+      productos con cantidad 0.
+      Las líneas se agrupan en un array cuya clave es la categoría, de modo que las categorías sin nada pedido
+      <strong>ni siquiera existen</strong> en el resultado: no hay que filtrarlas en la vista.
+    </li>
+    <li><code>subtotal()</code> suma los importes de un grupo de líneas con
+      <code>array_sum(array_column($lineas, 'importe'))</code>.</li>
+    <li>En <code>index.php</code>, la suma es la de los subtotales; el ticket se guarda en un array
+      <code>['grupos' =&gt; ..., 'suma' =&gt; ...]</code>.</li>
+  </ul>
+  <pre><code class="language-php">// lineasTicket() (paso 3, funciones.php)
+$importe = round($cantidad * $producto['precio'], 2);
+$grupos[$producto['categoria']][] = [
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Redondea cada importe a céntimos.</strong> Los <code>float</code> no representan exactamente la mayoría
+      de los decimales: 0,1 +
+      0,2 no es exactamente 0,3. En un ticket, cada línea es un importe en céntimos y debe guardarse así; si se suman
+      los valores sin redondear, el total puede diferir en un céntimo de la suma de lo que se ve impreso. Por eso hay un
+      <code>round(..., 2)</code> en el importe de cada línea, en cada subtotal y en la suma. (Una ampliación del
+      enunciado propone
+      hacer los cálculos con céntimos enteros, que evita el problema de raíz.)
+    </p>
+  </div>
+
+  <p><strong>Lo que queda pendiente.</strong> La tabla termina en la fila <em>Suma</em>; justo debajo queda el TODO de
+    la promoción, el
+    descuento, el total y el IVA, y en el formulario el de <em>Nueva comanda</em>. Es desarrollo incremental: el ticket
+    ya
+    funciona y se puede probar, aunque todavía no esté completo.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 5: mesa 7 con espacios alrededor, dos cafés (también con espacios) y un zumo. Debe salir "Ticket de la mesa
+      7", la categoría Bebidas con su subtotal y la suma 5,10 €, y <strong>no</strong> debe salir Raciones. Pide 20
+      pulpos: la línea
+      debe decir 240,00 € (dos decimales y coma). Comprueba que, si añades una línea a <code>carta.php</code>, el
+      producto aparece
+      en el formulario y en el ticket sin tocar nada más (R1).</p>
+  </div>
+
+  <h3 id="34-paso-4-solucion-completa-promociones-total-e-iva">3.4.- Paso 4 (solución completa): promociones, total e
+    IVA</h3>
+  <p><strong>Objetivo.</strong> Calcular el 3x2 en cafés, el descuento de socio, el total y el desglose del IVA (R5,
+    R6); añadir la
+    nota al pie y el enlace <em>Nueva comanda</em> (R7).</p>
+  <p><strong>Por qué al final.</strong> Todos estos importes se calculan a partir de la <strong>suma</strong> del paso
+    3, y el orden entre ellos
+    importa: primero la promoción, después el descuento sobre lo que queda, después el total y, por último, la base y
+    el IVA a partir del total. Es una cadena, y cada eslabón necesita el anterior.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Las constantes que faltaban: <code>PROMO_PRODUCTO = 'cafe'</code>, <code>PROMO_CADA = 3</code>,
+      <code>DESCUENTO_SOCIO = 10</code> e <code>IVA = 10</code>.</li>
+    <li><code>calcularTotales()</code>, que devuelve un array con <code>suma</code>, <code>gratis</code>,
+      <code>promocion</code>, <code>descuento</code>, <code>total</code>, <code>base</code> e
+      <code>iva</code>. Las cuatro líneas clave:
+    </li>
+  </ul>
+  <pre><code class="language-php">// calcularTotales() (paso 4, funciones.php)
+$gratis = intdiv($comanda['cantidades'][PROMO_PRODUCTO], PROMO_CADA);
+$descuento = $comanda['socio'] ? round(($suma - $promocion) * DESCUENTO_SOCIO / 100, 2) : 0.0;
+$base = round($total / (1 + IVA / 100), 2);
+$cuotaIva = round($total - $base, 2);
+</code></pre>
+  <ul>
+    <li>En la vista, la línea de la promoción solo sale si <code>$totales['gratis'] &gt; 0</code>, y la del socio solo
+      si
+      <code>$comanda['socio']</code>. Las dos se escriben en negativo (−1,30 €).
+    </li>
+    <li>La nota se muestra con <code>e()</code> solo si no está vacía, y <em>Nueva comanda</em> es un
+      <code>&lt;a href="index.php"&gt;</code>.</li>
+  </ul>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>El IVA "incluido" se calcula hacia atrás.</strong> Los precios de la carta ya llevan el IVA, así que el
+      total
+      (17,55 €) es la base <strong>más</strong> el 10 % de la base: base = 17,55 / 1,10 = 15,95 €. El error frecuente es
+      calcular el
+      IVA como el 10 % del total (1,76 €), que daría una base de 15,79 €. Y fíjate en que el IVA no se calcula aparte
+      con otra división, sino como <strong>total − base</strong>: así los dos importes, redondeados, suman siempre el
+      total del
+      ticket, sin un céntimo de diferencia.</p>
+  </div>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Aplicar el descuento de socio sobre la suma: 20,80 € × 10 % = 2,08 €, y el total saldría 17,42 € en lugar de
+      17,55 €. R5 dice "sobre lo que queda después de la promoción": 19,50 € × 10 % = 1,95 €. Cuando hay varios
+      descuentos, <strong>el orden</strong> es parte del requisito.</p>
+  </div>
+
+  <p><strong>Cada decisión del paso 2 simplifica este.</strong> <code>calcularTotales()</code> lee
+    <code>$comanda['cantidades'][PROMO_PRODUCTO]</code>
+    directamente, sin <code>??</code>: puede hacerlo porque <code>validarComanda()</code> recorre la carta y garantiza
+    que hay una cantidad
+    (entera) para cada producto, también para el café aunque no se haya pedido ninguno.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 6 a 9. La comanda del enunciado (mesa 4, 4 cafés, 2 tostadas, 1 pulpo, socio) debe dar exactamente la tabla
+      del ejemplo: 20,80; −1,30; −1,95; 17,55; 15,95 y 1,60. Con 6 cafés, "(2 gratis)". Con 2 cafés y sin socio, no
+      debe salir ninguna línea de promoción. Escribe <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> en la nota y
+      busca en el código fuente
+      (Ctrl+U) <code>&amp;lt;script&amp;gt;</code>. Pulsa <em>Nueva comanda</em>: el formulario debe salir vacío.</p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 4 añade filas a la tabla del ticket y podría haber estropeado algo que antes funcionaba. Una lista de
+    comprobación para esta tarea:</p>
+  <ul>
+    <li>☐ Casos correctos: el ejemplo del enunciado, una comanda sin cafés, una comanda de socio sin cafés.</li>
+    <li>☐ Casos límite: mesa 1 y mesa 12; cantidad 20 y 21; exactamente 3 cafés (1 gratis) y 2 cafés (ninguno); una
+      nota de 80 caracteres con tildes (vale) y otra de 81 (no vale).</li>
+    <li>☐ Formulario pegajoso: tras un error se conservan la mesa, cada cantidad (también las mal escritas), la casilla
+      y la nota.</li>
+    <li>☐ Maliciosos: <code>mesa[]=1</code>, <code>cantidad=abc</code>, <code>cantidad[cafe][]=1</code>,
+      <code>cantidad[inventado]=5</code>, HTML en la nota y en
+      las cantidades (el mensaje "has escrito «…»" también debe salir escapado).</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code> y base + IVA = total en todos los tickets.</li>
+  </ul>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución ya está organizada en funciones cortas, así que la refactorización se hizo sobre la marcha. Aun así,
+    quedan detalles que se podrían mejorar sin cambiar el comportamiento, buenos para practicar:</p>
+  <ul>
+    <li>En el formulario, el precio de cada producto se escribe con
+      <code>number_format($producto['precio'], 2, ',', '.')</code> y
+      un <code>€</code> a mano. Tiene una explicación histórica: el formulario se escribió en el paso 2, cuando
+      <code>euros()</code> aún no
+      existía, y en el paso 3 no se volvió atrás. Ahora se puede sustituir por <code>euros($producto['precio'])</code>:
+      es la
+      refactorización típica que aparece al <strong>releer</strong> el código terminado.</li>
+    <li>Los subtotales se calculan dos veces: en <code>index.php</code> para obtener la suma y otra vez en la vista con
+      <code>subtotal($lineas)</code>. Se podrían guardar en el ticket (<code>$ticket['subtotales'][$categoria]</code>),
+      y así la vista no
+      calcularía nada, como pide RNF-05.
+    </li>
+    <li><code>calcularTotales()</code> supone que el producto de la promoción está en la carta. Si alguien quita el café
+      de
+      <code>carta.php</code>, <code>$comanda['cantidades'][PROMO_PRODUCTO]</code> daría un aviso. Una comprobación con
+      <code>isset()</code> (o
+      <code>?? 0</code>) haría la función robusta frente a cambios de la carta. Del mismo modo, el texto "Promoción 3x2
+      en
+      cafés" de la vista está escrito a mano aunque el producto y el 3 sean constantes.
+    </li>
+    <li>Las ampliaciones del enunciado (menú del día, céntimos enteros, forma de pago, ticket de 40 columnas) son la
+      siguiente <strong>vuelta</strong> del proceso: cada una empieza otra vez por el análisis. Por ejemplo, el menú del
+      día obliga a
+      decidir si se aplica antes o después del 3x2, igual que el descuento de socio.</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Recorrer <code>$_POST['cantidad']</code> en lugar de la carta</td>
+          <td>Entran productos inventados y faltan los borrados</td>
+          <td><code>foreach ($carta as $codigo =&gt; $producto)</code></td>
+        </tr>
+        <tr>
+          <td><code>trim($_POST['mesa'])</code> sin comprobar el tipo</td>
+          <td><code>TypeError</code> con <code>mesa[]=1</code></td>
+          <td><code>is_string($datos['mesa'] ?? null)</code></td>
+        </tr>
+        <tr>
+          <td><code>if (!$cantidad)</code> o <code>empty($texto)</code></td>
+          <td>El 0 se toma como error</td>
+          <td><code>=== false</code> y <code>=== ''</code></td>
+        </tr>
+        <tr>
+          <td><code>$_POST['socio'] == 'on'</code> sin <code>isset</code></td>
+          <td>Aviso <em>Undefined array key</em> si no se marca</td>
+          <td><code>isset($datos['socio'])</code></td>
+        </tr>
+        <tr>
+          <td><code>strlen()</code> para la nota</td>
+          <td>Una nota con tildes "mide" más de lo que es</td>
+          <td><code>mb_strlen()</code></td>
+        </tr>
+        <tr>
+          <td>Mostrar "La comanda está vacía" junto a una cantidad mal escrita</td>
+          <td>Mensaje confuso</td>
+          <td>La variable <code>$hayMal</code></td>
+        </tr>
+        <tr>
+          <td>Descuento de socio sobre la suma</td>
+          <td>17,42 € en lugar de 17,55 €</td>
+          <td>Primero la promoción, después el descuento</td>
+        </tr>
+        <tr>
+          <td>IVA = total × 10 %</td>
+          <td>Base e IVA incorrectos</td>
+          <td>Base = total / 1,10; IVA = total − base</td>
+        </tr>
+        <tr>
+          <td>No redondear cada importe</td>
+          <td>Céntimos que no cuadran</td>
+          <td><code>round(..., 2)</code> en cada línea y subtotal</td>
+        </tr>
+        <tr>
+          <td>Escribir los errores sin <code>e()</code></td>
+          <td>El mensaje "has escrito «…»" ejecuta HTML</td>
+          <td><strong>Todo</strong> lo que se escribe en el HTML se escapa</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué <code>validarComanda()</code> recorre la carta y no <code>$_POST['cantidad']</code>? <strong>Porque
+          así se ignoran los códigos
+          inventados y la comanda tiene siempre una cantidad para cada producto, lo que permite usar
+          <code>$cantidades[$codigo]</code> sin <code>??</code> en los pasos siguientes.</strong></li>
+      <li>Si el camarero escribe <code>x</code> en el café, ¿qué se guarda en
+        <code>$comanda['cantidades']['cafe']</code>? <strong>El texto <code>'x'</code>,
+          para que el formulario pegajoso lo devuelva; el ticket no se calcula porque hay errores.</strong></li>
+      <li>¿Por qué no se puede usar <code>if (!$cantidad)</code> para detectar un error? <strong>Porque
+          <code>filter_var()</code> devuelve <code>0</code> para
+          una cantidad válida de 0 unidades, y <code>0</code> es falso; hay que comparar con
+          <code>=== false</code>.</strong></li>
+      <li>¿Cómo se sabe si la casilla de socio estaba marcada? <strong>Con <code>isset($_POST['socio'])</code>: una
+          casilla sin marcar no
+          se envía.</strong></li>
+      <li>Con un total de 17,55 €, ¿cuánto es la base imponible y por qué no es 17,55 × 0,90? <strong>15,95 €: el IVA
+          está
+          incluido, así que base = total / 1,10; e IVA = total − base = 1,60 €.</strong></li>
+      <li>¿Por qué esta tarea no necesita campos ocultos ni ninguna otra forma de guardar estado? <strong>Porque cada
+          envío
+          trae la comanda completa: no hay nada que recordar entre una petición y la siguiente.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

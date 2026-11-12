@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata del Boletín 05, ejercicio 4: producto de dos matrices</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata del Boletín 05, ejercicio 4: producto de dos matrices</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p><strong>Carlos</strong> tiene que hacer una página que multiplique dos matrices. Con el enunciado delante ve
+            que no es un formulario, sino <strong>dos seguidos</strong>: primero hay que preguntar las dimensiones y,
+            con ellas, dibujar las parrillas para escribir los números. <strong>María</strong> le avisa: —Entre el
+            primer formulario y el segundo, la página tiene que recordar las dimensiones. Y lo que recuerda la página,
+            el usuario lo puede cambiar.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Desarrolla un script que, utilizando las funciones de los ejercicios 2 y 3 del boletín, solicite al usuario 2
+        matrices, compruebe que tienen dimensiones compatibles para calcular el producto matricial y, si cumplen las
+        condiciones, lo muestre. Si no, mostrará un mensaje de error.</p>
+    <ul>
+        <li>Ejercicio 2 (<em>introducirMatriz</em>): solicitar las dimensiones de una matriz n x m y generar una
+            parrilla (una tabla HTML con un campo de texto en cada celda) para introducir los datos; validar que sean
+            números (enteros o <em>float</em>).
+        </li>
+        <li>Ejercicio 3 (<em>productoMatricial</em>): producto de dos matrices de dimensiones m x n y n x t (1 ≤ n, m, t
+            ≤ 10).
+        </li>
+    </ul>
+    <p>Llamaremos <strong>m x n</strong> a las dimensiones de A y <strong>p x q</strong> a las de B: se pueden
+        multiplicar si <strong>n = p</strong>, y el resultado es una matriz m x q.</p>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> <em>Enviar</em> (el mismo botón en los dos formularios: el
+            <strong>estado</strong> dice cuál de los dos se está enviando) y la <strong>carga</strong> sin parámetros,
+            que se produce también con el enlace "Empezar de nuevo".
+        </li>
+        <li><strong>Estados.</strong> Cuatro: ST0 carga; ST1 esperando las dimensiones; ST2 esperando los datos de A y
+            B; ST3 producto mostrado. Aquí sí hacen falta estados distintos: con el mismo botón, la página hace cosas
+            diferentes según lo que esté esperando.
+        </li>
+        <li><strong>Variables de estado.</strong> El estado y las <strong>cuatro dimensiones</strong>, que se guardan en
+            campos ocultos al pasar a ST2 (el segundo formulario no las pide, pero las necesita para leer las
+            parrillas).
+        </li>
+        <li><strong>Predicados.</strong> Para el primer formulario: las cuatro dimensiones son enteros entre 1 y 10
+            (PL0) y son compatibles (PL1). Para el segundo: todas las celdas de A (PL2) y de B (PL3) son números.
+        </li>
+        <li><strong>Datos ocultos manipulados.</strong> En T3 se <strong>vuelven a comprobar</strong> PL0 y PL1 con las
+            dimensiones ocultas. Si no se cumplen, alguien ha tocado la página: se vuelve al principio.
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 440" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="m3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="60" cy="70" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="60" y="75"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="60" y="115"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="60" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text><text x="60" y="305"
+                text-anchor="middle" font-size="11" fill="#333">Carga de página</text>
+            <circle cx="225" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="225" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text><text x="191" y="298" text-anchor="end"
+                font-size="11" fill="#333">Esperando las</text><text x="191" y="311" text-anchor="end" font-size="11"
+                fill="#333">dimensiones</text>
+            <circle cx="440" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="440" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text><text x="476" y="234"
+                text-anchor="start" font-size="11" fill="#333">Esperando los</text><text x="476" y="247"
+                text-anchor="start" font-size="11" fill="#333">datos de A y B</text>
+            <circle cx="640" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text><text x="640" y="305"
+                text-anchor="middle" font-size="11" fill="#333">Producto</text><text x="640" y="318"
+                text-anchor="middle" font-size="11" fill="#333">mostrado</text>
+            <path d="M60.0,101.0 Q60.0,165.0 60.0,227.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="75" y="135" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#c0392b" font-weight="bold">Carga</text><text x="75" y="149" text-anchor="start"
+                font-family="Arial, sans-serif" font-size="10.5" fill="#555555" font-style="italic">("Empezar de
+                nuevo")</text>
+            <path d="M91.0,260.0 Q142.5,260.0 192.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="142" y="237" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T1</text><text x="142" y="251" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES0</text>
+            <path d="M212.0,233.0 C155.3,162.3 294.7,162.3 239.4,230.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="190" y="30" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="190" y="44" text-anchor="end"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="190" y="58" text-anchor="end" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0</text><text x="190" y="72" text-anchor="end"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">!PL0</text><text x="190" y="86"
+                text-anchor="end" font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC2 →
+                ES1</text><text x="190" y="100" text-anchor="end" font-family="Consolas, monospace" font-size="11.5"
+                fill="#111111">o PL0 &amp;&amp; !PL1</text><text x="190" y="114" text-anchor="end"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">→ ES2</text>
+            <path d="M256.0,260.0 Q332.5,260.0 407.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="332" y="195" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="332" y="209" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="332" y="223" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0</text><text x="332" y="237" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1</text><text x="332"
+                y="251" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad"
+                font-weight="bold">ES3 [AC4]</text>
+            <path d="M427.0,233.0 C370.3,162.3 509.7,162.3 454.4,230.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="500" y="30" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T3</text><text x="500" y="44" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="500" y="58" text-anchor="start" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0, AC1</text><text x="500" y="72" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1
+                &amp;&amp;</text><text x="500" y="86" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#111111">(!PL2 || !PL3)</text><text x="500" y="100" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES4 [AC4]</text>
+            <path d="M471.0,260.0 Q540.0,260.0 607.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="545" y="285" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T3</text><text x="545" y="299" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="545" y="313" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0, AC1</text><text x="545" y="327" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1
+                &amp;&amp;</text><text x="545" y="341" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="11.5" fill="#111111">PL2 &amp;&amp; PL3</text><text x="545" y="355" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC3</text><text x="545" y="369"
+                text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad"
+                font-weight="bold">ES5</text>
+            <path d="M413.4,275.9 Q332.5,324.5 253.3,277.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m3)" /><text x="332" y="350" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T3</text><text x="332" y="364" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="332" y="378" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0</text><text x="332" y="392" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">!PL0 || !PL1</text><text x="332"
+                y="406" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" fill="#555555"
+                font-style="italic">(ocultos manipulados)</text><text x="332" y="420" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES0</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del Boletín 05, ejercicio 4</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>página sin parámetros (primera vez o enlace "Empezar de nuevo")</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Enviar</td>
+                <td>el usuario pulsa "Enviar"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>formularioDimensiones</td>
+                <td>formulario de las cuatro dimensiones, vacío</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>dimensionesConErrores</td>
+                <td>lo escrito y un aviso junto a cada dimensión no válida</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>dimensionesIncompatibles</td>
+                <td>"No se pueden multiplicar: A tiene n columnas y B tiene p filas"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>parrillas</td>
+                <td>una parrilla m x n para A y otra p x q para B, vacías</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>parrillasConErrores</td>
+                <td>las parrillas con lo escrito y las celdas no válidas en rojo</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES5</td>
+                <td>resultado</td>
+                <td>A, B y A x B, con el enlace "Empezar de nuevo" (sin botón Enviar)</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST0</td>
+                <td>CargaPagina</td>
+                <td>la página aún no se ha mostrado</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST1</td>
+                <td>EsperandoDimensiones</td>
+                <td>se muestra el formulario de dimensiones</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST2</td>
+                <td>EsperandoDatos</td>
+                <td>se muestran las parrillas de A y B</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST3</td>
+                <td>ProductoMostrado</td>
+                <td>se muestra el resultado</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td>estado actual (campo oculto)</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE1–VE4</td>
+                <td><code>$m</code>, <code>$n</code>, <code>$p</code>, <code>$q</code></td>
+                <td>dimensiones (campos ocultos en ST2)</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE5, VE6</td>
+                <td><code>$a</code>, <code>$b</code></td>
+                <td>las matrices (arrays de 2 dimensiones)</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE7</td>
+                <td><code>$c</code></td>
+                <td>el producto</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>dimensiones válidas</td>
+                <td>m, n, p y q son enteros entre 1 y 10</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>compatibles</td>
+                <td>n = p (columnas de A = filas de B)</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>A numérica</td>
+                <td>todas las celdas de A son números</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>B numérica</td>
+                <td>todas las celdas de B son números</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>leer dimensiones</td>
+                <td><code>trim</code> y <code>FILTER_VALIDATE_INT</code> (1–10) de m, n, p, q (del formulario o de los
+                    ocultos)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>leer matrices</td>
+                <td>leer <code>a[i][j]</code> y <code>b[i][j]</code>, admitir coma decimal,
+                    <code>FILTER_VALIDATE_FLOAT</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>avisos de dimensiones</td>
+                <td>un aviso por cada dimensión no válida</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td><code>$c = productoMatricial($a, $b)</code></td>
+                <td>c[i][j] = suma de a[i][k] · b[k][j]</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td>guardar dimensiones</td>
+                <td>escribir m, n, p, q en campos ocultos (al generar ES3 y ES4)</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga (EE0)</th>
+                <th>Enviar (EE1)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>T3</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>---</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>En ST3 la página no tiene botón <em>Enviar</em> (<code>---</code>): si llega, se ha manipulado y el programa
+        empieza de nuevo (T1).</p>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes de los PLs</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0</td>
+                <td><code>!PL0</code></td>
+                <td>ST1</td>
+                <td>AC2</td>
+                <td>ES1</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0</td>
+                <td><code>PL0 &amp;&amp; !PL1</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0</td>
+                <td><code>PL0 &amp;&amp; PL1</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES3 [AC4]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC0</td>
+                <td><code>!PL0 || !PL1</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC0, AC1</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; (!PL2 || !PL3)</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES4 [AC4]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC0, AC1</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2 &amp;&amp; PL3</code></td>
+                <td>ST3</td>
+                <td>AC3</td>
+                <td>ES5</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>En T3 la acción AC1 (leer las parrillas) solo se hace si se cumplen PL0 y PL1: sin dimensiones válidas no se sabe
+        cuántas celdas leer.</p>
+    <h3>4.4.- Comprobación de predicados</h3>
+    <p>T2 tiene dos predicados (PL1 no se evalúa si PL0 es falso):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th><code>!PL0</code></th>
+                <th><code>PL0 &amp;&amp; !PL1</code></th>
+                <th><code>PL0 &amp;&amp; PL1</code></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>T3 tiene cuatro, pero PL2 y PL3 solo se evalúan si PL0 y PL1 son ciertos:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th>PL2</th>
+                <th>PL3</th>
+                <th><code>!PL0 || !PL1</code></th>
+                <th><code>... &amp;&amp; (!PL2 || !PL3)</code></th>
+                <th><code>... &amp;&amp; PL2 &amp;&amp; PL3</code></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>5.- Del autómata al código</h2>
+    <p>Fragmento de <code>solucion/index.php</code>. Observa que el evento imposible (<code>---</code>) se guarda en la
+        tabla como <code>null</code> y se trata como T1:</p>
+    <pre><code>$automata = [
+    ST0 =&gt; [EE0 =&gt; 1, EE1 =&gt; 1],
+    ST1 =&gt; [EE0 =&gt; 1, EE1 =&gt; 2],
+    ST2 =&gt; [EE0 =&gt; 1, EE1 =&gt; 3],
+    ST3 =&gt; [EE0 =&gt; 1, EE1 =&gt; null],       // en ST3 no hay botón Enviar
+];
+$transicion = $automata[$estado][$evento] ?? 1;            // evento imposible: empezar de nuevo
+
+switch ($transicion) {
+    // ...
+    case 3:                                                // ---- T3
+        [, $d] = leerDimensiones($_GET);                   // AC0 (de los campos ocultos)
+        $pl0 = !in_array(false, $d, true);
+        if (!$pl0 || $d['n'] !== $d['p']) {                // !PL0 || !PL1: ocultos manipulados
+            $estado = ST1;
+            es0();
+            break;
+        }
+        [$textosA, $numerosA] = leerMatriz($_GET['a'] ?? null, $d['m'], $d['n']);   // AC1
+        [$textosB, $numerosB] = leerMatriz($_GET['b'] ?? null, $d['p'], $d['q']);
+        $pl2 = todasNumeros($numerosA);
+        $pl3 = todasNumeros($numerosB);
+        if (!$pl2 || !$pl3) {                              // PL0 &amp;&amp; PL1 &amp;&amp; (!PL2 || !PL3)
+            $estado = ST2;
+            es3($d, $textosA, $numerosA, $textosB, $numerosB);  // ES4: valores escritos y celdas en rojo
+        } else {                                           // PL0 &amp;&amp; PL1 &amp;&amp; PL2 &amp;&amp; PL3
+            $estado = ST3;
+            $c = productoMatricial($numerosA, $numerosB);  // AC3
+            es5($numerosA, $numerosB, $c);
+        }
+        break;
+}</code></pre>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p><code>leerMatriz()</code> no se fía de lo que llega: comprueba que <code>$_GET['a']</code> es un array y que
+            cada celda existe y es un texto antes de validarla. Si alguien envía <code>a=hola</code> en lugar de
+            <code>a[0][0]=...</code>, las celdas que faltan cuentan como no válidas (camino ES4) y no se produce ningún
+            aviso de PHP.</p>
+    </div>
+    <h2>6.- Pruebas: un camino por cada fila</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Primera carga</td>
+                <td>T1</td>
+                <td>formulario de dimensiones; <code>estado</code> = 1</td>
+            </tr>
+            <tr>
+                <td>m = 0, q = "abc"</td>
+                <td>T2: <code>!PL0</code></td>
+                <td>avisos junto a m y q</td>
+            </tr>
+            <tr>
+                <td>A 2 x 3, B 2 x 2</td>
+                <td>T2: <code>PL0 &amp;&amp; !PL1</code></td>
+                <td>"A tiene 3 columnas y B tiene 2 filas"</td>
+            </tr>
+            <tr>
+                <td>A 2 x 3, B 3 x 2</td>
+                <td>T2: <code>PL0 &amp;&amp; PL1</code></td>
+                <td>parrillas 2 x 3 y 3 x 2; <code>estado</code> = 2; dimensiones ocultas</td>
+            </tr>
+            <tr>
+                <td>una celda de A con "x"</td>
+                <td>T3: <code>!PL2</code></td>
+                <td>la celda en rojo; se conservan los demás valores</td>
+            </tr>
+            <tr>
+                <td>A = [[1,2,3],[4,5,6]], B = [[7,8],[9,10],[11,12]]</td>
+                <td>T3: <code>PL2 &amp;&amp; PL3</code></td>
+                <td>A x B = [[58, 64], [139, 154]]; sin botón Enviar</td>
+            </tr>
+            <tr>
+                <td>A 1 x 1 con "1,5", B 1 x 1 con 2</td>
+                <td>T3: <code>PL2 &amp;&amp; PL3</code></td>
+                <td>3 (acepta la coma decimal)</td>
+            </tr>
+            <tr>
+                <td>oculto n = 3, p = 2 (manipulado)</td>
+                <td>T3: <code>!PL1</code></td>
+                <td>vuelve al formulario de dimensiones</td>
+            </tr>
+            <tr>
+                <td>oculto m = 99</td>
+                <td>T3: <code>!PL0</code></td>
+                <td>vuelve al formulario de dimensiones</td>
+            </tr>
+            <tr>
+                <td><code>a=hola</code></td>
+                <td>T3: <code>!PL2</code></td>
+                <td>celdas en rojo, sin avisos de PHP</td>
+            </tr>
+            <tr>
+                <td>Enviar en ST3</td>
+                <td><code>---</code> → T1</td>
+                <td>formulario de dimensiones</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade a ES5 un botón "Cambiar los números" que vuelva a ST2 con las mismas dimensiones y los valores
+            escritos. ¿Qué evento entrante nuevo aparece? ¿En qué celdas de la tabla de eventos-estados? ¿Qué variables
+            de estado nuevas tiene que guardar ES5?
+        </li>
+        <li>¿Y si se quiere permitir también la suma A + B? Añade un predicado "las dos matrices tienen las mismas
+            dimensiones" y decide qué camino sigue cada combinación.
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

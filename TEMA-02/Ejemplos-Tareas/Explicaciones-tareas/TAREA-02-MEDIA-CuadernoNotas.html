@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuaderno de notas del profesor (TAREA-02, nivel medio): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="cuaderno-de-notas-del-profesor-tarea-02-nivel-medio-como-se-llega-a-la-solucion-paso-a-paso">Cuaderno de notas
+    del profesor (TAREA-02, nivel medio): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-alta-de-alumnos-y-estado-en-campos-ocultos">3.2.- Paso 2: alta de alumnos y estado en
+              campos ocultos</a></li>
+          <li><a href="#33-paso-3-medias-calificaciones-y-acciones-sobre-el-cuaderno">3.3.- Paso 3: medias,
+              calificaciones y acciones sobre el cuaderno</a></li>
+          <li><a href="#34-paso-4-solucion-completa-estadisticas-y-carga-masiva">3.4.- Paso 4 (solución completa):
+              estadísticas y carga masiva</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-MEDIA-CuadernoNotas/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-CuadernoNotas/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-CuadernoNotas/datos-prueba.txt">datos de prueba</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-CuadernoNotas/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-CuadernoNotas/SOLUCION%20PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p><strong>María</strong> lleva las notas de sus grupos en una hoja de papel y le pide a <strong>Carlos</strong> una
+      pequeña aplicación que
+      calcule las medias y las estadísticas. Carlos abre el editor dispuesto a empezar por la tabla, pero se para en
+      seco: "Si añado a Ana y luego a Brais, ¿dónde está Ana cuando llega la segunda petición?". Todavía no saben usar
+      sesiones ni bases de datos, así que el cuaderno tendrá que <strong>viajar en la propia página</strong>, en campos
+      ocultos. Y
+      <strong>Juan</strong>, que pasa por allí, le recuerda lo que eso significa: "Lo que viaja en la página lo puede
+      cambiar
+      cualquiera con F12. Cuando vuelva, valídalo otra vez".
+    </p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;SOLUCION PASO A PASO/paso2&quot; &quot;SOLUCION PASO A PASO/paso3&quot;
+</code></pre>
+  <p>(desde la carpeta de la tarea, <code>TAREA-02-MEDIA-CuadernoNotas</code>; en VS Code: seleccionar los dos ficheros,
+    botón
+    derecho, <em>Comparar seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 10 requisitos (R1…R10) que <a
+      href="DOCUMENTACION/TAREA-02-MEDIA-CuadernoNotas/Requisitos.md">Requisitos.md</a>
+    convierte en 11 requisitos funcionales comprobables. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Alta y validación</td>
+          <td>R1, R2 · RF-01…RF-03</td>
+          <td>Normalizar el nombre con funciones <code>mb_</code>, validar nombre y notas (coma o punto),
+            <strong>todos</strong> los errores a la vez y formulario pegajoso.</td>
+        </tr>
+        <tr>
+          <td>Mostrar</td>
+          <td>R3, R6 · RF-04, RF-08</td>
+          <td>Media ponderada, calificación, resaltado de suspensos, estadísticas y un gráfico de barras con
+            <code>&lt;div&gt;</code>.</td>
+        </tr>
+        <tr>
+          <td>Actuar sobre el cuaderno</td>
+          <td>R4, R5, R8 · RF-05…RF-07, RF-10</td>
+          <td>Botones <em>Editar</em> y <em>Eliminar</em> por fila, ordenar con lista blanca y vaciar con confirmación.
+          </td>
+        </tr>
+        <tr>
+          <td>Carga masiva</td>
+          <td>R7 · RF-09</td>
+          <td>Partir un texto en líneas y en campos, e informar de cada error con su <strong>número de línea</strong>.
+          </td>
+        </tr>
+        <tr>
+          <td>Conservar el estado</td>
+          <td>R9 · RF-11, RNF-03, RNF-11, RNF-14</td>
+          <td>El cuaderno viaja en campos <code>hidden</code> con la forma <code>alumnos[Nombre][0..2]</code> y se
+            <strong>revalida</strong> al llegar.</td>
+        </tr>
+        <tr>
+          <td>Organización</td>
+          <td>R10 · RNF-06…RNF-08</td>
+          <td>Funciones sin <code>echo</code> en <code>funciones.php</code>, paso por referencia y constantes con
+            <code>const</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son tres: <strong>el estado en campos ocultos</strong>
+    (RNF-03 y
+    RNF-04: nada de <code>$_SESSION</code>, cookies ni ficheros), <strong>no fiarse de esos campos</strong> (RNF-11) y
+    <strong>un único formulario</strong>
+    que envuelve toda la página (RNF-16), para que cualquier botón envíe también el cuaderno.</p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <p>Al leer con calma aparecen preguntas. Conviene escribir la respuesta <strong>antes</strong> de programar:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿<code>ana pérez</code> y <code>Ana Pérez</code> son el mismo alumno?</td>
+          <td>Sí: el nombre se <strong>normaliza</strong> antes de usarlo como clave, así que se actualiza en lugar de
+            duplicarse.</td>
+        </tr>
+        <tr>
+          <td>¿Se puede cambiar el nombre al editar?</td>
+          <td>No: guardar con otro nombre crea un alumno nuevo. Renombrar es una ampliación (campo oculto
+            <code>nombreOriginal</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Con cuántos decimales se guardan las notas?</td>
+          <td><code>validarNota()</code> las redondea a 2; la media también se redondea a 2.</td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa si un campo oculto llega manipulado?</td>
+          <td><code>recuperarCuaderno()</code> descarta ese alumno <strong>en silencio</strong> (sus errores van a un
+            array que no se muestra).</td>
+        </tr>
+        <tr>
+          <td>¿Qué número de línea se da en la carga masiva?</td>
+          <td>El del texto pegado, contando también las líneas vacías y los comentarios: coincide con el de
+            <code>datos-prueba.txt</code>.</td>
+        </tr>
+        <tr>
+          <td>¿Qué botón "pulsa" la tecla <em>Intro</em>?</td>
+          <td><em>Guardar</em>: un botón invisible al principio del formulario.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo se ordenan los nombres con tilde?</td>
+          <td>Con <code>ksort()</code>: las vocales con tilde quedan después de la "z". Ordenar bien en español
+            (<code>Collator</code>) es una ampliación.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). Así quien
+      corrija sabrá que no es un olvido, y tú no cambiarás de criterio a mitad de la tarea. En esta solución, la nota
+      sobre las tildes y <code>Collator</code> está escrita como comentario dentro de <code>ordenarCuaderno()</code>.
+    </p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> y el fichero <code>datos-prueba.txt</code> son ejemplos
+    concretos de entrada y
+    salida. Escríbelos en una tabla antes de programar: serán las pruebas de cada paso.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Guardar <code>brais   OTERO</code> con <code>4</code>, <code>5,5</code>, <code>3</code></td>
+          <td>"Se ha añadido a «Brais Otero»."; en la tabla, <em>Brais Otero</em>; el formulario queda vacío</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Añadir 3 alumnos uno tras otro</td>
+          <td>Los 3 siguen en la tabla (RF-11)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Guardar <code>ana pérez</code> cuando ya existe <em>Ana Pérez</em></td>
+          <td>"Se han actualizado las notas de «Ana Pérez»." y no hay un segundo alumno</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Nombre <code>X</code> y notas <code>5</code>, vacío, <code>abc</code></td>
+          <td>3 errores y el formulario conserva lo escrito</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Notas <code>6,5</code> y <code>6.5</code></td>
+          <td>Las dos se aceptan como la misma nota</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Notas <code>6,75</code>, <code>7</code>, <code>6</code></td>
+          <td>Media 6,53 y calificación <em>Bien</em></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><em>Editar</em> en <em>Ana Pérez</em></td>
+          <td>El formulario muestra su nombre y sus notas con coma decimal</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><em>Vaciar</em> sin marcar la casilla / marcándola</td>
+          <td>Error "Para vaciar el cuaderno debes marcar la casilla de confirmación." / "Se ha vaciado el cuaderno."
+          </td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Pegar <code>datos-prueba.txt</code> en la carga masiva</td>
+          <td>5 alumnos cargados y 5 errores (líneas 9 a 13); media del grupo 6,46, mejor <em>Carmen Núñez Vázquez</em>
+            (9,55), peor <em>Brais Otero</em> (4,05), 3 aprobados de 5</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Cambiar con F12 una nota oculta por <code>99</code></td>
+          <td>Ese alumno desaparece del cuaderno, sin avisos</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Cambiar con F12 el <code>value</code> de una opción del desplegable de orden</td>
+          <td>Se ordena por nombre (lista blanca)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 10 y 11 son <strong>maliciosos</strong>: no se pueden provocar con el formulario normal, hay que editar
+    el HTML con
+    F12. Que estén en la lista desde el principio obliga a decidir, ya en el diseño, que el cuaderno recibido <strong>se
+      valida igual que un alumno nuevo</strong>.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Es la decisión más importante de la tarea. Como <strong>HTTP no tiene estado</strong>, cada clic en un botón es una
+    petición
+    nueva: el script empieza desde cero y tiene que <strong>reconstruir el cuaderno</strong> a partir de lo que envíe el
+    formulario.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cuaderno</td>
+          <td>array <code>nombre =&gt; [n1, n2, n3]</code> (floats)</td>
+          <td>campos ocultos <code>alumnos[Nombre][0..2]</code></td>
+          <td>Es lo único que hay que recordar (R9)</td>
+        </tr>
+        <tr>
+          <td>Criterio de orden</td>
+          <td>string (<code>nombre</code> o <code>media</code>)</td>
+          <td>el propio <code>&lt;select name="orden"&gt;</code></td>
+          <td>Como está dentro del único formulario, se envía en cada petición (R5)</td>
+        </tr>
+        <tr>
+          <td>Nombre y notas del formulario</td>
+          <td>strings</td>
+          <td>campos de texto</td>
+          <td>Solo hacen falta en la petición en que se envían (formulario pegajoso)</td>
+        </tr>
+        <tr>
+          <td>Texto de la carga masiva</td>
+          <td>string</td>
+          <td><code>&lt;textarea name="csv"&gt;</code></td>
+          <td>Se procesa y no se conserva</td>
+        </tr>
+        <tr>
+          <td>Confirmación de vaciar</td>
+          <td>casilla</td>
+          <td><code>confirmarVaciar</code></td>
+          <td>Solo importa si está (<code>isset</code>)</td>
+        </tr>
+        <tr>
+          <td>Medias, calificaciones, estadísticas</td>
+          <td>—</td>
+          <td><strong>se calculan</strong></td>
+          <td>Si se guardaran, podrían contradecirse con las notas</td>
+        </tr>
+        <tr>
+          <td>Errores y mensajes</td>
+          <td>arrays</td>
+          <td>variables</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>PHP reconstruye arrays a partir de los nombres de los campos.</strong> Si la página contiene
+      <code>name='alumnos[Brais Otero][0]' value='4'</code>, <code>name='alumnos[Brais Otero][1]' value='5.5'</code>…
+      entonces
+      <code>$_POST['alumnos']</code> llega como <code>['Brais Otero' =&gt; ['4', '5.5', '3']]</code>: el mismo array
+      multidimensional del
+      enunciado, pero con <strong>textos</strong> en lugar de números. Por eso el nombre tiene que ser una clave segura
+      (sin <code>[</code>,
+      <code>]</code> ni comillas, RNF-14) y por eso las notas hay que volver a validarlas: son textos que ha enviado el
+      navegador.
+    </p>
+  </div>
+
+  <p>El cuaderno, dentro del programa, es exactamente el del enunciado:</p>
+  <pre><code class="language-php">['Ana Pérez Lago' =&gt; [7.5, 6.0, 8.25], 'Brais Otero' =&gt; [4.0, 5.5, 3.0]]
+</code></pre>
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Dos ficheros PHP con una responsabilidad cada uno: <code>funciones.php</code> (lógica, sin HTML) e
+    <code>index.php</code> (decide qué
+    hacer y muestra la página), más <code>estilos.css</code>. <code>index.php</code> sigue la estructura de siempre de
+    los apuntes:</p>
+  <pre><code class="language-text">1. Inicializar          -&gt; require_once 'funciones.php'; arrays $errores y $mensajes
+2. Recuperar el estado  -&gt; recuperarCuaderno($_POST['alumnos'] ?? []), ¡validándolo!
+3. Recibir              -&gt; valores por defecto del formulario; criterio de orden (lista blanca)
+4. Procesar la acción   -&gt; eliminar / editar / guardar / cargar / vaciar / ordenar
+5. Preparar la vista    -&gt; ordenarCuaderno() y estadisticas()
+6. Mostrar la página    -&gt; mensajes, tabla, estadísticas, formularios y los campos ocultos con el estado
+</code></pre>
+  <p>R10 pide siete funciones como mínimo; la solución añade cinco más para no repetir código:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>e()</code></td>
+          <td>Escapar para el HTML</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>normalizarNombre()</code> / <code>nombreValido()</code></td>
+          <td>Limpiar el nombre / comprobar su formato</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarNota()</code></td>
+          <td>Texto → nota (<code>float</code>) o <code>null</code>, añadiendo el error a <code>$errores</code> (por
+            referencia)</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarAlumno()</code></td>
+          <td>Nombre y 3 textos → <code>[nombreNormalizado, [n1, n2, n3]]</code> o <code>null</code></td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>recuperarCuaderno()</code></td>
+          <td><code>$_POST['alumnos']</code> → cuaderno, descartando lo que no sea válido</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>mediaPonderada()</code> / <code>calificacion()</code> / <code>formatoNota()</code></td>
+          <td>Calcular la media / su texto / escribir <code>6,50</code></td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>ordenarCuaderno()</code></td>
+          <td>Devolver una copia ordenada por nombre o por media</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>procesarCargaMasiva()</code></td>
+          <td>Texto → alumnos añadidos y errores con su número de línea</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>estadisticas()</code></td>
+          <td>Cuaderno → número de alumnos, media, mejor, peor, aprobados y distribución</td>
+          <td>4</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>La función que más se reutiliza es <code>validarAlumno()</code>: la usan el botón <em>Guardar</em> (paso 2),
+      <code>recuperarCuaderno()</code>
+      (paso 2) y <code>procesarCargaMasiva()</code> (paso 4). Hay <strong>una sola</strong> definición de "alumno
+      válido", así que es imposible
+      que el formulario acepte algo que luego la carga masiva rechace, o que los campos ocultos admitan una nota que el
+      formulario no admitiría. Cuando una regla se aplica en varios sitios, escríbela una vez.</p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>El cuaderno puede estar vacío o tener alumnos, y el botón pulsado decide la transición (<em>evento [condición] /
+      acción</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cualquiera</td>
+          <td>cualquier botón [un alumno oculto no es válido]</td>
+          <td><code>recuperarCuaderno()</code> lo descarta</td>
+          <td>igual, sin ese alumno</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Guardar</em> o <em>Intro</em> [datos válidos, nombre nuevo]</td>
+          <td>añadir; "Se ha añadido a…"; vaciar el formulario</td>
+          <td>Con alumnos</td>
+        </tr>
+        <tr>
+          <td>Con alumnos</td>
+          <td><em>Guardar</em> [datos válidos, nombre existente]</td>
+          <td>sustituir las notas; "Se han actualizado…"</td>
+          <td>Con alumnos</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Guardar</em> [datos no válidos]</td>
+          <td>mostrar <strong>todos</strong> los errores; formulario pegajoso</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>Con alumnos</td>
+          <td><em>Editar</em> [el alumno existe]</td>
+          <td>cargar su nombre y sus notas en el formulario</td>
+          <td>Con alumnos</td>
+        </tr>
+        <tr>
+          <td>Con alumnos</td>
+          <td><em>Eliminar</em> [el alumno existe]</td>
+          <td><code>unset()</code>; "Se ha eliminado a…"</td>
+          <td>Con alumnos o Vacío</td>
+        </tr>
+        <tr>
+          <td>Con alumnos</td>
+          <td><em>Vaciar</em> [casilla marcada]</td>
+          <td>cuaderno vacío; "Se ha vaciado el cuaderno."</td>
+          <td>Vacío</td>
+        </tr>
+        <tr>
+          <td>Con alumnos</td>
+          <td><em>Vaciar</em> [casilla sin marcar]</td>
+          <td>error</td>
+          <td>Con alumnos</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Cargar</em></td>
+          <td>añadir las líneas correctas; errores con su número de línea</td>
+          <td>Con alumnos (si alguna es correcta)</td>
+        </tr>
+        <tr>
+          <td>Con alumnos</td>
+          <td><em>Ordenar</em> [criterio en la lista blanca / fuera de ella]</td>
+          <td>ordenar por ese criterio / por nombre</td>
+          <td>Con alumnos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dibujar la tabla descubre dos cosas. La primera fila no depende del botón: <strong>todas</strong> las peticiones
+    empiezan
+    reconstruyendo y revalidando el cuaderno. Y <em>Editar</em> y <em>Eliminar</em> no llevan un nombre de acción, sino
+    <strong>el nombre
+      del alumno</strong> (<code>&lt;button name="eliminar" value="Nombre del alumno"&gt;</code>, como sugiere el
+    enunciado), por lo que se
+    comprueban con <code>isset()</code> antes del <code>switch</code> que reparte el resto de acciones.</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden no es
+    casual: primero lo que permite <strong>guardar y conservar</strong> alumnos, después lo que permite
+    <strong>trabajar</strong> con ellos y al
+    final lo que se <strong>construye encima</strong> de todo lo anterior.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs y esqueleto HTML</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Alta y modificación con validación, formulario pegajoso y estado en campos ocultos (revalidado)</td>
+          <td>R1, R2, R9, R10</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Medias, calificaciones, <em>Editar</em>, <em>Eliminar</em>, <em>Vaciar</em> y <em>Ordenar</em></td>
+          <td>R3, R4, R5, R8</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td><strong>Solución completa:</strong> estadísticas y carga masiva</td>
+          <td>R6, R7</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> La tarea tiene seis acciones distintas que comparten el mismo estado; si se
+    empieza a
+    escribir código directamente, es fácil que una de ellas "olvide" el cuaderno. Los TODO son el <strong>plan</strong>
+    escrito
+    dentro del propio código: en <code>index.php</code>, uno por cada parte de la estructura, en el orden en que se
+    ejecutará; en
+    <code>funciones.php</code>, la <strong>firma</strong> de cada función con lo que recibe y lo que devuelve:
+  </p>
+  <pre><code class="language-php">// Función auxiliar TODO: validarNota(?string $texto, string $campo, array &amp;$errores): ?float
+//      admite coma o punto decimal; número entre 0 y 10
+</code></pre>
+  <p>Lo más importante del paso 1 está en un único comentario del HTML: <strong>un único formulario</strong> que
+    envuelve toda la
+    página, con un botón <em>Guardar</em> invisible al principio y los campos ocultos al final. Es la decisión de la que
+    dependen todas las demás.</p>
+  <p><strong>Decisión clave.</strong> La estructura del cuaderno ya se escribe en el comentario de cabecera de
+    <code>funciones.php</code>, y el
+    TODO de <code>index.php</code> que lo recupera dice expresamente <em>¡validándolo!</em>: la revalidación forma parte
+    del plan desde
+    el primer minuto, no es un añadido final.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título "Cuaderno de notas" y nada más, pero <strong>no hay errores de PHP</strong>. Con
+      la extensión
+      <em>Todo Tree</em> de VS Code verás la lista de lo que queda por hacer. A partir de ahora, cada TODO que se
+      programa se
+      borra.
+    </p>
+  </div>
+
+  <h3 id="32-paso-2-alta-de-alumnos-y-estado-en-campos-ocultos">3.2.- Paso 2: alta de alumnos y estado en campos ocultos
+  </h3>
+  <p><strong>Objetivo.</strong> Validar y guardar un alumno (R1, R2) y conseguir que el cuaderno
+    <strong>sobreviva</strong> de una petición a la
+    siguiente (R9).</p>
+  <p><strong>Por qué ahora (y por qué las dos cosas juntas).</strong> Sin alta no hay alumnos con los que probar nada,
+    pero un alta
+    sin estado solo sirve para un alumno: al añadir el segundo, el primero ya no existe. Por eso este paso termina con
+    los campos ocultos y <code>recuperarCuaderno()</code>. Y la revalidación entra también aquí, no al final: como
+    <code>validarAlumno()</code> ya está escrita para el botón <em>Guardar</em>, validar el cuaderno recibido es solo
+    <strong>llamarla otra
+      vez</strong> para cada alumno.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Las constantes <code>EVALUACIONES</code>, <code>PESOS</code>, <code>CALIFICACIONES</code> y
+      <code>NOTA_APROBADO</code>, todas de golpe: casi todas se usan
+      ya en este paso, para dibujar las cabeceras (<code>PESOS[$i] * 100</code>), el formulario (una caja de texto por
+      evaluación)
+      y la clase <code>nota-suspensa</code> de las notas menores que <code>NOTA_APROBADO</code>.</li>
+    <li><code>normalizarNombre()</code>: <code>preg_replace('/\s+/u', ' ', ...)</code>, <code>trim()</code> y
+      <code>mb_convert_case(..., MB_CASE_TITLE, 'UTF-8')</code>.</li>
+    <li><code>nombreValido()</code>: una expresión regular con <code>\p{L}</code> (cualquier letra, también con tilde o
+      ñ) y el modificador <code>u</code>,
+      que además limita la longitud a 3-40 caracteres.</li>
+    <li><code>validarNota()</code>: cambia la coma por un punto, comprueba que no está vacía, que
+      <code>is_numeric()</code> y que está entre 0 y
+      10, y devuelve la nota redondeada o <code>null</code>.</li>
+    <li><code>validarAlumno()</code>: valida el nombre y las tres notas y acumula <strong>todos</strong> los errores en
+      <code>$errores</code>. Para saber si
+      <em>este</em> alumno ha fallado, aunque el array ya traiga errores de antes, compara la longitud del array al
+      principio
+      y al final (ver el código debajo de esta lista).
+    </li>
+    <li><code>recuperarCuaderno()</code>: comprueba que <code>$datos</code> es un array y que cada alumno es un array, y
+      lo pasa por
+      <code>validarAlumno()</code> con un array de errores que se ignora.
+    </li>
+    <li>En <code>index.php</code>, la acción <code>guardar</code>: mensaje distinto según
+      <code>array_key_exists($nombre, $cuaderno)</code> y, si todo es
+      correcto, formulario vacío.</li>
+    <li>En el HTML, los campos ocultos al final del formulario, con el nombre escapado.</li>
+  </ul>
+  <pre><code class="language-php">// validarAlumno() (paso 2, funciones.php)
+$erroresAntes = count($errores);
+// ... validar el nombre y las 3 notas, añadiendo a $errores ...
+return count($errores) &gt; $erroresAntes ? null : [$nombre, $notas];
+</code></pre>
+  <pre><code class="language-php">// index.php (paso 2): el estado, al final del único formulario
+echo &quot;&lt;input type='hidden' name='alumnos[&quot; . e($nombre) . &quot;][{$i}]' value='{$nota}'&gt;\n&quot;;
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>El botón invisible del principio.</strong> Al pulsar <em>Intro</em> en un campo de texto, el navegador
+      simula un clic en el
+      <strong>primer</strong> botón <em>submit</em> del formulario. En el paso 3 aparecerán <em>Ordenar</em>,
+      <em>Editar</em> y <em>Eliminar</em> por encima del
+      formulario de alta: sin el botón
+      <code>&lt;button type="submit" name="accion" value="guardar" class="oculto"&gt;</code> del
+      principio, <em>Intro</em> ordenaría la tabla y lo escrito se perdería. Se pone ya en el paso 2,
+      <strong>antes</strong> de que
+      haga falta, porque así lo decía el plan del paso 1.
+    </p>
+  </div>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Poner un <code>&lt;form&gt;</code> distinto para cada parte de la página (uno para el alta, otro para la
+      tabla...). Los campos
+      ocultos solo se envían con el formulario en el que están, así que al pulsar un botón de otro formulario el
+      cuaderno llega vacío. Por eso la pista del enunciado insiste: <strong>un único formulario</strong> que envuelva
+      toda la página.</p>
+  </div>
+
+  <p><strong>Lo que queda provisional.</strong> La tabla muestra las notas tal cual (<code>&lt;?= $nota ?&gt;</code>, es
+    decir, <code>5.5</code> con punto) y
+    tiene TODOs donde irán la media, la calificación y los botones. Los TODOs de este paso llevan anotado <strong>en qué
+      paso</strong>
+    se resolverán (<code>// TODO (paso 3): ...</code>), y las funciones pendientes ya tienen su comentario de
+    documentación
+    escrito encima: el plan sigue a la vista.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 a 5. Añade tres alumnos seguidos y comprueba que no se pierde ninguno. Con Ctrl+U, mira los campos
+      ocultos:
+      <code>name='alumnos[Brais Otero][0]' value='4'</code>. Con F12, cambia uno de esos <code>value</code> por
+      <code>99</code> y pulsa <em>Guardar alumno</em>
+      con el formulario vacío: saldrán los errores del formulario y Brais habrá <strong>desaparecido</strong> de la
+      tabla (caso 10).
+      Con el depurador, pon un punto de ruptura después de <code>recuperarCuaderno()</code> y mira cómo llega
+      <code>$_POST['alumnos']</code>.
+    </p>
+  </div>
+
+  <h3 id="33-paso-3-medias-calificaciones-y-acciones-sobre-el-cuaderno">3.3.- Paso 3: medias, calificaciones y acciones
+    sobre el cuaderno</h3>
+  <p><strong>Objetivo.</strong> Completar la tabla (R3) y añadir las acciones que trabajan sobre un cuaderno que ya se
+    conserva:
+    <em>Editar</em>, <em>Eliminar</em> (R4), <em>Ordenar</em> (R5) y <em>Vaciar</em> (R8).
+  </p>
+  <p><strong>Por qué ahora.</strong> Con el estado funcionando, cada una de estas acciones es pequeña: unas líneas que
+    modifican
+    <code>$cuaderno</code> antes de que la vista lo vuelva a escribir en los campos ocultos. Y la media y la
+    calificación son
+    necesarias para ordenar por media, así que van en el mismo paso.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>mediaPonderada()</code> recorre las notas y multiplica cada una por <code>PESOS[$i]</code>: cambiar un
+      peso es tocar una línea
+      (RNF-08).</li>
+    <li><code>calificacion()</code> con <code>match (true)</code> y las condiciones en orden
+      (<code>$nota &lt; 5 =&gt; 'Insuficiente'</code>, …).</li>
+    <li><code>formatoNota()</code> con <code>number_format($nota, 2, ',', '.')</code>, que sustituye al
+      <code>&lt;?= $nota ?&gt;</code> provisional del paso 2.</li>
+    <li><code>ordenarCuaderno()</code> <strong>devuelve una copia</strong> ordenada (no modifica el original). Por
+      nombre, con <code>ksort()</code>. Por
+      media, con un array auxiliar <code>nombre =&gt; media</code> y <code>arsort()</code> (ver el código debajo de esta
+      lista).</li>
+    <li>En <code>index.php</code>: el criterio de orden con lista blanca, al principio, <strong>antes</strong> de
+      procesar la acción; <em>Eliminar</em>
+      y <em>Editar</em> comprueban con <code>array_key_exists()</code> que el alumno existe; <em>Editar</em> rellena el
+      formulario con
+      <code>array_map('formatoNota', $cuaderno[$nombre])</code>, de modo que las notas salen con coma; <em>Vaciar</em>
+      solo actúa con
+      <code>isset($_POST['confirmarVaciar'])</code>; y el <code>case 'ordenar'</code> no hace nada, porque el criterio
+      ya se ha leído.
+    </li>
+    <li>La ordenación se aplica <strong>después</strong> de la acción, justo antes de la vista: así un alumno recién
+      añadido aparece
+      ya en su sitio.</li>
+  </ul>
+  <pre><code class="language-php">// ordenarCuaderno() (paso 3, funciones.php)
+arsort($medias);
+// 3) reconstruimos el cuaderno en ese orden
+</code></pre>
+  <pre><code class="language-php">// index.php (paso 3): lista blanca del criterio de orden
+$orden = in_array($_POST['orden'] ?? '', ['nombre', 'media']) ? $_POST['orden'] : 'nombre';
+</code></pre>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Ordenar las medias con <code>sort()</code> o <code>rsort()</code>. Esas funciones <strong>renumeran</strong> las
+      claves (0, 1, 2…), así que se
+      pierde a qué alumno pertenece cada media. <code>arsort()</code> ordena por valor de mayor a menor
+      <strong>conservando las
+        claves</strong>, y <code>ksort()</code> ordena por clave: justo lo que pide la pista del enunciado.</p>
+  </div>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>¿Dónde se guarda el criterio de orden entre peticiones? En ningún campo oculto: en el propio <code>&lt;select
+name="orden"&gt;</code>, que tiene <code>selected</code> en la opción actual y, como está dentro del único formulario,
+      se envía con
+      cualquier botón. Un control visible también es estado. (Consecuencia curiosa: el desplegable solo se dibuja si
+      hay alumnos, así que al vaciar el cuaderno el criterio vuelve a ser <em>nombre</em>.)</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 6, 7, 8 y 11. Con <code>6,75</code>, <code>7</code>, <code>6</code> la fila debe decir 6,53 y
+      <em>Bien</em>; con una media menor que 5, la fila sale
+      resaltada. Pulsa <em>Editar</em>: las notas aparecen con coma, y al guardar sale "Se han actualizado las notas
+      de…".
+      Ordena por media, añade otro alumno y comprueba que el criterio se mantiene. Escribe un nombre y pulsa
+      <em>Intro</em>:
+      debe guardar, no ordenar.</p>
+  </div>
+
+  <h3 id="34-paso-4-solucion-completa-estadisticas-y-carga-masiva">3.4.- Paso 4 (solución completa): estadísticas y
+    carga masiva</h3>
+  <p><strong>Objetivo.</strong> Calcular y dibujar las estadísticas del grupo (R6) y cargar muchos alumnos de golpe
+    desde un
+    <code>&lt;textarea&gt;</code> (R7).
+  </p>
+  <p><strong>Por qué al final.</strong> Las dos funciones se construyen <strong>encima</strong> de lo anterior.
+    <code>estadisticas()</code> es un bucle que
+    llama a <code>mediaPonderada()</code> y <code>calificacion()</code>, y <code>procesarCargaMasiva()</code> es un
+    bucle que parte el texto y llama a
+    <code>validarAlumno()</code>. Si estuvieran al principio, habría que escribir dos veces la validación y la media.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>procesarCargaMasiva()</code>: separa las líneas con <code>preg_split('/\R/', $texto)</code> (sirve para
+      <code>\n</code> y <code>\r\n</code>), salta las
+      vacías y las que empiezan por <code>#</code>, comprueba que hay exactamente <code>1 + count(EVALUACIONES)</code>
+      campos y valida el
+      resto con <code>validarAlumno()</code>, recogiendo los errores de la línea en un array propio para añadirles
+      delante
+      <code>"Línea {$numLinea}: "</code>.
+    </li>
+    <li><code>estadisticas()</code>: inicializa todo a cero, con la distribución creada con
+      <code>array_fill_keys(CALIFICACIONES, 0)</code>, y sale enseguida si no hay alumnos (así nunca se divide entre 0).
+    </li>
+    <li>En la vista, el gráfico: una fila por calificación con un <code>&lt;div class="barra"&gt;</code> cuyo ancho es
+      el porcentaje de
+      alumnos de esa calificación.</li>
+  </ul>
+  <pre><code class="language-php">// procesarCargaMasiva() (paso 4, funciones.php)
+$erroresLinea = [];
+$alumno = validarAlumno($campos[0], array_slice($campos, 1), $erroresLinea);
+</code></pre>
+  <pre><code class="language-php">// estadisticas() (paso 4, funciones.php)
+$stats['distribucion'][calificacion($media)]++;
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Cada decisión del análisis simplifica un paso posterior.</strong> Como <code>validarAlumno()</code> añade
+      los errores a un array
+      recibido <strong>por referencia</strong> y devuelve <code>null</code> si este alumno ha fallado, la carga masiva
+      no necesita saber nada
+      de nombres ni de notas: le pasa un array vacío por línea y, si hay errores, les pone delante el número de línea.
+      Las líneas incorrectas no impiden cargar las correctas (RF-09) sin escribir ni una regla de validación nueva.</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 9. Pega <code>datos-prueba.txt</code> y pulsa <em>Cargar</em>: "Carga masiva: 5 alumno(s) añadidos o
+      actualizados." y cinco
+      errores, de la línea 9 ("se esperaban 4 campos separados por «;» y hay 3") a la 13 (el nombre con un número). En
+      las estadísticas: media del grupo 6,46, mejor <em>Carmen Núñez Vázquez</em> (9,55), peor <em>Brais Otero</em>
+      (4,05) y 3
+      aprobados de 5. En el gráfico, <em>Insuficiente</em> tiene 2 alumnos (barra del 40 %) y <em>Suficiente</em>,
+      ninguno.</p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 4 añade una acción nueva al <code>switch</code> y código a la vista, y podría haber estropeado algo que
+    antes
+    funcionaba. Una lista de comprobación para esta tarea:</p>
+  <ul>
+    <li>☐ Casos correctos: alta, modificación, edición, eliminación, orden por nombre y por media, carga masiva.</li>
+    <li>☐ Casos límite: notas 0 y 10; 10,01 y −0,5 (no valen); una media de 4,99 y otra de 5 (suspenso y aprobado);
+      un nombre de 3 caracteres y otro de 41; un nombre con guion o apóstrofo.</li>
+    <li>☐ Multibyte: <code>"  ana   PÉREZ "</code> → <em>Ana Pérez</em>; nombres con ñ y tildes en la tabla, en los
+      botones y en los
+      campos ocultos.</li>
+    <li>☐ Estado: después de <strong>cada</strong> acción (también de un error o de <em>Vaciar</em> sin confirmar)
+      siguen todos los alumnos.</li>
+    <li>☐ Maliciosos: nota <code>99</code> o <code>abc</code> en un campo oculto, un nombre oculto con
+      <code>&lt;script&gt;</code>, un criterio de orden
+      inventado, HTML en el nombre del formulario (debe salir escapado en el mensaje de error).</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code>.</li>
+  </ul>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución ya está organizada en funciones cortas, así que la refactorización se hizo sobre la marcha. Aun así,
+    quedan detalles que se podrían mejorar, buenos para practicar:</p>
+  <ul>
+    <li><strong>Pendiente: arrays donde se espera un texto.</strong> <code>validarAlumno()</code> y
+      <code>validarNota()</code> declaran parámetros <code>string</code> y
+      <code>?string</code>, pero el código no comprueba con <code>is_string()</code> lo que llega antes de llamarlas. Si
+      alguien envía
+      <code>nombre[]=x</code>, <code>notas[0][]=5</code> o <code>alumnos[Ana Pérez][0][]=5</code>, PHP lanza un
+      <code>TypeError</code> y la página se rompe; con
+      <code>eliminar[]=x</code>, <code>(string)</code> da el aviso <em>Array to string conversion</em>. Eso contradice
+      RNF-15 ("ningún aviso ni
+      error con ninguna entrada"). La corrección es la de siempre: <code>is_string($_POST['nombre'] ?? null)</code>
+      antes de
+      usarlo, igual que en la tarea básica de la comanda.
+    </li>
+    <li><code>calificacion()</code> escribe a mano el 5 y los cinco textos, aunque existen <code>NOTA_APROBADO</code> y
+      <code>CALIFICACIONES</code>. Hoy
+      funciona, pero si alguien cambia un texto de la constante,
+      <code>$stats['distribucion'][calificacion($media)]++</code>
+      apuntaría a una clave que no existe. Mejor que las dos cosas salgan de las mismas constantes.</li>
+    <li><code>mediaPonderada()</code> se llama varias veces para el mismo alumno en cada petición (al ordenar por media,
+      en la tabla
+      y en las estadísticas). Se podría calcular una vez un array <code>nombre =&gt; media</code> y reutilizarlo.</li>
+    <li>El mensaje "debe ser un número (has escrito «…»)" muestra el texto <strong>después</strong> de cambiar la coma
+      por el punto:
+      quien escribe <code>6,5x</code> ve <code>6.5x</code>. Basta con guardar el texto original para el mensaje.</li>
+    <li>El <code>&lt;textarea&gt;</code> de la carga masiva no es pegajoso: si hay líneas con errores, el texto se
+      pierde y hay que volver
+      a pegarlo para corregirlas.</li>
+    <li>Las ampliaciones del enunciado (renombrar con <code>nombreOriginal</code>, exportar al formato de la carga
+      masiva, ordenar
+      con <code>Collator</code>) son la siguiente <strong>vuelta</strong> del proceso: cada una empieza otra vez por el
+      análisis. Por ejemplo,
+      renombrar obliga a decidir qué pasa si el nombre nuevo ya existe.</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Guardar el cuaderno solo en una variable</td>
+          <td>Al añadir el segundo alumno, el primero ha desaparecido</td>
+          <td>Campos ocultos <code>alumnos[Nombre][i]</code> (R9)</td>
+        </tr>
+        <tr>
+          <td>Varios <code>&lt;form&gt;</code> en la página</td>
+          <td>Los botones de un formulario no envían los campos ocultos del otro</td>
+          <td>Un único formulario</td>
+        </tr>
+        <tr>
+          <td>Confiar en los campos ocultos</td>
+          <td>Una nota de 99 en la tabla y en las estadísticas</td>
+          <td><code>recuperarCuaderno()</code> con <code>validarAlumno()</code></td>
+        </tr>
+        <tr>
+          <td>Usar el nombre sin validar como clave</td>
+          <td>Un <code>]</code> en el nombre rompe la estructura de <code>$_POST['alumnos']</code></td>
+          <td><code>nombreValido()</code> (RNF-14) y <code>e()</code> en el <code>name</code></td>
+        </tr>
+        <tr>
+          <td><code>ucwords(strtolower(...))</code></td>
+          <td>Las mayúsculas con tilde no se convierten bien</td>
+          <td><code>mb_convert_case(..., MB_CASE_TITLE, 'UTF-8')</code></td>
+        </tr>
+        <tr>
+          <td>Comparar el nombre sin normalizar</td>
+          <td><em>ana pérez</em> y <em>Ana Pérez</em> son dos alumnos</td>
+          <td>Normalizar antes de buscar la clave</td>
+        </tr>
+        <tr>
+          <td><code>(float) '6,5'</code></td>
+          <td>Da 6: se pierde el decimal</td>
+          <td><code>str_replace(',', '.', ...)</code> antes de convertir</td>
+        </tr>
+        <tr>
+          <td><code>sort()</code> / <code>rsort()</code> de las medias</td>
+          <td>Se pierden los nombres</td>
+          <td><code>arsort()</code> y <code>ksort()</code></td>
+        </tr>
+        <tr>
+          <td>No poner el <em>Guardar</em> invisible al principio</td>
+          <td><em>Intro</em> ordena la tabla y se pierde lo escrito</td>
+          <td>Primer botón <em>submit</em> = <em>Guardar</em></td>
+        </tr>
+        <tr>
+          <td>Escribir nombres o errores sin <code>e()</code></td>
+          <td>Un nombre con HTML se ejecuta</td>
+          <td><strong>Todo</strong> lo que se escribe en el HTML se escapa</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Qué recibe PHP en <code>$_POST['alumnos']</code> si la página tiene los campos
+        <code>alumnos[Ana Pérez][0]</code>, <code>[1]</code> y <code>[2]</code>?
+        <strong>Un array multidimensional <code>['Ana Pérez' =&gt; ['7.5', '6', '8.25']]</code>, con las notas como
+          textos.</strong>
+      </li>
+      <li>¿Por qué <code>recuperarCuaderno()</code> vuelve a validar cada alumno? <strong>Porque los campos ocultos se
+          pueden modificar
+          con F12: todo lo que llega del navegador es una entrada más y se valida igual que el formulario.</strong></li>
+      <li>¿Por qué hay un único formulario en toda la página? <strong>Porque solo así cualquier botón (Editar, Ordenar,
+          Cargar…) envía también los campos ocultos con el cuaderno.</strong></li>
+      <li>¿Cómo sabe <code>validarAlumno()</code> si <strong>este</strong> alumno tiene errores, si
+        <code>$errores</code> ya puede traer otros?
+        <strong>Comparando <code>count($errores)</code> al principio y al final.</strong>
+      </li>
+      <li>¿Por qué se usa <code>arsort()</code> y no <code>rsort()</code> para ordenar por media? <strong>Porque
+          <code>arsort()</code> conserva las claves (los
+          nombres) y <code>rsort()</code> las renumera.</strong></li>
+      <li>¿Dónde se guarda el criterio de orden entre peticiones? <strong>En el propio
+          <code>&lt;select name="orden"&gt;</code>, que se envía con
+          cualquier botón porque está dentro del único formulario.</strong></li>
+      <li>¿Por qué la carga masiva va en el último paso? <strong>Porque se apoya en <code>validarAlumno()</code>: solo
+          hay que partir el
+          texto en líneas y campos y añadir el número de línea a los errores.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

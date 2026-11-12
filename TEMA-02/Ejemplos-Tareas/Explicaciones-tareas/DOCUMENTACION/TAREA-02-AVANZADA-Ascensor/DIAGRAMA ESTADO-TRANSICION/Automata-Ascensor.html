@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata del ascensor del instituto</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+        .cabecera>span {
+            flex: 1;
+        }
+
+        .cabecera>span:last-child {
+            text-align: right;
+        }
+
+        .cabecera .centro {
+            flex: 2;
+        }
+
+        .cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #999;
+            padding: 6px 0;
+            margin-bottom: 14px;
+            font-size: 9pt;
+        }
+
+        .cabecera .centro {
+            text-align: center;
+            color: #5a4fcf;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata del ascensor del instituto</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p><strong>Juan</strong> le enseña a <strong>Carlos</strong> el cuadro de mandos del ascensor del instituto:
+            <em>Parado</em>, <em>Subiendo</em>, <em>Bajando</em>, <em>Puertas abiertas</em>, <em>Emergencia</em>...
+            —¿Ves? Un ascensor es un autómata de estado-transición de libro. Si programas la simulación con el método de
+            los diagramas ampliados, el diagrama de la página y el del ascensor serán <strong>el mismo</strong>.
+            <strong>María</strong> añade un detalle: en cada estado hay cosas que <strong>no pueden pasar</strong> (un
+            ascensor que sube sin llamadas arriba, uno parado con una llamada en su propia planta). Esas condiciones,
+            los <strong>invariantes</strong>, son la mejor forma de comprobar los campos ocultos.</p>
+    </div>
+    <p>Este documento aplica el método de <code>Claude/tema-02/DIAGRAMAS ESTADO-TRANSICION/00-Metodo</code> a la tarea
+        <strong>TAREA-02-AVANZADA-Ascensor</strong>. La solución (<code>SOLUCION-01/index.php</code>) está programada
+        <strong>a partir de este autómata</strong>.</p>
+    <h2>1.- Cómo se lee el diagrama</h2>
+    <figure><svg viewBox="0 0 700 110" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="leym" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="50" cy="60" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="50" y="65"
+                text-anchor="middle" font-weight="bold" font-size="14">STa</text>
+            <circle cx="320" cy="60" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="320" y="65"
+                text-anchor="middle" font-weight="bold" font-size="14">STb</text>
+            <path d="M81.0,60.0 Q185.0,60.0 287.0,60.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#leym)" /><text x="185" y="30" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Evento</tspan>
+                <tspan fill="#111111"> PL1 &amp;&amp; !PL2</tspan>
+            </text><text x="185" y="43" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#7f8c8d">antes: AC1</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#2e7d32">AC3, AC4</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="380" y="18" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#111111">: número de transición</tspan>
+            </text><text x="380" y="31" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Evento</tspan>
+                <tspan fill="#111111">: evento entrante (rojo)</tspan>
+            </text><text x="380" y="44" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL1 &amp;&amp; !PL2: predicados (negro)</tspan>
+            </text><text x="380" y="57" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#7f8c8d">antes: AC1</tspan>
+                <tspan fill="#111111">: acciones previas (gris)</tspan>
+            </text><text x="380" y="70" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC3, AC4</tspan>
+                <tspan fill="#111111">: acciones (verde)</tspan>
+            </text><text x="380" y="83" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+                <tspan fill="#111111">: evento saliente (morado)</tspan>
+            </text>
+        </svg>
+        <figcaption>Figura 1. Leyenda del diagrama de estado-transición ampliado</figcaption>
+    </figure>
+    <h2>2.- El problema, en resumen</h2>
+    <ul>
+        <li>Un edificio de 5 plantas (de la planta baja a la 4.ª) con un ascensor. Cada planta tiene un botón
+            <strong>Llamar</strong>.
+        </li>
+        <li>El tiempo avanza a saltos: cada vez que se pulsa <strong>Avanzar</strong>, el ascensor da un paso: arranca,
+            sube o baja una planta, abre o cierra las puertas.
+        </li>
+        <li>Algoritmo del <strong>ascensor colectivo</strong>: parado, va hacia la llamada más cercana (a igual
+            distancia, hacia arriba); en marcha, para en cada planta con llamada y <strong>sigue en la misma
+                dirección</strong> mientras queden llamadas en ella; si no, cambia de dirección.
+        </li>
+        <li>Una llamada desde la planta en la que está parado abre las puertas al momento. Con las puertas abiertas en
+            esa planta, no hace nada.
+        </li>
+        <li><strong>Parada de emergencia</strong>: anula todas las llamadas. <strong>Rearmar</strong> lo pone en marcha
+            otra vez; a la <strong>tercera</strong> emergencia queda <strong>fuera de servicio</strong> hasta que se
+            reinicie.
+        </li>
+        <li>Contadores: plantas recorridas, paradas y emergencias.
+        </li>
+    </ul>
+    <h2>3.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Cinco: la carga (también el botón <em>Reiniciar</em>), <em>Llamar</em>
+            (con la planta en el valor del botón: <code>llamar:3</code>), <em>Avanzar</em>, <em>Emergencia</em> y
+            <em>Rearmar</em>. <em>Avanzar</em> es el más interesante: hace cosas distintas en cada estado.
+        </li>
+        <li><strong>Estados.</strong> Los del propio ascensor: parado, subiendo, bajando, puertas abiertas, emergencia y
+            fuera de servicio (más ST0). En este problema, la pregunta "¿necesito saber algo de la petición anterior?"
+            tiene una respuesta muy física: necesito saber si el ascensor se mueve y hacia dónde.
+        </li>
+        <li><strong>Variables de estado.</strong> La planta (<code>piso</code>), la dirección en la que iba
+            (<code>direccion</code>), las llamadas pendientes (<code>"024"</code>), las emergencias y los contadores.
+        </li>
+        <li><strong>Por qué hace falta la dirección en ST4.</strong> Con las puertas abiertas, el ascensor no se mueve,
+            pero al cerrarlas debe <strong>seguir en la misma dirección</strong> si quedan llamadas en ella (PL6, PL7).
+            Ese dato no se puede deducir de la planta y las llamadas: es una variable de estado.
+        </li>
+        <li><strong>Invariantes (PL0).</strong> En cada estado, los datos tienen que cumplir unas condiciones. Si no,
+            los campos ocultos se han cambiado. Se comprueban <strong>antes de cualquier transición</strong> salvo T1.
+        </li>
+    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Invariante</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>todos</td>
+                <td>planta de 0 a 4; llamadas con cifras de 0 a 4, ordenadas y sin repetir; contadores ≥ 0; dirección
+                    vacía, <code>sube</code> o <code>baja</code>; emergencias de 0 a 2 (3 solo en ST5)</td>
+            </tr>
+            <tr>
+                <td>ST1 Parado</td>
+                <td>no hay llamada en su planta (la habría atendido abriendo las puertas) y no tiene dirección</td>
+            </tr>
+            <tr>
+                <td>ST2 Subiendo</td>
+                <td>hay alguna llamada <strong>por encima</strong> y la dirección es <code>sube</code></td>
+            </tr>
+            <tr>
+                <td>ST3 Bajando</td>
+                <td>hay alguna llamada <strong>por debajo</strong> y la dirección es <code>baja</code></td>
+            </tr>
+            <tr>
+                <td>ST4 Puertas abiertas</td>
+                <td>no hay llamada en su planta (se quitó al llegar)</td>
+            </tr>
+            <tr>
+                <td>ST5 Emergencia</td>
+                <td>no hay llamadas (se anularon) y ha habido al menos una emergencia</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Gracias a los invariantes de ST2 y ST3, el ascensor <strong>nunca</strong> sube de la 4.ª planta ni baja de la
+        planta baja: si sube, es porque hay una llamada más arriba.</p>
+    <h2>4.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 725" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="asm" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="60" cy="60" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="60" y="65"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="60" y="105"
+                text-anchor="middle" font-size="10.5" fill="#333">cualquier estado</text>
+            <circle cx="60" cy="280" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="285"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text>
+            <circle cx="220" cy="280" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="220" y="285"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text>
+            <circle cx="430" cy="125" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="430" y="130"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text>
+            <circle cx="430" cy="470" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="430" y="475"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text>
+            <circle cx="630" cy="280" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="630" y="285"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text>
+            <circle cx="220" cy="610" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="220" y="615"
+                text-anchor="middle" font-weight="bold" font-size="14">ST5</text><text x="220" y="655"
+                text-anchor="middle" font-size="10.5" fill="#333">emergencia</text>
+            <circle cx="60" cy="610" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="615"
+                text-anchor="middle" font-weight="bold" font-size="14">ST6</text><text x="60" y="655"
+                text-anchor="middle" font-size="10.5" fill="#333">fuera de servicio</text>
+            <rect x="470" y="628" width="170" height="34" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="555.0" y="649.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST1, ST2, ST3, ST4</text>
+            <path d="M60.0,91.0 Q60.0,170.0 60.0,247.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M91.0,280.0 Q140.0,280.0 187.0,280.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M208.4,308.7 C199.0,364.4 133.2,286.1 187.7,286.9" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M251.0,280.0 Q425.0,280.0 597.0,280.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M599.6,274.1 Q425.0,240.0 252.4,273.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M242.7,258.9 Q316.1,190.4 401.4,141.4" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M240.7,303.1 Q314.9,386.1 403.3,450.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M415.4,97.6 C378.9,54.6 481.1,54.6 445.5,95.9" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M444.6,497.4 C481.1,540.4 378.9,540.4 414.5,499.1" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M457.2,139.9 Q542.3,186.7 607.4,256.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M602.8,265.1 Q517.7,218.3 452.6,149.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M455.3,452.1 Q543.8,389.5 609.6,305.9" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M604.7,297.9 Q516.2,360.5 450.4,444.1" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M657.6,294.1 C712.3,308.3 628.5,367.0 634.0,312.8" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M469.0,636.0 Q387.5,627.5 252.8,613.4" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M215.4,579.3 Q195.0,445.0 215.1,312.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" />
+            <path d="M189.0,610.0 Q140.0,610.0 93.0,610.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#asm)" /><text x="72" y="175" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Carga</tspan>
+            </text><text x="140" y="255" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T1</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#2e7d32">AC0</tspan>
+            </text><text x="140" y="268" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text><text x="170" y="362" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> !PL1 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="170" y="375" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> PL1 &amp;&amp; !PL2</tspan>
+            </text><text x="170" y="388" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="170" y="401" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> !PL3 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="430" y="292" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> PL1 &amp;&amp; PL2 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="430" y="252" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> !PL3 </tspan>
+                <tspan fill="#2e7d32">AC7</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="290" y="170" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+            </text><text x="290" y="183" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL3 &amp;&amp; PL4</tspan>
+            </text><text x="290" y="196" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC4</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="285" y="410" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+            </text><text x="285" y="423" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL3 &amp;&amp; !PL4</tspan>
+            </text><text x="285" y="436" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC4</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="430" y="30" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#7f8c8d">antes: AC5</tspan>
+                <tspan fill="#111111"> !PL5 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="430" y="43" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> PL1 </tspan>
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="430" y="560" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#7f8c8d">antes: AC5</tspan>
+                <tspan fill="#111111"> !PL5 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="430" y="573" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> PL1 </tspan>
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="600" y="160" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> PL5</tspan>
+            </text><text x="600" y="173" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="470" y="215" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> PL3 &amp;&amp; PL6</tspan>
+            </text><text x="470" y="228" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">o ... &amp;&amp; !PL7 &amp;&amp; PL4 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="605" y="468" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> PL5</tspan>
+            </text><text x="605" y="481" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="470" y="345" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Avanzar</tspan>
+                <tspan fill="#111111"> PL3 &amp;&amp; PL7</tspan>
+            </text><text x="470" y="358" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">o ... &amp;&amp; !PL7 &amp;&amp; !PL4 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="698" y="392" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> PL1 &amp;&amp; PL2 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="698" y="405" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Llamar</tspan>
+                <tspan fill="#111111"> PL1 &amp;&amp; !PL2</tspan>
+            </text><text x="698" y="418" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="355" y="640" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T9</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Emergencia</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#2e7d32">AC9</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text><text x="165" y="470" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T10</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Rearmar</tspan>
+            </text><text x="165" y="483" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL8 </tspan>
+                <tspan fill="#2e7d32">AC7</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="140" y="578" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T10</tspan>
+                <tspan fill="#111111"> </tspan>
+                <tspan fill="#c0392b" font-weight="bold">Rearmar</tspan>
+            </text><text x="140" y="591" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL8 </tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text><text x="20" y="700" text-anchor="start" font-size="10.5" fill="#555" font-style="italic">En T2 a
+                T10, antes de nada: AC1 (recuperar el ascensor) y PL0 (invariantes del estado); con !PL0 → ST1, AC0,
+                ES1.</text><text x="20" y="717" text-anchor="start" font-size="10.5" fill="#222" font-style="italic">ST0
+                Carga · ST1 Parado · ST2 Subiendo · ST3 Bajando · ST4 Puertas abiertas · ST5 Emergencia · ST6 Fuera de
+                servicio</text>
+        </svg>
+        <figcaption>Figura 2. Diagrama del ascensor (la caja discontinua es "ST1, ST2, ST3 o ST4"; PL0 no se dibuja:
+            está en todas las transiciones salvo T1)</figcaption>
+    </figure>
+    <h2>5.- Autómata</h2>
+    <h3>5.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>petición sin evento, o el botón <em>Reiniciar</em></td>
+            </tr>
+            <tr>
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Llamar</td>
+                <td><code>llamar:0</code> ... <code>llamar:4</code></td>
+            </tr>
+            <tr>
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Avanzar</td>
+                <td>pasa un instante</td>
+            </tr>
+            <tr>
+                <td>Evento entrante</td>
+                <td>EE3</td>
+                <td>Emergencia</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Evento entrante</td>
+                <td>EE4</td>
+                <td>Rearmar</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>edificio</td>
+                <td>el ascensor en la planta baja, parado</td>
+            </tr>
+            <tr>
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>edificio con aviso</td>
+                <td>los datos recibidos no eran válidos</td>
+            </tr>
+            <tr>
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>edificio con mensaje</td>
+                <td>lo que acaba de pasar ("Pasa por la 2.ª planta.")</td>
+            </tr>
+            <tr>
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>emergencia</td>
+                <td>sin botones de llamada; solo <em>Rearmar</em> y <em>Reiniciar</em></td>
+            </tr>
+            <tr>
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>fuera de servicio</td>
+                <td>solo <em>Reiniciar</em></td>
+            </tr>
+            <tr>
+                <td>Estado</td>
+                <td>ST0 ... ST6</td>
+                <td>—</td>
+                <td>Carga, Parado, Subiendo, Bajando, Puertas abiertas, Emergencia, Fuera de servicio</td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE1</td>
+                <td><code>piso</code></td>
+                <td>de 0 a 4</td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE2</td>
+                <td><code>direccion</code></td>
+                <td><code>''</code>, <code>sube</code> o <code>baja</code></td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE3</td>
+                <td><code>llamadas</code></td>
+                <td><code>"024"</code></td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE4</td>
+                <td><code>emergencias</code></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE5</td>
+                <td><code>recorridas</code>, <code>paradas</code></td>
+                <td>contadores</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>datos coherentes</td>
+                <td>los invariantes del estado (tabla del apartado 3)</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>planta válida</td>
+                <td>el botón dice una planta de 0 a 4</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>es su planta</td>
+                <td>la planta que llama es la del ascensor</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>hay llamadas</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>la más cercana, arriba</td>
+                <td>a igual distancia, también</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>llamada aquí</td>
+                <td>hay una llamada en la planta a la que acaba de llegar</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>sigue subiendo</td>
+                <td>subía y quedan llamadas por encima</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL7</td>
+                <td>sigue bajando</td>
+                <td>bajaba y quedan llamadas por debajo</td>
+            </tr>
+            <tr>
+                <td>Predicado</td>
+                <td>PL8</td>
+                <td>se puede rearmar</td>
+                <td>menos de 3 emergencias</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>ascensor inicial</td>
+                <td>planta baja, sin llamadas, contadores a cero</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>recuperar</td>
+                <td>el ascensor de los campos ocultos</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>leer la planta</td>
+                <td>del valor del botón</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC3</td>
+                <td>añadir la llamada</td>
+                <td>sin repetir y ordenada</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC4</td>
+                <td>fijar la dirección</td>
+                <td><code>sube</code> o <code>baja</code></td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>mover</td>
+                <td>una planta arriba (T6) o abajo (T7); recorridas++</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>parar</td>
+                <td>quitar la llamada de esa planta; paradas++</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC7</td>
+                <td>sin dirección</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC8</td>
+                <td>guardar</td>
+                <td>el estado y el ascensor en campos ocultos</td>
+            </tr>
+            <tr>
+                <td>Acción</td>
+                <td>AC9</td>
+                <td>emergencia</td>
+                <td>emergencias++, anular las llamadas, sin dirección</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>5.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga</th>
+                <th>Llamar</th>
+                <th>Avanzar</th>
+                <th>Emergencia</th>
+                <th>Rearmar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>T5</td>
+                <td>T9</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>T3</td>
+                <td>T6</td>
+                <td>T9</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>T3</td>
+                <td>T7</td>
+                <td>T9</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>T4</td>
+                <td>T8</td>
+                <td>T9</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST5</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T10</td>
+            </tr>
+            <tr>
+                <td>ST6</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>En ST5 y ST6 los botones de llamada, <em>Avanzar</em> y <em>Emergencia</em> están deshabilitados: por eso esas
+        celdas son <code>---</code>.</p>
+    <h3>5.3.- Tabla de transiciones</h3>
+    <p>Todas, salvo T1, empiezan con AC1 y tienen un primer camino <code>!PL0</code> → ST1, AC0, ES1 que no se repite en
+        la tabla.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>AC0</td>
+                <td>ES0 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC2</td>
+                <td><code>!PL1</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES2 "esa planta no existe" [AC8]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC2</td>
+                <td><code>PL1 &amp;&amp; PL2</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES2 "se abren las puertas" [AC8]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC2</td>
+                <td><code>PL1 &amp;&amp; !PL2</code></td>
+                <td>ST1</td>
+                <td>AC3</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC2</td>
+                <td><code>!PL1</code> / <code>PL1</code></td>
+                <td>ST2 o ST3 (el mismo)</td>
+                <td>--- / AC3</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC2</td>
+                <td><code>!PL1</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC2</td>
+                <td><code>PL1 &amp;&amp; PL2</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES2 "ya están abiertas" [AC8]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC2</td>
+                <td><code>PL1 &amp;&amp; !PL2</code></td>
+                <td>ST4</td>
+                <td>AC3</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>---</td>
+                <td><code>!PL3</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>---</td>
+                <td><code>PL3 &amp;&amp; PL4</code></td>
+                <td>ST2</td>
+                <td>AC4 (<code>sube</code>)</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>---</td>
+                <td><code>PL3 &amp;&amp; !PL4</code></td>
+                <td>ST3</td>
+                <td>AC4 (<code>baja</code>)</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC5 (+1)</td>
+                <td><code>PL5</code> / <code>!PL5</code></td>
+                <td>ST4 / ST2</td>
+                <td>AC6 / ---</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC5 (−1)</td>
+                <td><code>PL5</code> / <code>!PL5</code></td>
+                <td>ST4 / ST3</td>
+                <td>AC6 / ---</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>---</td>
+                <td><code>!PL3</code></td>
+                <td>ST1</td>
+                <td>AC7</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>---</td>
+                <td><code>PL3 &amp;&amp; PL6</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "sigue subiendo" [AC8]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>---</td>
+                <td><code>PL3 &amp;&amp; !PL6 &amp;&amp; PL7</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES2 "sigue bajando" [AC8]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>---</td>
+                <td><code>PL3 &amp;&amp; !PL6 &amp;&amp; !PL7 &amp;&amp; PL4</code></td>
+                <td>ST2</td>
+                <td>AC4 (<code>sube</code>)</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>---</td>
+                <td><code>PL3 &amp;&amp; !PL6 &amp;&amp; !PL7 &amp;&amp; !PL4</code></td>
+                <td>ST3</td>
+                <td>AC4 (<code>baja</code>)</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T9</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST5</td>
+                <td>AC9</td>
+                <td>ES3 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T10</td>
+                <td>---</td>
+                <td><code>PL8</code> / <code>!PL8</code></td>
+                <td>ST1 / ST6</td>
+                <td>---</td>
+                <td>ES2 / ES4 [AC8]</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>5.4.- Comprobación de predicados</h3>
+    <p>T8 (cerrar las puertas):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL3</th>
+                <th>PL6</th>
+                <th>PL7</th>
+                <th>PL4</th>
+                <th>parado</th>
+                <th>sigue subiendo</th>
+                <th>sigue bajando</th>
+                <th>cambia a subir</th>
+                <th>cambia a bajar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>x</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>x</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>PL6 y PL7 no pueden ser ciertos a la vez (uno exige <code>sube</code> y el otro <code>baja</code>): por eso, con
+        PL6 cierto, PL7 es <strong>x</strong>.</p>
+    <p>T2 (llamada con el ascensor parado):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL1</th>
+                <th>PL2</th>
+                <th>no existe</th>
+                <th>abre</th>
+                <th>añade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>6.- Del autómata al código</h2>
+    <p>Como PL0 está en todas las transiciones salvo T1, el código lo comprueba <strong>una vez</strong>, antes del
+        <code>switch</code>. Si falla, cambia la transición por T1 con un aviso:</p>
+    <pre><code>$transicion = $automata[$estado][$evento] ?? 1;
+if ($transicion !== 1) {
+    $ascensor = leerAscensor($_POST);          // AC1
+    $pl0 = coherente($estado, $ascensor);      // PL0: los invariantes del estado
+    if (!$pl0) {
+        $transicion = 1;                       // !PL0 -&gt; ST1, AC0, ES1
+        $aviso = 'Los datos del ascensor no son válidos...';
+    }
+}
+switch ($transicion) { ... }</code></pre>
+    <p><code>coherente()</code> es casi una copia de la tabla de invariantes, con un <code>match ($estado)</code>. T6 y
+        T7 (subir y bajar) comparten el mismo <code>case</code>: solo cambia el signo de AC5.</p>
+    <h2>7.- Pruebas: un camino por fila</h2>
+    <p>Las 52 peticiones de <code>pruebas.json</code> hacen un recorrido completo:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Camino</th>
+                <th>Petición</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T2 <code>PL1 &amp;&amp; PL2</code></td>
+                <td>llamar a la planta baja estando en ella</td>
+                <td>"se abren las puertas", ST4</td>
+            </tr>
+            <tr>
+                <td>T2 <code>PL1 &amp;&amp; !PL2</code></td>
+                <td>llamar a la 3.ª y a la 1.ª</td>
+                <td>llamadas <code>13</code></td>
+            </tr>
+            <tr>
+                <td>T2 <code>!PL1</code></td>
+                <td><code>llamar:9</code>, <code>llamar:&lt;b&gt;</code></td>
+                <td>"Esa planta no existe."</td>
+            </tr>
+            <tr>
+                <td>T5 <code>PL3 &amp;&amp; PL4</code></td>
+                <td>Avanzar</td>
+                <td>arranca hacia arriba (la 1.ª está más cerca)</td>
+            </tr>
+            <tr>
+                <td>T6 <code>PL5</code></td>
+                <td>Avanzar</td>
+                <td>llega a la 1.ª y abre</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>llamar a la 1.ª y a la planta baja</td>
+                <td>"ya están abiertas"; llamadas <code>03</code></td>
+            </tr>
+            <tr>
+                <td>T8 <code>PL3 &amp;&amp; PL6</code></td>
+                <td>Avanzar</td>
+                <td>sigue subiendo (queda la 3.ª)</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>llamar a la 2.ª en marcha</td>
+                <td>llamadas <code>023</code></td>
+            </tr>
+            <tr>
+                <td>T8 <code>... &amp;&amp; !PL4</code></td>
+                <td>Avanzar en la 3.ª</td>
+                <td>baja a por la planta baja</td>
+            </tr>
+            <tr>
+                <td>T7 <code>!PL5</code> / <code>PL5</code></td>
+                <td>Avanzar ×3</td>
+                <td>pasa por la 2.ª y la 1.ª y llega a la baja: 6 plantas, 4 paradas</td>
+            </tr>
+            <tr>
+                <td>T8 <code>!PL3</code>, T5 <code>!PL3</code></td>
+                <td>Avanzar ×2</td>
+                <td>parado, sin llamadas</td>
+            </tr>
+            <tr>
+                <td>T5 <code>PL4</code> (empate)</td>
+                <td>parado en la 2.ª con llamadas en la 0 y la 4</td>
+                <td>sube</td>
+            </tr>
+            <tr>
+                <td>T9, T10 <code>PL8</code>, T10 <code>!PL8</code></td>
+                <td>tres emergencias</td>
+                <td>rearmado dos veces; a la tercera, fuera de servicio</td>
+            </tr>
+            <tr>
+                <td><code>!PL0</code></td>
+                <td>sube sin llamadas arriba, <code>piso=7</code>, llamadas <code>31</code> o <code>33</code>, parado
+                    con llamada en su planta, emergencia con llamadas...</td>
+                <td>"Los datos del ascensor no son válidos"</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>8.- Para practicar</h2>
+    <ul>
+        <li>Añade un botón <em>Abrir puertas</em> que, en ST4, deje las puertas abiertas un instante más. ¿Es un evento
+            nuevo o un predicado de T8?
+        </li>
+        <li>Añade el estado <em>Sobrecarga</em>: con un botón <em>Entra mucha gente</em> en ST4, el ascensor no cierra
+            las puertas hasta que se pulse <em>Sale gente</em>. Dibuja sus flechas y escribe sus invariantes.
+        </li>
+        <li>Cambia el algoritmo para que, parado, vaya a la llamada <strong>más antigua</strong> en lugar de a la más
+            cercana. ¿Qué variable de estado cambia?
+        </li>
+        <li>Completa la tabla de verdad de T4 y de T10.
+        </li>
+    </ul>
+    <div class="caja autoeval">
+        <div class="titulo-caja">Autoevaluación</div>
+        <ul>
+            <li>¿Por qué la dirección es una variable de estado si ya hay estados <em>Subiendo</em> y <em>Bajando</em>?
+                <strong>Porque hace falta también en ST4: con las puertas abiertas el ascensor no se mueve, pero al
+                    cerrarlas tiene que seguir en la dirección que llevaba.</strong>
+            </li>
+            <li>Un usuario cambia los campos ocultos para que el ascensor esté en ST2 (subiendo) en la 4.ª planta. ¿Qué
+                pasa? <strong>Que no se cumple el invariante de ST2 (no puede haber llamadas por encima de la 4.ª): PL0
+                    es falso y la página se reinicia con un aviso.</strong>
+            </li>
+            <li>¿Por qué la columna <em>Rearmar</em> solo tiene una transición? <strong>Porque el botón solo está
+                    habilitado en ST5. En los demás estados no puede llegar sin manipular la página
+                    (<code>---</code>).</strong>
+            </li>
+            <li>En T8, ¿qué pasaría si se comprobara PL4 antes que PL6? <strong>Que el ascensor podría cambiar de
+                    dirección con llamadas pendientes en la que llevaba: si subía hacia la 4.ª con alguien esperando en
+                    la 1.ª, más cerca, se daría la vuelta.</strong>
+            </li>
+        </ul>
+    </div>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

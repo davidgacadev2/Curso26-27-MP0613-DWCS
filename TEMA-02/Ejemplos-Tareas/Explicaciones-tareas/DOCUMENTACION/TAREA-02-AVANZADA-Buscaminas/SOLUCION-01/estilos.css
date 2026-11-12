@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #eceff1;
+    color: #222;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #37474f;
+}
+
+fieldset {
+    border: 1px solid #90a4ae;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+legend {
+    font-weight: bold;
+}
+
+.configuracion label {
+    margin-right: 12px;
+    white-space: nowrap;
+}
+
+.configuracion input[type='number'] {
+    width: 55px;
+}
+
+.configuracion button {
+    padding: 4px 14px;
+}
+
+.errores {
+    margin: 12px 0;
+    padding: 4px 16px;
+    border: 1px solid #c0392b;
+    background-color: #fdecea;
+    color: #c0392b;
+}
+
+.aviso,
+.ayuda {
+    text-align: center;
+    color: #555;
+}
+
+.marcador {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 16px 0 8px;
+    font-size: 1.1em;
+}
+
+.final {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.final.ganada {
+    color: #2e7d32;
+}
+
+.final.perdida {
+    color: #c62828;
+}
+
+.modo {
+    text-align: center;
+}
+
+/* ===== Tablero ===== */
+table.tablero {
+    margin: 8px auto;
+    border-collapse: collapse;
+    border: 3px solid #607d8b;
+    user-select: none;
+}
+
+table.tablero td {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #b0bec5;
+    text-align: center;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+table.tablero td button {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 2px outset #cfd8dc;
+    background-color: #b0bec5;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+table.tablero td button:hover {
+    background-color: #cfd8dc;
+}
+
+td.oculta {
+    background-color: #b0bec5;
+}
+
+td.descubierta {
+    background-color: #fafafa;
+}
+
+td.mina {
+    background-color: #ffe0b2;
+}
+
+td.explotada {
+    background-color: #e53935;
+}
+
+td.error {
+    background-color: #ffcdd2;
+}
+
+/* Colores clásicos de los números */
+.n1 { color: #1e40af; }
+.n2 { color: #2e7d32; }
+.n3 { color: #c62828; }
+.n4 { color: #311b92; }
+.n5 { color: #6d1b1b; }
+.n6 { color: #00838f; }
+.n7 { color: #212121; }
+.n8 { color: #757575; }

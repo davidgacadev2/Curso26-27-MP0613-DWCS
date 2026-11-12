@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata de un examen tipo test</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata de un examen tipo test</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p><strong>Juan</strong> prepara un examen de repaso de PHP para los nuevos de BK Programación: preguntas de
+            cuatro opciones que se pueden <strong>saltar</strong> y contestar después. <strong>María</strong> quiere dos
+            modos: uno que corrija cada pregunta en el momento (para aprender) y otro que solo dé la nota al final (para
+            evaluarse). —Dos modos, preguntas saltadas, una lista de pendientes... —dice <strong>Carlos</strong>—. El
+            botón <em>Responder</em> hace cinco cosas distintas según el caso.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Programa en PHP un <strong>examen tipo test</strong> sin sesiones (el examen viaja en JSON en un campo oculto):
+    </p>
+    <ul>
+        <li>Se pide el <strong>nombre</strong>, el <strong>número de preguntas</strong> (5 o 10, del banco de preguntas)
+            y el <strong>modo de corrección</strong>: <em>después de cada pregunta</em> o <em>al final</em>.
+        </li>
+        <li>Cada pregunta tiene cuatro opciones y los botones <em>Responder</em>, <em>Saltar</em> y <em>Entregar
+                ya</em>. Responder sin elegir opción muestra un aviso.
+        </li>
+        <li>En el modo <strong>inmediato</strong>, tras responder se muestra si es correcta (y, si no, cuál era) con un
+            botón <em>Continuar</em>.
+        </li>
+        <li>Tras responder (o continuar, o saltar), se va a la <strong>siguiente pregunta sin responder</strong>. Si ya
+            no quedan por delante pero hay preguntas <strong>saltadas</strong>, se muestra la <strong>revisión de
+                pendientes</strong>, desde la que se puede ir a cualquiera (<em>Ir a</em>) o <em>Entregar así</em>. Si
+            no queda ninguna, los <strong>resultados</strong>.
+        </li>
+        <li>Resultados: aciertos, nota sobre 10 con un decimal, aprobado o suspenso, y cada pregunta con la respuesta
+            dada (las no respondidas cuentan como fallo). <em>Hacer otro examen</em> vuelve a la configuración
+            conservando el nombre.
+        </li>
+    </ul>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Ocho: Carga, Comenzar, Responder, Saltar, Continuar, Ir a
+            (<code>ir:3</code>), Entregar y Repetir.
+        </li>
+        <li><strong>Estados.</strong> Seis: configuración, respondiendo, corrección inmediata, revisión de pendientes y
+            resultados (más ST0).
+        </li>
+        <li><strong>Variables de estado.</strong> El examen: nombre, modo, número de preguntas, la respuesta de cada una
+            (<code>null</code> si está sin responder) y la pregunta actual.
+        </li>
+        <li><strong>Dónde está la complejidad.</strong> Casi toda en <strong>a dónde se va después</strong>: tres
+            predicados (PL7 "queda alguna sin responder por delante", PL8 "queda alguna sin responder" y PL6 "modo
+            inmediato") deciden entre seguir preguntando, revisar o terminar. Los mismos PL7 y PL8 se usan en T3, T4 y
+            T5.
+        </li>
+        <li><strong>Saltar siempre lleva a algún sitio.</strong> Si no hay más preguntas por delante, la que se acaba de
+            saltar está pendiente: PL8 es seguro cierto y T4 no necesita el camino de "resultados".
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 640" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="n10" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="55" cy="60" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="55" y="65"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="55" y="105"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="55" cy="250" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="55" y="255"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text>
+            <circle cx="180" cy="250" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="180" y="255"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text>
+            <circle cx="380" cy="250" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="380" y="255"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text>
+            <circle cx="380" cy="470" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="380" y="475"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text>
+            <circle cx="600" cy="470" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="600" y="475"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text>
+            <circle cx="600" cy="90" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="600" y="95"
+                text-anchor="middle" font-weight="bold" font-size="14">ST5</text>
+            <path d="M55.0,91.0 Q55.0,155.0 55.0,217.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="65" y="160" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Carga</tspan>
+            </text>
+            <path d="M86.0,250.0 Q117.5,250.0 147.0,250.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="118" y="238" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T1</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M167.0,223.0 C110.3,152.3 249.7,152.3 194.4,220.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="160" y="118" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Comenzar</tspan>
+            </text><text x="160" y="131" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL0 || !PL1 || !PL2</tspan>
+            </text><text x="160" y="144" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M211.0,250.0 Q280.0,250.0 347.0,250.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="280" y="226" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Comenzar</tspan>
+            </text><text x="280" y="239" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">ok</tspan>
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M367.0,223.0 C310.3,152.3 449.7,152.3 394.4,220.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="380" y="112" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Responder</tspan>
+                <tspan fill="#111111">!PL4</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text><text x="380" y="125" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">!PL6 &amp;&amp; PL7</tspan>
+                <tspan fill="#2e7d32">AC5, AC6</tspan>
+            </text><text x="380" y="138" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Saltar</tspan>
+                <tspan fill="#111111">PL7</tspan>
+                <tspan fill="#2e7d32">AC6</tspan>
+            </text>
+            <path d="M371.1,279.7 Q347.0,360.0 370.5,438.4" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="335" y="360" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Responder</tspan>
+            </text><text x="335" y="373" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL4 &amp;&amp; PL6</tspan>
+            </text><text x="335" y="386" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC5</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text>
+            <path d="M388.9,440.3 Q413.0,360.0 389.5,281.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="425" y="300" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Continuar</tspan>
+            </text><text x="425" y="313" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL7</tspan>
+                <tspan fill="#2e7d32">AC6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M397.2,275.8 Q468.0,382.0 572.5,451.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="493" y="405" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">!PL7 &amp;&amp; PL8</tspan>
+            </text><text x="493" y="418" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Saltar</tspan>
+                <tspan fill="#111111">!PL7</tspan>
+            </text><text x="493" y="431" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M582.8,444.2 Q512.0,338.0 407.5,268.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="540" y="325" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Ir a</tspan>
+                <tspan fill="#111111">PL9</tspan>
+            </text><text x="540" y="338" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC7</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M411.0,470.0 Q490.0,470.0 567.0,470.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="490" y="492" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Continuar</tspan>
+                <tspan fill="#111111">!PL7 &amp;&amp; PL8</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M613.0,497.0 C669.7,567.7 530.3,567.7 585.6,499.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="650" y="560" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Ir a</tspan>
+            </text><text x="650" y="573" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL9</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <rect x="455" y="160" width="130" height="32" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="520.0" y="180.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST2, ST3, ST4</text>
+            <path d="M560,160 Q572.0,138.0 584,116" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="595" y="180" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">sin pendientes</tspan>
+            </text><text x="595" y="193" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#111111">sin pendientes</tspan>
+            </text><text x="595" y="206" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Entregar</tspan>
+            </text><text x="595" y="219" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC8</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M571.5,77.9 Q313.2,-31.6 194.1,220.2" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n10)" /><text x="545" y="40" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Repetir</tspan>
+                <tspan fill="#2e7d32">AC9</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text><text x="20" y="610" text-anchor="start" font-size="11" fill="#222" font-style="italic">ST0 Carga ·
+                ST1 Configuración · ST2 Respondiendo una pregunta · ST3 Corrección inmediata</text><text x="20" y="625"
+                text-anchor="start" font-size="11" fill="#222" font-style="italic">ST4 Revisión de las pendientes · ST5
+                Resultados</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del examen tipo test</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Comenzar</td>
+                <td>enviar la configuración</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Responder</td>
+                <td>con la opción elegida</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE3</td>
+                <td>Saltar</td>
+                <td></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE4</td>
+                <td>Continuar</td>
+                <td>tras la corrección inmediata</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE5</td>
+                <td>Ir a</td>
+                <td><code>ir:n</code>, desde la revisión</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE6</td>
+                <td>Entregar</td>
+                <td>"Entregar ya" o "Entregar así"</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE7</td>
+                <td>Repetir</td>
+                <td>"Hacer otro examen"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0 / ES1</td>
+                <td>configuracion</td>
+                <td>vacía (o con el nombre) / con avisos</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>pregunta</td>
+                <td>enunciado, opciones, cuántas quedan sin responder</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>correccion</td>
+                <td>"¡Correcto!" o "Incorrecto. La respuesta era..."</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>revision</td>
+                <td>lista de pendientes con botones "Ir a"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES5</td>
+                <td>resultados</td>
+                <td>aciertos, nota, aprobado o suspenso, detalle</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estados</td>
+                <td>ST0–ST5</td>
+                <td>—</td>
+                <td>Carga, Configuracion, Respondiendo, Correccion, Revision, Resultados</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td></td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE1</td>
+                <td><code>$x</code></td>
+                <td>JSON: nombre, modo, total, respuestas, actual</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>nombre válido</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>número válido</td>
+                <td>5 o 10</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>modo válido</td>
+                <td>"inmediata" o "final"</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>examen coherente</td>
+                <td>forma y valores del JSON</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>opción válida</td>
+                <td>0 a 3</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>respuesta correcta</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>modo inmediato</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL7</td>
+                <td>queda alguna por delante</td>
+                <td>hay una sin responder después de la actual</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL8</td>
+                <td>queda alguna</td>
+                <td>hay alguna sin responder</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL9</td>
+                <td>la pedida está pendiente</td>
+                <td>(Ir a)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>recuperar el examen</td>
+                <td>y comprobarlo (PL3)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>leer la configuración</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td>preparar el examen</td>
+                <td>respuestas a <code>null</code>, actual = 0</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td>leer la opción</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>guardar la respuesta</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>ir a la siguiente pendiente</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC7</td>
+                <td>ir a la pedida</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC8</td>
+                <td>calcular la nota</td>
+                <td>las no respondidas fallan</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC9</td>
+                <td>conservar el nombre</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC10</td>
+                <td>guardar</td>
+                <td>el examen en el campo oculto</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga</th>
+                <th>Comenzar</th>
+                <th>Responder</th>
+                <th>Saltar</th>
+                <th>Continuar</th>
+                <th>Ir a</th>
+                <th>Entregar</th>
+                <th>Repetir</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>T3</td>
+                <td>T4</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T7</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T6</td>
+                <td>T7</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST5</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T8</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <p>T3 a T7 empiezan con AC1 y su primer camino es <code>!PL3</code> → ST1, ES1 ("El examen no era válido"). Las ES
+        de ST2 a ST5 llevan AC10.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes</th>
+                <th>PLs (además de PL3)</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC2</td>
+                <td><code>!PL0 || !PL1 || !PL2</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES1</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></td>
+                <td>ST2</td>
+                <td>AC3</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC4</td>
+                <td><code>!PL4</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "elija una respuesta"</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC4</td>
+                <td><code>PL4 &amp;&amp; PL6 &amp;&amp; PL5</code></td>
+                <td>ST3</td>
+                <td>AC5</td>
+                <td>ES3 "¡Correcto!"</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC4</td>
+                <td><code>PL4 &amp;&amp; PL6 &amp;&amp; !PL5</code></td>
+                <td>ST3</td>
+                <td>AC5</td>
+                <td>ES3 "Incorrecto..."</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC4</td>
+                <td><code>PL4 &amp;&amp; !PL6 &amp;&amp; PL7</code></td>
+                <td>ST2</td>
+                <td>AC5, AC6</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC4</td>
+                <td><code>PL4 &amp;&amp; !PL6 &amp;&amp; !PL7 &amp;&amp; PL8</code></td>
+                <td>ST4</td>
+                <td>AC5</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC4</td>
+                <td><code>PL4 &amp;&amp; !PL6 &amp;&amp; !PL7 &amp;&amp; !PL8</code></td>
+                <td>ST5</td>
+                <td>AC5, AC8</td>
+                <td>ES5</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC1</td>
+                <td><code>PL7</code></td>
+                <td>ST2</td>
+                <td>AC6</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC1</td>
+                <td><code>!PL7</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>PL7</code></td>
+                <td>ST2</td>
+                <td>AC6</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>!PL7 &amp;&amp; PL8</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>!PL7 &amp;&amp; !PL8</code></td>
+                <td>ST5</td>
+                <td>AC8</td>
+                <td>ES5</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1</td>
+                <td><code>PL9</code></td>
+                <td>ST2</td>
+                <td>AC7</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1</td>
+                <td><code>!PL9</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES4 "ya está respondida"</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1</td>
+                <td>---</td>
+                <td>ST5</td>
+                <td>AC8</td>
+                <td>ES5</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>AC1</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>AC9</td>
+                <td>ES0 (con el nombre)</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados (T3, con PL3 cierto)</h3>
+    <p>PL7 y PL8 se calculan <strong>después</strong> de guardar la respuesta (AC5), así que no cuentan la pregunta
+        actual; PL5 solo importa en el modo inmediato:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL4</th>
+                <th>PL6</th>
+                <th>PL5</th>
+                <th>PL7</th>
+                <th>PL8</th>
+                <th>Camino</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>aviso, sigue en ST2</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>x</td>
+                <td>x</td>
+                <td>ST3 "¡Correcto!"</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>ST3 "Incorrecto"</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>x</td>
+                <td>ST2, siguiente pendiente</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>ST4 revisión</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>0</td>
+                <td>0</td>
+                <td>ST5 resultados</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>Aquí se ve una diferencia con los ejemplos anteriores: PL7 y PL8 se evalúan <strong>después</strong> de una
+            acción (AC5, guardar la respuesta). Es correcto siempre que la tabla lo diga y el código respete ese orden.
+            La alternativa, definirlos "sin contar la actual" antes de guardar, da lo mismo pero es más difícil de
+            explicar. Escoge la forma que se entienda mejor y sé coherente en la tabla, el diagrama y el código.</p>
+    </div>
+    <h2>5.- Del autómata al código</h2>
+    <p>T3 en <code>solucion/index.php</code> (el camino <code>!PL3</code> se resuelve antes del <code>switch</code>,
+        para T3–T7 a la vez):</p>
+    <pre><code>case 3:                                                // ---- T3 (ST2, Responder)
+    $opcion = filter_var($_GET['opcion'] ?? '', FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 0, 'max_range' =&gt; 3]]);   // AC4
+    $i = $x['actual'];
+    if ($opcion === false) {                           // PL3 &amp;&amp; !PL4
+        $estado = ST2;
+        $examen = $x;
+        es2($x, 'Elija una respuesta (o pulse Saltar).');
+        break;
+    }
+    $x['respuestas'][$i] = $opcion;                    // AC5: guardar la respuesta
+    $pl5 = $opcion === PREGUNTAS[$i][2];
+    $siguiente = siguientePendiente($x, $i);
+    if ($x['modo'] === 'inmediata') {                  // PL6
+        $estado = ST3;                                 // PL3 &amp;&amp; PL4 &amp;&amp; PL6 &amp;&amp; PL5 / !PL5
+        $examen = $x;
+        es3($x, $i, $pl5);
+    } elseif ($siguiente !== null) {                   // PL3 &amp;&amp; PL4 &amp;&amp; !PL6 &amp;&amp; PL7
+        $estado = ST2;
+        $x['actual'] = $siguiente;                     // AC6: ir a la siguiente pendiente
+        $examen = $x;
+        es2($x);
+    } elseif (hayPendientes($x)) {                     // PL3 &amp;&amp; PL4 &amp;&amp; !PL6 &amp;&amp; !PL7 &amp;&amp; PL8
+        $estado = ST4;
+        $examen = $x;
+        es4($x);
+    } else {                                           // PL3 &amp;&amp; PL4 &amp;&amp; !PL6 &amp;&amp; !PL7 &amp;&amp; !PL8
+        $estado = ST5;
+        $examen = $x;
+        es5($x);
+    }
+    break;</code></pre>
+    <p>Las respuestas del banco de preguntas (<code>7 % 3</code>, <code>intdiv(7, 2)</code>, <code>"10" == "1e1"</code>,
+        <code>strlen("ñ")</code>, <code>0 == "a"</code> en PHP 8...) se comprobaron ejecutándolas en PHP 8.2.</p>
+    <h2>6.- Pruebas</h2>
+    <p>44 peticiones; algunos caminos:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>sin nombre; modo "otro"</td>
+                <td>T2</td>
+                <td>avisos</td>
+            </tr>
+            <tr>
+                <td>modo final: 1 bien, saltar 2, 3 mal, saltar 4, 5 bien</td>
+                <td>T3 <code>PL7</code> ×2, T4 <code>PL7</code> ×2, T3 <code>!PL7 &amp;&amp; PL8</code></td>
+                <td>revisión con las preguntas 2 y 4</td>
+            </tr>
+            <tr>
+                <td>Ir a la 1 (respondida)</td>
+                <td>T6 <code>!PL9</code></td>
+                <td>"ya está respondida"</td>
+            </tr>
+            <tr>
+                <td>Ir a la 4, responderla bien; Ir a la 2, responderla bien</td>
+                <td>T6, T3 <code>!PL7 &amp;&amp; PL8</code>, T6, T3 <code>!PL7 &amp;&amp; !PL8</code></td>
+                <td>4 de 5, nota 8,0, aprobado</td>
+            </tr>
+            <tr>
+                <td>Hacer otro examen</td>
+                <td>T8</td>
+                <td>se conserva el nombre</td>
+            </tr>
+            <tr>
+                <td>modo inmediato: 1 mal, 2 bien</td>
+                <td>T3 <code>PL6 &amp;&amp; !PL5</code>, <code>PL6 &amp;&amp; PL5</code></td>
+                <td>"Incorrecto. La respuesta era a) 1"; "¡Correcto!"</td>
+            </tr>
+            <tr>
+                <td>saltar la 3, Entregar ya</td>
+                <td>T4, T7</td>
+                <td>1 de 5, nota 2,0, suspenso</td>
+            </tr>
+            <tr>
+                <td>inmediato con la 3 saltada hasta la 5 y Continuar</td>
+                <td>T5 <code>!PL7 &amp;&amp; PL8</code></td>
+                <td>revisión con la 3</td>
+            </tr>
+            <tr>
+                <td>responder la 3 y Continuar</td>
+                <td>T5 <code>!PL7 &amp;&amp; !PL8</code></td>
+                <td>5 de 5, nota 10,0</td>
+            </tr>
+            <tr>
+                <td>modo final, saltar las 5</td>
+                <td>T4 <code>PL7</code> ×4, T4 <code>!PL7</code></td>
+                <td>revisión con las 5; "Entregar así": 0 de 5</td>
+            </tr>
+            <tr>
+                <td>JSON del examen manipulado</td>
+                <td><code>!PL3</code></td>
+                <td>"El examen no era válido"</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade un <strong>tiempo límite</strong> de 5 minutos: guarda la hora de inicio en el examen y comprueba en
+            cada transición si se ha pasado. ¿Es un predicado nuevo que hay que añadir a <strong>todas</strong> las
+            transiciones? ¿A qué estado se va si se ha agotado?
+        </li>
+        <li>Permite <strong>cambiar una respuesta</strong> desde la revisión (no solo las pendientes). ¿Qué predicado
+            cambia? ¿Y la lista de ES4?
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

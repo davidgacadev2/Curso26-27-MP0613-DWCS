@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Siete y media (TAREA-02, nivel avanzado): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="siete-y-media-tarea-02-nivel-avanzado-como-se-llega-a-la-solucion-paso-a-paso">Siete y media (TAREA-02, nivel
+    avanzado): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-el-automata">2.- Diseño: el autómata</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-eventos-y-transiciones">2.2.- Estados, eventos y transiciones</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-a-partir-del-automata">3.1.- Paso 1: descomponer el problema a
+              partir del autómata</a></li>
+          <li><a href="#32-paso-2-el-esqueleto-del-automata">3.2.- Paso 2: el esqueleto del autómata</a></li>
+          <li><a href="#33-paso-3-t2-apostar-y-recibir-la-primera-carta">3.3.- Paso 3: T2, apostar y recibir la primera
+              carta</a></li>
+          <li><a href="#34-paso-4-pedir-plantarse-y-el-evento-interno">3.4.- Paso 4: pedir, plantarse y el evento
+              interno</a></li>
+          <li><a href="#35-paso-5-siguiente-mano-retirarse-y-sin-fichas">3.5.- Paso 5: siguiente mano, retirarse y sin
+              fichas</a></li>
+          <li><a href="#36-paso-6-solucion-completa-pl0-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa): PL0,
+              no fiarse del navegador</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/Requisitos.md">requisitos</a> ·
+    <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/DIAGRAMA%20ESTADO-TRANSICION/Automata-SieteYMedia.html">autómata</a>
+    (<a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/DIAGRAMA%20ESTADO-TRANSICION/Automata-SieteYMedia.pdf">PDF</a>)
+    ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/SOLUCION-01/README.md">README</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/SOLUCION-01/PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a> ·
+    <a href="DOCUMENTACION/COMUN/metodo-automatas/Metodo-Automatas.html">método de los autómatas</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p>El departamento de Matemáticas pide a <strong>BK Programación</strong> una <strong>siete y media</strong> contra
+      la banca para un taller de
+      probabilidad. <strong>Carlos</strong> ya hizo un tres en raya contra el servidor y reconoce el problema: cuando el
+      jugador se
+      planta, la banca tiene que jugar <strong>sin que el navegador envíe nada más</strong>. <strong>María</strong> le
+      recuerda el <em>evento
+        interno</em> de los diagramas ampliados y añade una advertencia: "Las cartas que quedan en el mazo no pueden
+      estar en
+      la página. Si están, cualquiera sabrá con Ctrl+U cuándo le conviene pedir carta". <strong>Juan</strong> remata:
+      "Entonces,
+      ¿qué guardas, si no puedes guardar las cartas?".</p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes (análisis,
+    diseño, codificación incremental, pruebas y refactorización) con una particularidad: aquí el diseño
+    <strong>es</strong> el
+    autómata (R1), y el código se escribe <strong>a partir de él</strong> (R2).</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta dibujar tú el autómata antes de abrir el
+    <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/DIAGRAMA%20ESTADO-TRANSICION/Automata-SieteYMedia.html">documento
+      del autómata</a>.
+    Después, para cada paso del apartado 3, compara su carpeta con la anterior:
+  </p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso3&quot; &quot;PASO A PASO/paso4&quot;
+</code></pre>
+  <p>(desde la carpeta <code>SOLUCION-01</code>; en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 9 requisitos (R1…R9) que <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-SieteYMedia/Requisitos.md">Requisitos.md</a>
+    convierte en 6 requisitos funcionales con criterios de aceptación muy concretos. Agrupados:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Diseño</td>
+          <td>R1, R2 · RF-01, RNF-02</td>
+          <td>Diagrama ampliado con un estado <strong>transitorio</strong> y un <strong>evento interno</strong>; tablas;
+            código que sigue la tabla <code>$automata[estado][evento]</code>.</td>
+        </tr>
+        <tr>
+          <td>Cartas</td>
+          <td>R3, R4 · RNF-03</td>
+          <td>Baraja de 40, figuras a medio punto, "3 y media". El mazo se <strong>recalcula</strong>: no viaja.</td>
+        </tr>
+        <tr>
+          <td>Apostar</td>
+          <td>R5 · RF-02</td>
+          <td>De 5 a 50 y no más que el saldo; si no vale, se explica y se vuelve a pedir.</td>
+        </tr>
+        <tr>
+          <td>Jugar la mano</td>
+          <td>R6, R7 · RF-03, RF-04</td>
+          <td>Pedir, pasarse, 7 y media (se planta solo), plantarse; la banca roba mientras tenga menos; empates para la
+            banca; pago doble.</td>
+        </tr>
+        <tr>
+          <td>Terminar</td>
+          <td>R8 · RF-05</td>
+          <td>Siguiente mano, retirarse, sin fichas, nueva partida; saldo y manos siempre visibles.</td>
+        </tr>
+        <tr>
+          <td>No fiarse</td>
+          <td>R9 · RF-06, RNF-04</td>
+          <td>Los datos deben ser <strong>posibles en el estado</strong> en el que dicen estar; nada sin escapar, ningún
+            aviso.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Qué pasa si llega un evento que no toca en ese estado (<em>Pedir</em> sin mano)?</td>
+          <td>Se trata como la carga: <code>$automata[$estado][$evento] ?? 1</code> (T1, partida nueva).</td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa si llega <code>estado=3</code>?</td>
+          <td>ST3 nunca se envía; si llega, se trata como ST0 (primera carga).</td>
+        </tr>
+        <tr>
+          <td>¿<em>Nueva partida</em> es un evento nuevo?</td>
+          <td>No: el botón manda <code>evento=nueva</code>, que no está en <code>EVENTOS</code>, y eso es EE0
+            (<em>Carga</em>).</td>
+        </tr>
+        <tr>
+          <td>¿Cuándo se descuenta la apuesta?</td>
+          <td>Al <strong>perder</strong> la mano; mientras se juega, el saldo incluye lo apostado (por eso la apuesta
+            debe "caber" en él).</td>
+        </tr>
+        <tr>
+          <td>¿Cómo se prueba siempre con las mismas cartas?</td>
+          <td>La <strong>primera</strong> petición (sin campo <code>estado</code>) puede mandar <code>semilla</code>;
+            con la 7, la primera mano reparte caballo de oros, 3 de oros, 4 de copas, 2 de bastos y 6 de copas.</td>
+        </tr>
+        <tr>
+          <td>¿Con qué texto se dice el resultado al retirarse?</td>
+          <td>"Te retiras con 60 fichas: pierdes 40." (o "ganas N." si se tiene más de 100).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Las dos primeras filas no son detalles: son <strong>celdas de la tabla de eventos-estados</strong>. Si cada
+      <code>---</code> de la tabla
+      tiene una respuesta decidida, el programa no puede llegar a una situación que no se haya pensado.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son caminos completos por el autómata. Con la semilla 7:
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Primera petición con <code>semilla=7</code></td>
+          <td>"Fichas: 100" y <code>estado</code> 1</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Apostar <code>abc</code>, <code>51</code>, <code>importe[]</code> o <code>&lt;script&gt;</code></td>
+          <td>"La apuesta debe ser un número entero de fichas entre 5 y 50.", sin <code>&lt;script&gt;</code> en la
+            página</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Apostar 10</td>
+          <td>"Mano 1", "Caballo de oros", "Tus cartas: media" y <code>estado</code> 2</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Pedir</td>
+          <td>"3 de oros", "Tus cartas: 3 y media"</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Pedir otra vez</td>
+          <td>"4 de copas", 7 y media: la banca saca "2 de bastos" y "6 de copas" ("La banca: 8"), "La banca se pasa:
+            ganas 10 fichas.", "Fichas: 110" (<code>estado</code> 4)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><em>Siguiente mano</em></td>
+          <td>"Manos: 1 (ganadas 1, perdidas 0)", <code>estado</code> 1 y <code>cartas</code> 0</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Mano 2: apostar 50 y plantarse con el rey</td>
+          <td>"La banca gana con 5: pierdes 50 fichas." y "Fichas: 60"</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><em>Retirarse</em> con 60</td>
+          <td>"Te retiras con 60 fichas: pierdes 40." (<code>estado</code> 6)</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Mano 3 (sota, as, 4, 3) apostando 20</td>
+          <td>"Te has pasado (8 y media): pierdes 20 fichas." sin cartas de la banca</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Semilla 12, mano 2 (7 de bastos), apostando 10, pedir</td>
+          <td>"Caballo de oros", "ganas 20 fichas (¡siete y media con dos cartas: paga doble!)" y "Fichas: 120"</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Pasarse apostando las 20 últimas fichas</td>
+          <td>"Te has pasado (8 y media) y te has quedado sin fichas." (<code>estado</code> 5)</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td><code>estado=3</code>, <code>evento[]</code>, <em>Pedir</em> sin mano</td>
+          <td>Partida nueva: "Fichas: 100" y <code>estado</code> 1</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td>ST2 con 7 y media, apuesta 60, manos mal contadas, semilla 0, <code>saldo[]</code>…</td>
+          <td>"La partida recibida no es válida" y <code>estado</code> 1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 12 y 13 son <strong>maliciosos</strong>: hay que editar los campos ocultos con F12 o enviar la petición
+    con <code>curl</code>.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada botón es una petición nueva y el script tiene que reconstruir la
+    partida a partir
+    de los campos ocultos. La decisión central es <strong>qué no se guarda</strong>: las cartas.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baraja, dinero, límite, clave</td>
+          <td>constantes</td>
+          <td><code>funciones.php</code></td>
+          <td><code>PALOS</code>, <code>VALORES</code>, <code>FIGURAS</code>, <code>SALDO_INICIAL</code>,
+            <code>LIMITE = 7.5</code>, <code>CLAVE</code></td>
+        </tr>
+        <tr>
+          <td>Estado del autómata (VE0)</td>
+          <td>int</td>
+          <td>campo oculto <code>estado</code></td>
+          <td>Nunca vale ST3 en la página</td>
+        </tr>
+        <tr>
+          <td><code>saldo</code>, <code>apuesta</code> (VE1)</td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>Fichas</td>
+        </tr>
+        <tr>
+          <td><code>semilla</code>, <code>manos</code> (VE2)</td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>De ellas sale el mazo de la mano</td>
+        </tr>
+        <tr>
+          <td><code>cartas</code> (VE3)</td>
+          <td>int</td>
+          <td>campo oculto</td>
+          <td><strong>Cuántas</strong> cartas tiene el jugador, no cuáles</td>
+        </tr>
+        <tr>
+          <td><code>ganadas</code>, <code>perdidas</code> (VE4)</td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>Marcador; además permiten comprobar <code>manos</code></td>
+        </tr>
+        <tr>
+          <td>Las cartas del jugador y de la banca</td>
+          <td>array de <code>[palo, valor]</code></td>
+          <td><strong>se calculan</strong> con <code>mazo()</code></td>
+          <td>Si viajaran, Ctrl+U enseñaría la siguiente</td>
+        </tr>
+        <tr>
+          <td>Puntos</td>
+          <td>float</td>
+          <td><strong>se calculan</strong> con <code>puntos()</code></td>
+          <td>Dependen de las cartas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Un mazo que se puede volver a barajar igual.</strong> Si el mazo se baraja con un generador inicializado
+      con la misma
+      semilla, sale <strong>siempre en el mismo orden</strong>. Así, guardando la semilla de la partida y el número de
+      mano, el
+      servidor puede rehacer el mazo en cada petición: el jugador tiene las <code>cartas</code> primeras y la banca roba
+      las
+      siguientes. La semilla viaja en la página, pero el mazo se obtiene de ella con <code>hash_hmac()</code> y una
+      <strong>clave que
+        solo conoce el servidor</strong>: sin la clave, la semilla no sirve para adivinar las cartas.</p>
+  </div>
+
+  <p>La partida queda como un array asociativo (cabecera de <code>funciones.php</code>, desde el paso 1):</p>
+  <pre><code class="language-php">['saldo' =&gt; 100, 'apuesta' =&gt; 10, 'semilla' =&gt; 1234, 'manos' =&gt; 3, 'cartas' =&gt; 2, 'ganadas' =&gt; 1, 'perdidas' =&gt; 1]
+</code></pre>
+  <h2 id="2-diseno-el-automata">2.- Diseño: el autómata</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Dos ficheros. <code>funciones.php</code> tiene las acciones (AC) y los predicados (PL) que necesitan más de una
+    línea, <strong>sin
+      HTML</strong>. <code>index.php</code> tiene las constantes del autómata, la tabla, las funciones de los
+    <strong>eventos salientes</strong> (ES, que
+    escriben HTML) y el bucle de las transiciones. Cada función lleva en el comentario el código del autómata al que
+    corresponde, de modo que el diagrama y el código se pueden leer en paralelo:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Código del autómata</th>
+          <th>Fichero</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>partidaNueva()</code> / <code>leerPartida()</code></td>
+          <td>AC0 / AC1</td>
+          <td>funciones</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>resumen()</code> / <code>es0()</code> / <code>guardar()</code></td>
+          <td>ES0, ES1 / AC9</td>
+          <td>index</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>leerApuesta()</code></td>
+          <td>AC2 y PL1</td>
+          <td>funciones</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>mazo()</code> / <code>puntos()</code> / <code>nombreCarta()</code> / <code>textoPuntos()</code> /
+            <code>cartasJugador()</code></td>
+          <td>(auxiliares)</td>
+          <td>funciones</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>mano()</code> / <code>es2()</code></td>
+          <td>ES2</td>
+          <td>index</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>juegaBanca()</code> / <code>esFinMano()</code></td>
+          <td>AC5 / ES3, ES4</td>
+          <td>funciones / index</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>esFinPartida()</code></td>
+          <td>ES5, ES6</td>
+          <td>index</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td><code>partidaValida()</code></td>
+          <td>PL0</td>
+          <td>funciones</td>
+          <td>6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="22-estados-eventos-y-transiciones">2.2.- Estados, eventos y transiciones</h3>
+  <p>Siete estados (ST0 carga, ST1 apuesta, ST2 turno del jugador, <strong>ST3 turno de la banca</strong>, ST4 mano
+    terminada, ST5 sin
+    fichas, ST6 retirado) y siete eventos entrantes, seis del navegador y uno <strong>interno</strong> (EE4, el turno de
+    la banca).
+    La tabla de eventos-estados del documento del autómata pasa al código <strong>tal cual</strong>:</p>
+  <pre><code class="language-php">//                Carga Apostar Pedir Plantarse Interno Siguiente Retirarse
+$automata = [
+    ST0 =&gt; [1, 1, 1, 1, null, 1, 1],
+    ST1 =&gt; [1, 2, null, null, null, null, 7],
+    ST2 =&gt; [1, null, 3, 4, null, null, null],
+    ST3 =&gt; [null, null, null, null, 5, null, null],
+    // ... ST4 =&gt; [1, null, null, null, null, 6, 7], ST5 y ST6 solo con T1
+];
+</code></pre>
+  <p>La fila de ST3 y la columna <em>Interno</em> tienen <strong>una sola celda</strong>: en ST3 solo puede ocurrir el
+    evento interno y el
+    evento interno solo puede ocurrir en ST3. Las transiciones, en forma <em>evento [condición] / acción</em>:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Carga</em>, <em>Nueva partida</em> o evento imposible (T1)</td>
+          <td>AC0: 100 fichas, semilla nueva</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>ST1, ST2, ST4</td>
+          <td>cualquier evento salvo T1 [!PL0: datos imposibles]</td>
+          <td>AC0 con aviso (ES1)</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>ST1</td>
+          <td><em>Apostar</em> [!PL1] (T2)</td>
+          <td>explicar el error</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>ST1</td>
+          <td><em>Apostar</em> [PL1] (T2)</td>
+          <td>AC3: manos + 1, una carta</td>
+          <td>ST2</td>
+        </tr>
+        <tr>
+          <td>ST2</td>
+          <td><em>Pedir</em> [PL2 se pasa &amp;&amp; PL4 sin fichas] (T3)</td>
+          <td>AC6 pierde</td>
+          <td>ST5</td>
+        </tr>
+        <tr>
+          <td>ST2</td>
+          <td><em>Pedir</em> [PL2 &amp;&amp; !PL4] (T3)</td>
+          <td>AC6 pierde</td>
+          <td>ST4</td>
+        </tr>
+        <tr>
+          <td>ST2</td>
+          <td><em>Pedir</em> [!PL2 &amp;&amp; PL3 justo 7 y media] (T3)</td>
+          <td>—</td>
+          <td><strong>ST3</strong></td>
+        </tr>
+        <tr>
+          <td>ST2</td>
+          <td><em>Pedir</em> [!PL2 &amp;&amp; !PL3] (T3)</td>
+          <td>—</td>
+          <td>ST2</td>
+        </tr>
+        <tr>
+          <td>ST2</td>
+          <td><em>Plantarse</em> (T4)</td>
+          <td>—</td>
+          <td><strong>ST3</strong></td>
+        </tr>
+        <tr>
+          <td>ST3</td>
+          <td><em>Interno</em> [PL5 la banca se pasa] (T5)</td>
+          <td>AC5, AC7 gana (doble con PL6)</td>
+          <td>ST4</td>
+        </tr>
+        <tr>
+          <td>ST3</td>
+          <td><em>Interno</em> [!PL5 &amp;&amp; PL4] (T5)</td>
+          <td>AC5, AC6 pierde</td>
+          <td>ST5</td>
+        </tr>
+        <tr>
+          <td>ST3</td>
+          <td><em>Interno</em> [!PL5 &amp;&amp; !PL4] (T5)</td>
+          <td>AC5, AC6 pierde</td>
+          <td>ST4</td>
+        </tr>
+        <tr>
+          <td>ST4</td>
+          <td><em>Siguiente</em> (T6)</td>
+          <td>AC8: sin apuesta ni cartas</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>ST1, ST4</td>
+          <td><em>Retirarse</em> (T7)</td>
+          <td>—</td>
+          <td>ST6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Dos caminos llevan a ST3</strong> (plantarse y llegar a 7 y media) y <strong>una sola transición lo
+      atiende</strong> (T5). Es la razón
+    de dibujar el turno de la banca como un estado aunque nunca llegue al navegador: la banca juega igual venga de
+    donde venga, y su código se escribe una vez. Fíjate también en que PL4 (sin fichas) se evalúa
+    <strong>después</strong> de AC6
+    (perder la apuesta): es un predicado sobre el resultado de una acción.</p>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>El documento del autómata incluye la <strong>comprobación de predicados</strong> de T3 y T5 (R1): una tabla con
+      todas las
+      combinaciones de PL2, PL3 y PL4 (o PL5, PL6 y PL4) que demuestra que cada combinación lleva a <strong>un
+        único</strong>
+      camino. Por ejemplo, PL2 y PL3 no pueden ser ciertos a la vez (no se puede tener más de 7 y media y justo 7 y
+      media), así que con PL2 cierto PL3 se marca como "x".</p>
+  </div>
+
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden sigue
+    el
+    autómata: primero el <strong>esqueleto</strong> (que ya sabe a qué transición ir), después las transiciones
+    <strong>en el orden en que
+      se juega</strong> una mano y, al final, la validación del estado.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición a partir del autómata, solo con TODOs</td>
+          <td>R1</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>El esqueleto: constantes, tabla, estado y evento, bucle del evento interno, T1, ES0 y AC9</td>
+          <td>R2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>T2 <em>Apostar</em>: <code>leerApuesta()</code>, <code>mazo()</code>, <code>puntos()</code>, la primera
+            carta y ES2</td>
+          <td>R3, R4, R5</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>T3 <em>Pedir</em>, T4 <em>Plantarse</em> y T5, el evento interno: <code>juegaBanca()</code>, pago doble,
+            ES3 y ES4</td>
+          <td>R6, R7</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>T6 <em>Siguiente mano</em>, T7 <em>Retirarse</em> y el final sin fichas (PL4, ES5, ES6)</td>
+          <td>R8</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td><strong>Solución completa:</strong> PL0, <code>partidaValida()</code></td>
+          <td>R9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-a-partir-del-automata">3.1.- Paso 1: descomponer el problema a partir del
+    autómata</h3>
+  <p><strong>Objetivo.</strong> Escribir el plan del código con los nombres del autómata, sin programar nada.</p>
+  <p><strong>Por qué empezar así.</strong> Con el autómata hecho, la descomposición es casi mecánica: cada fila de la
+    <strong>tabla de
+      descriptores</strong> es una constante o una función, y cada transición, un <code>case</code>. Los TODO usan los
+    mismos códigos (ST,
+    EE, AC, PL, ES) para que se pueda ir del diagrama al código y volver:</p>
+  <pre><code class="language-php">// TODO: AC5 juegaBanca(array $partida): array -&gt; la banca roba cartas (las siguientes) mientras tenga menos que el jugador
+// TODO: PL0 partidaValida(int $estado, array $partida): bool -&gt; ¿son posibles estos datos en este estado?
+</code></pre>
+  <p>En <code>index.php</code> los TODO siguen el orden en que se ejecutará cada petición: 1) estado, evento y
+    transición; 2) AC1 y
+    PL0 antes de cualquier transición salvo T1; 3) la transición, con el evento interno; 4) AC9, guardar.</p>
+  <p><strong>Decisión clave.</strong> Ya en el paso 1 el comentario de cabecera dice que <strong>ST3 nunca llega al
+      navegador</strong> y que las
+    cartas no viajan: las dos ideas del caso práctico están en el plan antes que en el código.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: título y un formulario vacío, <strong>sin errores de PHP</strong>. Con <em>Todo Tree</em> verás
+      la lista del trabajo.</p>
+  </div>
+
+  <h3 id="32-paso-2-el-esqueleto-del-automata">3.2.- Paso 2: el esqueleto del autómata</h3>
+  <p><strong>Objetivo.</strong> Que cada petición sepa <strong>en qué estado está</strong>, <strong>qué evento ha
+      llegado</strong> y <strong>qué transición toca</strong>, con
+    el bucle del evento interno ya escrito, aunque solo funcione T1.</p>
+  <p><strong>Por qué ahora.</strong> Es el armazón del que cuelga todo lo demás: a partir de aquí, programar una
+    transición es
+    <strong>rellenar un <code>case</code></strong>. Y conviene escribir el bucle del evento interno desde el principio,
+    cuando todavía no hay
+    nada que lo use, para no tener que reorganizar el <code>switch</code> en el paso 4.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Las constantes <code>ST0</code>…<code>ST6</code>, <code>EE0</code>…<code>EE6</code>, <code>EVENTOS</code> (el
+      <code>value</code> de cada botón → su evento) y la tabla <code>$automata</code>.</li>
+    <li>La lectura del estado y del evento, que ya trata los valores imposibles (código debajo de la lista).</li>
+    <li><code>leerPartida()</code> (AC1): cada campo con <code>filter_var(..., FILTER_VALIDATE_INT)</code> y, si no
+      vale, <code>-1</code>. <strong>No comprueba
+        nada más</strong>: eso será PL0. Así un <code>saldo[]</code> o un <code>&lt;script&gt;</code> no producen avisos
+      y luego serán fáciles de rechazar.</li>
+    <li>El bucle <code>do … while</code> alrededor del <code>switch</code>, con T1 en <code>case 1:</code>
+      <strong>y</strong> en <code>default:</code>.</li>
+    <li><code>es0()</code> (el campo de la apuesta y el botón <em>Repartir</em>), <code>resumen()</code> y
+      <code>guardar()</code> (AC9), que escapa cada valor.</li>
+  </ul>
+  <pre><code class="language-php">$estado = filter_var($_POST['estado'] ?? '', FILTER_VALIDATE_INT);
+if ($estado === false || !isset($automata[$estado]) || $estado === ST3) {
+    $estado = ST0;
+}
+$evento = EVENTOS[is_string($_POST['evento'] ?? null) ? $_POST['evento'] : ''] ?? EE0;
+$transicion = $automata[$estado][$evento] ?? 1;      // un evento imposible (&quot;---&quot;) se trata como T1
+</code></pre>
+  <pre><code class="language-php">do {
+    switch ($transicion) {
+        case 1:     // ---- T1: cualquier estado + Carga (o evento imposible, o !PL0) -&gt; ST1, AC0, ES0 (ES1 con aviso)
+        default:    //      (default: una transición que todavía no esté programada se trata igual)
+            // ...
+    }
+    $transicion = $estado === ST3 ? $automata[ST3][EE4] : null;
+} while ($transicion !== null);
+</code></pre>
+  <p><strong>Dos trucos provisionales.</strong> PL0 todavía no existe, así que el código deja <code>$pl0 = true;</code>
+    con un TODO: es un valor
+    consciente y marcado que el paso 6 sustituye por <code>partidaValida()</code>. Y el <code>default:</code> hace que
+    cualquier transición
+    sin programar (T2…T7) se comporte como T1: la aplicación <strong>funciona en cada paso</strong>, aunque haga menos.
+  </p>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>La semilla es una herramienta de prueba.</strong> T1 solo acepta <code>$_POST['semilla']</code> si
+      <strong>no</strong> llega el campo <code>estado</code>,
+      es decir, en la primera petición; en cualquier otra (incluida <em>Nueva partida</em>), usa
+      <code>random_int(1, 999999)</code>. Para
+      probar con la semilla 7 desde el navegador: F12, borra el campo oculto <code>estado</code>, pon 7 en el campo
+      oculto
+      <code>semilla</code> y pulsa cualquier botón. Es un ejemplo de diseñar pensando en <strong>cómo vas a
+        probar</strong>.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 y 12. La página muestra "Fichas: 100 · Manos: 0 (ganadas 0, perdidas 0)" y el campo de la apuesta. Pulsa
+      <em>Repartir</em>: como T2 aún no existe, el <code>default:</code> empieza otra partida (cambia el campo
+      <code>semilla</code>). Con F12, pon
+      <code>estado</code> a 3, o cambia el <code>name</code> del botón por <code>evento[]</code>: siempre una partida
+      nueva, sin avisos.
+    </p>
+  </div>
+
+  <h3 id="33-paso-3-t2-apostar-y-recibir-la-primera-carta">3.3.- Paso 3: T2, apostar y recibir la primera carta</h3>
+  <p><strong>Objetivo.</strong> Validar la apuesta (PL1) y repartir la primera carta, con un mazo que <strong>no
+      viaja</strong> (R3, R4, R5).</p>
+  <p><strong>Por qué ahora.</strong> Es la primera transición de una mano, y obliga a resolver la decisión más delicada
+    (de dónde
+    salen las cartas) antes de construir nada encima. Las funciones de cartas que se escriben aquí las usarán todas las
+    transiciones siguientes.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>leerApuesta()</code> (AC2 y PL1): <code>filter_var</code> con <code>min_range</code> 5 y
+      <code>max_range</code> <code>min(APUESTA_MAXIMA, $saldo)</code>. Una sola
+      llamada comprueba que es un entero, el mínimo, el máximo <strong>y</strong> el saldo.</li>
+    <li><code>mazo()</code>: las 40 cartas como pares <code>[palo, valor]</code>, barajadas con una semilla que sale de
+      <code>hash_hmac()</code> (código
+      debajo de la lista). El <code>'-' . manos</code> hace que cada mano tenga un mazo distinto.</li>
+    <li><code>puntos()</code> (<code>$valor &lt;= 7 ? $valor : 0.5</code>), <code>nombreCarta()</code> (con
+      <code>FIGURAS</code> para el as y las figuras) y
+      <code>textoPuntos()</code>, que escribe 0.5 como "media" y 3.5 como "3 y media".
+    </li>
+    <li><code>cartasJugador()</code>: <code>array_slice(mazo($partida), 0, $partida['cartas'])</code>.</li>
+    <li>El <code>case 2:</code> con sus dos caminos, y <code>mano()</code> y <code>es2()</code> para pintar las cartas y
+      los botones <em>Pedir carta</em> y
+      <em>Plantarse</em>.
+    </li>
+  </ul>
+  <pre><code class="language-php">// mazo() (paso 3, funciones.php)
+mt_srand(crc32(hash_hmac('sha256', $partida['semilla'] . '-' . $partida['manos'], CLAVE)));
+shuffle($cartas);
+</code></pre>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Barajar con <code>mt_srand($partida['semilla'])</code> a secas. Funcionaría, pero la semilla está en la página:
+      cualquiera
+      podría copiar <code>mazo()</code> en su ordenador, ejecutarla con esa semilla y saber todas las cartas de la mano.
+      Con
+      <code>hash_hmac()</code> y la <code>CLAVE</code>, el resultado depende de un dato que <strong>no</strong> sale del
+      servidor.
+    </p>
+  </div>
+
+  <p><strong>Decisión clave.</strong> Los predicados se guardan en <strong>variables con su nombre</strong> antes del
+    <code>if</code>
+    (<code>$pl1 = $apuesta !== null;</code>), como pide R2: el <code>if (!$pl1)</code> se lee igual que la fila de la
+    tabla de transiciones.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 2 y 3. Con la semilla 7, apuesta <code>abc</code>, <code>51</code> y <code>&lt;script&gt;</code> (y
+      <code>importe[]</code> con F12): siempre el mismo mensaje
+      de error y la página escapada. Apuesta 10: "Mano 1", "Caballo de oros", "Tus cartas: media". Con Ctrl+U comprueba
+      que los campos ocultos no nombran ninguna carta: solo <code>cartas</code> con valor 1. Pulsa <em>Pedir carta</em>:
+      T3 aún no
+      existe y el <code>default:</code> empieza otra partida.</p>
+  </div>
+
+  <h3 id="34-paso-4-pedir-plantarse-y-el-evento-interno">3.4.- Paso 4: pedir, plantarse y el evento interno</h3>
+  <p><strong>Objetivo.</strong> Las transiciones del turno del jugador (T3, T4) y el turno de la banca (T5), que se
+    atiende en la
+    <strong>misma petición</strong> (R6, R7).
+  </p>
+  <p><strong>Por qué ahora.</strong> Es el corazón del juego y el motivo del autómata ampliado. Como el bucle del evento
+    interno ya
+    existe desde el paso 2, T4 es literalmente una línea: <code>$estado = ST3;</code>. El bucle hace el resto.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>case 3:</code> (AC4 <code>cartas++</code>): <code>$pl2 = $puntos &gt; LIMITE;</code> y
+      <code>$pl3 = $puntos === LIMITE;</code>. Si se pasa, pierde la
+      apuesta (AC6) y va a ST4; si tiene justo 7 y media, <code>$estado = ST3</code> (se planta solo); si no, ES2 otra
+      vez.</li>
+    <li><code>case 4:</code> solo cambia el estado a ST3.</li>
+    <li><code>juegaBanca()</code> (AC5): toma las cartas <strong>siguientes</strong> a las del jugador mientras tenga
+      menos puntos (código debajo
+      de la lista).</li>
+    <li><code>case 5:</code> con PL5 (la banca se pasa) y PL6 (7 y media con <strong>dos</strong> cartas: paga doble).
+    </li>
+    <li><code>esFinMano()</code> (ES3, ES4): las dos manos, el mensaje y el saldo. Si el jugador se ha pasado, la banca
+      no juega y
+      sus cartas no se muestran (<code>$banca !== []</code>).</li>
+  </ul>
+  <pre><code class="language-php">// juegaBanca() (paso 4, funciones.php)
+while (puntos($banca) &lt; $objetivo) {                // la banca gana los empates: le basta con igualar
+    $banca[] = $mazo[$siguiente];
+    $siguiente++;
+}
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Cómo funciona la segunda vuelta.</strong> Al pulsar <em>Plantarse</em>, la primera vuelta del
+      <code>do … while</code> ejecuta <code>case 4</code>
+      y deja <code>$estado = ST3</code>. Al final de la vuelta,
+      <code>$transicion = $estado === ST3 ? $automata[ST3][EE4] : null;</code> vale
+      5, el bucle se repite y <code>case 5</code> hace jugar a la banca, que deja el estado en ST4 (o ST5). Al final de
+      esa
+      segunda vuelta <code>$transicion</code> es <code>null</code> y se sale. <strong>El navegador nunca ve
+        ST3.</strong> Pon un punto de ruptura en el
+      <code>while</code> para verlo con Xdebug.
+    </p>
+  </div>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p><code>7.5 === 7.5</code> es <code>true</code> y la comparación estricta de <code>$pl3</code> es segura, aunque
+      normalmente no se deban comparar
+      números en coma flotante con <code>===</code>: los medios puntos (0.5, 1.5…) se representan
+      <strong>exactamente</strong> en binario, así
+      que las sumas no acumulan error. Con décimas (0.1 + 0.2) no pasaría lo mismo.</p>
+  </div>
+
+  <p><strong>Lo que queda pendiente.</strong> Dos TODO <code>PL4: sin fichas -&gt; ST5, ES5</code>, uno en cada camino
+    que pierde. En este paso, si
+    el jugador pierde sus últimas fichas, la partida se queda en ST4 con saldo 0. Y <code>esFinMano()</code> todavía no
+    tiene los
+    botones para seguir.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 4 y 5 con la semilla 7: pedir → "3 de oros", "Tus cartas: 3 y media"; pedir → "4 de copas", 7 y media, y
+      <strong>en la misma respuesta</strong> la banca saca "2 de bastos" y "6 de copas" ("La banca: 8"): "La banca se
+      pasa: ganas
+      10 fichas.", "Fichas: 110" y <code>estado</code> 4 en el código fuente (nunca 3).
+    </p>
+  </div>
+
+  <h3 id="35-paso-5-siguiente-mano-retirarse-y-sin-fichas">3.5.- Paso 5: siguiente mano, retirarse y sin fichas</h3>
+  <p><strong>Objetivo.</strong> Cerrar el ciclo de la partida: T6, T7 y el camino PL4 (R8).</p>
+  <p><strong>Por qué ahora.</strong> Hasta ahora solo se podía jugar una mano. Con estas transiciones se pueden recorrer
+    <strong>todos los
+      caminos</strong> del autómata, que es lo que necesita el paso 6 para comprobar que la validación no estropea nada.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Los dos TODO de PL4: si tras AC6 el saldo es 0, <code>$estado = ST5</code>, <code>esFinPartida()</code> y
+      <code>break</code>.</li>
+    <li><code>case 6:</code> (AC8: <code>apuesta</code> y <code>cartas</code> a 0) y <code>case 7:</code> (el mensaje
+      con la diferencia respecto a <code>SALDO_INICIAL</code>).</li>
+    <li>Los botones: <em>Retirarse</em> en ES0, <em>Siguiente mano</em> y <em>Retirarse</em> en ES3/ES4 y <em>Nueva
+        partida</em> en <code>esFinPartida()</code>
+      (ES5, ES6), con <code>value="nueva"</code>, que el autómata interpreta como EE0.</li>
+  </ul>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Pensar que el <code>break</code> del camino PL4 sale del bucle. Dentro de un <code>switch</code>,
+      <code>break</code> sale <strong>del <code>switch</code></strong>, no del
+      <code>do … while</code>. Funciona porque, al llegar al final de la vuelta, el estado es ST5 y no ST3, así que
+      <code>$transicion</code> vale <code>null</code> y el bucle termina. Lo que decide si hay otra vuelta es <strong>el
+        estado</strong>, no el <code>break</code>:
+      por eso hay que ponerlo antes de salir del <code>case</code>.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 6 a 9 y 11. <em>Siguiente mano</em>: "Manos: 1 (ganadas 1, perdidas 0)" y en el HTML <code>estado</code> 1
+      y <code>cartas</code> 0.
+      Mano 2 apostando 50, plantarse con el rey: "La banca gana con 5: pierdes 50 fichas.", "Fichas: 60".
+      <em>Retirarse</em>:
+      "Te retiras con 60 fichas: pierdes 40.". Si en vez de retirarte sigues, la mano 3 (apostando 20) se pasa con 8 y
+      media. Pierde todo: "…y te has quedado sin fichas." y solo el botón <em>Nueva partida</em>, que vuelve a "Fichas:
+      100" y
+      "Manos: 0".</p>
+  </div>
+
+  <h3 id="36-paso-6-solucion-completa-pl0-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa): PL0, no fiarse del
+    navegador</h3>
+  <p><strong>Objetivo.</strong> Comprobar, antes de cualquier transición salvo T1, que los datos son <strong>posibles en
+      el estado</strong> en el
+    que dicen estar (R9).</p>
+  <p><strong>Por qué al final (y no al principio).</strong> Los invariantes de ST2 usan
+    <code>puntos(cartasJugador())</code>, que no existe
+    hasta el paso 3, y solo se pueden enunciar bien cuando se conocen <strong>todas</strong> las transiciones: por
+    ejemplo, "en ST2
+    el jugador no puede tener 7 y media" es cierto <strong>porque</strong> T3 lo manda a ST3 (paso 4). Hasta ahora el
+    juego
+    funcionaba con un <strong>cliente honrado</strong>; este paso lo prepara para uno que no lo es. El único cambio en
+    <code>index.php</code>
+    es sustituir <code>$pl0 = true;</code> por la llamada.</p>
+  <pre><code class="language-php">// partidaValida() (paso 6, funciones.php), en ST2
+return $partida['apuesta'] &gt;= APUESTA_MINIMA &amp;&amp; $partida['apuesta'] &lt;= min(APUESTA_MAXIMA, $partida['saldo'])
+    &amp;&amp; $partida['manos'] &gt;= 1 &amp;&amp; $partida['ganadas'] + $partida['perdidas'] === $partida['manos'] - 1
+    &amp;&amp; $partida['cartas'] &gt;= 1 &amp;&amp; $partida['cartas'] &lt;= 15 &amp;&amp; puntos(cartasJugador($partida)) &lt; LIMITE;
+</code></pre>
+  <p>Cada condición sale de una pregunta: ¿puede haber una mano en juego sin cartas? ¿Puede la apuesta superar el saldo,
+    si el saldo todavía la incluye? ¿Cuántas manos se han cerrado si se está jugando la número <code>manos</code>?
+    Antes, para
+    todos los estados, la semilla y el saldo deben ser al menos 1 y las manos ganadas y perdidas, no negativas; entre
+    manos (ST1, ST4), ganadas + perdidas = manos. Como <code>leerPartida()</code> convirtió los valores raros en
+    <code>-1</code>, todos caen
+    aquí.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 13. Con F12: en ST2 (semilla 7, mano 1) pon <code>cartas</code> a 3 (7 y media), <code>apuesta</code> a 60,
+      una apuesta mayor que
+      el saldo, <code>manos</code> a 5, <code>semilla</code> a 0, <code>saldo</code> a <code>&lt;script&gt;</code> o su
+      <code>name</code> a <code>saldo[]</code>; en ST1, apuesta con <code>saldo</code> 0;
+      en ST4, <code>manos</code> negativo. Todos: "La partida recibida no es válida (¿se han modificado los campos
+      ocultos?).
+      Empieza otra." y <code>estado</code> 1, sin avisos ni nada sin escapar.</p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3: PL0 se evalúa
+    antes de cada
+    transición y, si fuera demasiado estricto, rechazaría partidas honradas. El documento del autómata propone
+    <strong>un
+      camino por fila</strong> de la tabla de transiciones:</p>
+  <ul>
+    <li>☐ T2 con apuesta válida y no válida; T3 por sus cuatro caminos; T4; T5 por sus cuatro caminos (incluido el
+      doble).</li>
+    <li>☐ T6, T7 desde ST1 y desde ST4, y T1 desde ST5 y ST6 (<em>Nueva partida</em>).</li>
+    <li>☐ Casos límite: apostar exactamente el saldo; empatar con la banca (gana la banca); 7 y media con tres cartas
+      (no paga doble).</li>
+    <li>☐ Maliciosos: <code>estado=3</code>, eventos imposibles, <code>evento[]</code>, todos los de PL0.</li>
+    <li>☐ Ninguna carta sin mostrar en el código fuente; ningún aviso de PHP con <code>error_reporting(E_ALL)</code>.
+    </li>
+  </ul>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución sigue el autómata casi línea a línea, y eso ya es una forma de orden. Aun así hay detalles que
+    mejorar, buenos para practicar:</p>
+  <ul>
+    <li><strong>Un saldo que no llega a la apuesta mínima.</strong> PL4 es <code>saldo === 0</code>, pero se puede
+      llegar a ST1 con 1 a 4 fichas
+      (por ejemplo, 100 − 50 − 47 = 3). Entonces el campo dice "Apuesta (5-3 fichas)", ninguna apuesta es válida y
+      solo queda <em>Retirarse</em>. Definir PL4 como <code>saldo &lt; APUESTA_MINIMA</code> terminaría la partida en
+      ese caso.</li>
+    <li><strong>Datos posibles no es lo mismo que datos auténticos.</strong> PL0 rechaza lo imposible, pero no lo que es
+      posible y
+      falso: en ST2, el jugador puede subir con F12 su <code>apuesta</code> a 50 después de ver una buena carta, y la
+      partida
+      sigue siendo "posible". Firmar los campos ocultos con <code>hash_hmac()</code> (la misma función que ya baraja el
+      mazo) y
+      la <code>CLAVE</code> detectaría cualquier cambio; lo mismo hace la solución 02 del Buscaminas con el cifrado
+      autenticado.</li>
+    <li><strong>El botón <em>Atrás</em>.</strong> Después de pasarse, <em>Atrás</em> devuelve una página de ST2
+      perfectamente válida: el jugador ya
+      sabe qué carta viene y puede plantarse. Ni PL0 ni una firma lo evitan; hace falta que el servidor recuerde el
+      estado actual (sesiones, en temas posteriores).</li>
+    <li><strong>La semilla de prueba.</strong> Borrando el campo <code>estado</code> se puede elegir la semilla de una
+      partida nueva. Es cómodo
+      para probar, pero en producción se quitaría, igual que la <code>CLAVE</code> escrita en
+      <code>funciones.php</code>.</li>
+    <li><strong>La vista dentro de las transiciones.</strong> Los ES escriben HTML con <code>echo</code> desde dentro
+      del <code>switch</code>, que se ejecuta
+      en medio del <code>&lt;form&gt;</code>. Es la traducción directa de "ESs" en la tabla de transiciones, pero se
+      podría separar:
+      cada <code>case</code> decidiría qué ES toca y con qué mensaje, y el HTML se generaría al final.</li>
+    <li>Las ampliaciones del enunciado (<em>Doblar</em>, otra regla para la banca, estadísticas) son la siguiente
+      <strong>vuelta</strong> del
+      proceso, y empiezan por el autómata: <em>Doblar</em> es un evento nuevo en ST2 que, si el jugador no se pasa con
+      la
+      carta extra, lleva a ST3, así que T5 se reutiliza sin cambios.</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Guardar las cartas en campos ocultos</td>
+          <td>Ctrl+U revela el mazo</td>
+          <td>Guardar semilla, mano y <strong>cuántas</strong> cartas (R4)</td>
+        </tr>
+        <tr>
+          <td>Barajar con la semilla sin clave</td>
+          <td>Cualquiera puede reproducir el mazo</td>
+          <td><code>hash_hmac()</code> con una clave del servidor</td>
+        </tr>
+        <tr>
+          <td>Enviar ST3 al navegador o hacer que la banca juegue en otra petición</td>
+          <td>La banca necesita un clic más; el jugador podría no enviarlo</td>
+          <td>Bucle <code>do … while</code> con el evento interno</td>
+        </tr>
+        <tr>
+          <td>Programar la banca dos veces (al plantarse y al llegar a 7 y media)</td>
+          <td>Dos copias que acaban siendo distintas</td>
+          <td>Los dos caminos terminan en ST3 y T5 la atiende</td>
+        </tr>
+        <tr>
+          <td><code>$puntos &gt; 7</code> en lugar de <code>&gt; LIMITE</code></td>
+          <td>7 y media cuenta como pasarse</td>
+          <td>La constante <code>LIMITE = 7.5</code></td>
+        </tr>
+        <tr>
+          <td>Que la banca robe "mientras tenga menos o igual"</td>
+          <td>Los empates dejan de ser de la banca</td>
+          <td><code>while (puntos($banca) &lt; $objetivo)</code></td>
+        </tr>
+        <tr>
+          <td>Validar el estado solo con <code>filter_var</code></td>
+          <td>Partidas imposibles (7 y media en ST2, manos que no cuadran)</td>
+          <td>Invariantes por estado: PL0</td>
+        </tr>
+        <tr>
+          <td>Leer <code>$_POST['evento']</code> sin <code>is_string</code></td>
+          <td>Avisos o errores con <code>evento[]</code></td>
+          <td><code>is_string(...) ? ... : ''</code> y <code>?? EE0</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué ST3 es un estado si nunca llega al navegador? <strong>Porque dos transiciones (T3 y T4) terminan en
+          él y desde
+          ahí el evento interno decide el resultado: la banca juega igual venga de donde venga, y se programa una
+          vez.</strong></li>
+      <li>¿Qué pasa si alguien manda <code>estado=3</code>? <strong>Que se trata como ST0 y se empieza una partida
+          nueva.</strong></li>
+      <li>¿Por qué basta con guardar cuántas cartas tiene el jugador? <strong>Porque el mazo de la mano se vuelve a
+          barajar
+          igual a partir de la semilla y del número de mano; las del jugador son las primeras y las de la banca, las
+          siguientes.</strong></li>
+      <li>¿Para qué sirve la clave de <code>hash_hmac()</code>? <strong>Para que la semilla, que sí viaja en la página,
+          no permita a nadie
+          fuera del servidor calcular el mazo.</strong></li>
+      <li>En ST2, ¿por qué es imposible tener 7 y media? <strong>Porque al llegar a 7 y media T3 lleva a ST3 y, en la
+          misma
+          petición, T5 lleva a ST4 o ST5.</strong></li>
+      <li>¿Por qué PL0 llega en el último paso? <strong>Porque sus invariantes usan funciones de pasos anteriores
+          (<code>cartasJugador()</code>, <code>puntos()</code>) y solo se pueden enunciar cuando se conocen todas las
+          transiciones.</strong></li>
+      <li>¿Qué hace <code>$automata[$estado][$evento] ?? 1</code>? <strong>Convierte cualquier celda <code>---</code>
+          (un evento que no toca en ese
+          estado) en T1: partida nueva.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

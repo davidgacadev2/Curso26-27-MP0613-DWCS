@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avanzado: diagramas y autómatas de estado-transición ampliados</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Avanzado: diagramas y autómatas de estado-transición ampliados</h1>
+    <p>Aplicación de la metodología de los diagramas de estado-transición ampliados, explicada en
+        <a href="01-Metodo/Metodo-Automatas.html"><code>01-Metodo/Metodo-Automatas.html</code></a> (diagrama de
+        estado-transición ampliado + autómata: tabla de descriptores, tabla de eventos-estados y tabla de transiciones),
+        a problemas del tema 2 que <strong>no</strong> estaban resueltos así en los ejemplos del repositorio (que ya incluyen el
+        Boletín 01-E01, el Boletín 03-E01 y la Tarea 02A). Todo está probado con <strong>PHP 8.2</strong>.</p>
+    <p>Todas las rutas de este material son relativas a esta carpeta (la raíz de todo el contenido):</p>
+    <pre><code>AMPLIACION-Diagramas Estado-Transicion Ampliados/
+  README.html / README.md            este fichero
+  01-Metodo/                         Metodo-Automatas.html: el método, los elementos, cómo comprobar los
+                                     predicados, la plantilla de código y los errores frecuentes
+  02-Ejemplos/
+    01-B02-E01-Impuestos/            Automata-B02-E01.html + solucion/index.php
+    02-B03-E08-DiaSemana/            Automata-B03-E08.html + solucion/index.php
+    03-B05-E04-ProductoMatrices/     Automata-B05-E04.html + solucion/index.php
+    EJEMPLO-TAREA-02B-JuegoTablero/  Automata-TAREA-02B.html + solucion/index.php
+    05-B01-E01-Operaciones/          Automata-B01-E01.html + solucion/index.php
+                                     (el autómata de los ejemplos del repositorio, rehecho con este formato y completado)
+    06-Cajero/                       Automata-Cajero.html + solucion/index.php
+    07-Expendedora/                  Automata-Expendedora.html + solucion/index.php
+    08-ReservaBarBaio/               Automata-ReservaBarBaio.html + solucion/index.php
+    09-TresEnRaya/                   Automata-TresEnRaya.html + solucion/index.php
+    10-ExamenTest/                   Automata-ExamenTest.html + solucion/index.php
+    EJEMPLO-TAREA-02A-Agenda/        README.md, DIAGRAMA ESTADO-TRANSICION/Automata-Agenda.html
+                                     y PASO A PASO/ (la solución de la Tarea 02A, del código al autómata)
+    TAREA-02-AVANZADA-SieteYMedia/   ENUNCIADO.md, Requisitos.md, DIAGRAMA ESTADO-TRANSICION/ y SOLUCION-01/
+    TAREA-02-AVANZADA-CodigoSecreto/ ENUNCIADO.md, Requisitos.md, DIAGRAMA ESTADO-TRANSICION/ y SOLUCION-01/
+    TAREA-02-AVANZADA-Ascensor/      ENUNCIADO.md, Requisitos.md, DIAGRAMA ESTADO-TRANSICION/ y SOLUCION-01/</code></pre>
+
+    <h2>Índice</h2>
+    <ul>
+        <li>Método: <a href="01-Metodo/Metodo-Automatas.html"><code>01-Metodo/Metodo-Automatas.html</code></a></li>
+        <li>Ejemplos de los boletines y tareas del tema:
+            <a href="02-Ejemplos/01-B02-E01-Impuestos/Automata-B02-E01.html">Boletín 02-E01</a> ·
+            <a href="02-Ejemplos/02-B03-E08-DiaSemana/Automata-B03-E08.html">Boletín 03-E08</a> ·
+            <a href="02-Ejemplos/03-B05-E04-ProductoMatrices/Automata-B05-E04.html">Boletín 05-E04</a> ·
+            <a href="02-Ejemplos/EJEMPLO-TAREA-02B-JuegoTablero/Automata-TAREA-02B.html">Tarea 02B</a> ·
+            <a href="02-Ejemplos/05-B01-E01-Operaciones/Automata-B01-E01.html">Boletín 01-E01</a> ·
+            <a href="02-Ejemplos/EJEMPLO-TAREA-02A-Agenda/README.md">Tarea 02A (Agenda)</a></li>
+        <li>Ejemplos nuevos con más estados:
+            <a href="02-Ejemplos/06-Cajero/Automata-Cajero.html">Cajero</a> ·
+            <a href="02-Ejemplos/07-Expendedora/Automata-Expendedora.html">Expendedora</a> ·
+            <a href="02-Ejemplos/08-ReservaBarBaio/Automata-ReservaBarBaio.html">Reservas del Bar Baio</a> ·
+            <a href="02-Ejemplos/09-TresEnRaya/Automata-TresEnRaya.html">Tres en raya</a> ·
+            <a href="02-Ejemplos/10-ExamenTest/Automata-ExamenTest.html">Examen tipo test</a></li>
+        <li>Tareas de nivel avanzado:
+            <a href="02-Ejemplos/TAREA-02-AVANZADA-SieteYMedia/ENUNCIADO.md">Siete y media</a> ·
+            <a href="02-Ejemplos/TAREA-02-AVANZADA-CodigoSecreto/ENUNCIADO.md">Código secreto</a> ·
+            <a href="02-Ejemplos/TAREA-02-AVANZADA-Ascensor/ENUNCIADO.md">Ascensor</a></li>
+    </ul>
+
+    <h2>Los cuatro problemas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Problema</th>
+                <th>Estados</th>
+                <th>Eventos entrantes</th>
+                <th>Qué practica</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Boletín 02-E01: impuestos de las ventas</td>
+                <td>2</td>
+                <td>Calcular, Borrar</td>
+                <td>validar dos campos con acciones previas; el más parecido al Boletín 01-E01 de los ejemplos del repositorio</td>
+            </tr>
+            <tr>
+                <td>Boletín 03-E08: día de la semana</td>
+                <td>2</td>
+                <td>Carga, Enviar, Borrar (<code>type="reset"</code>: HTML/JS)</td>
+                <td>cuatro predicados, uno (el día existe en ese mes) que solo se evalúa si los otros se cumplen: tabla
+                    de verdad con "x" y cortocircuito</td>
+            </tr>
+            <tr>
+                <td>Boletín 05-E04: producto de matrices</td>
+                <td>4</td>
+                <td>Carga, Enviar</td>
+                <td>dos formularios seguidos con el mismo botón; dimensiones en campos ocultos que se vuelven a validar;
+                    evento imposible (<code>---</code>)</td>
+            </tr>
+            <tr>
+                <td>Tarea 02B: juego de tablero</td>
+                <td>5</td>
+                <td>Carga, Enviar, Jugada</td>
+                <td>toda la partida en campos ocultos; caminos que no pueden darse en un estado (invariantes);
+                    predicados evaluados antes de las acciones</td>
+            </tr>
+            <tr>
+                <td>Boletín 01-E01: operaciones con dos números (el de los ejemplos del repositorio)</td>
+                <td>2</td>
+                <td>Enviar, Reset</td>
+                <td>el autómata del material, con la misma numeración y lo que le faltaba: PL2 (segundo número distinto
+                    de 0), el cociente que pide el enunciado, un camino para el 0 y la validación de que el número cabe
+                    en un <code>int</code>. Es el más sencillo: el primero para empezar</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Cada documento tiene: enunciado, análisis (cómo se encuentran los elementos), diagrama, tabla de descriptores,
+        tabla de eventos-estados, tabla de transiciones (con las acciones <strong>antes</strong> y
+        <strong>después</strong> de los predicados, como en la Tarea 02A), comprobación de predicados (tablas de
+        verdad), el código que sale del autómata, las pruebas y ejercicios para practicar.</p>
+
+    <h2>Ejemplos nuevos con más estados (06 a 10)</h2>
+    <p>Problemas nuevos (no salen de los boletines) con más estados, eventos y transiciones que los anteriores, y cada
+        uno con una idea nueva:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Ejemplo</th>
+                <th>Estados</th>
+                <th>Eventos</th>
+                <th>Transiciones</th>
+                <th>Qué añade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>06 Cajero automático</td>
+                <td>8</td>
+                <td>9</td>
+                <td>11</td>
+                <td>la cuenta viaja en campos ocultos <strong>firmados</strong> con <code>hash_hmac</code>: un saldo
+                    cambiado en el navegador retiene la tarjeta; tres fallos de PIN; cascadas de predicados con avisos
+                    distintos</td>
+            </tr>
+            <tr>
+                <td>07 Máquina expendedora</td>
+                <td>7</td>
+                <td>9</td>
+                <td>9</td>
+                <td>el dato del evento va en el valor del botón (<code>moneda:200</code>); PL5 <strong>busca</strong>
+                    cómo dar el cambio con las monedas del cajón (con vuelta atrás); modo mantenimiento con clave</td>
+            </tr>
+            <tr>
+                <td>08 Reservas del Bar Baio</td>
+                <td>7</td>
+                <td>6</td>
+                <td>10</td>
+                <td>asistente en tres pasos con <em>Atrás</em> y <em>Editar</em> desde el resumen:
+                    <code>$editando</code> (PL2) cambia el destino de <em>Siguiente</em>; fechas relativas a hoy, lunes
+                    cerrado, domingos sin cenas, plazas por franja</td>
+            </tr>
+            <tr>
+                <td>09 Tres en raya</td>
+                <td>7</td>
+                <td>7 (uno interno)</td>
+                <td>7</td>
+                <td><strong>evento interno</strong>: el turno de la máquina se atiende en la misma petición; ST3 es un
+                    estado transitorio que nunca llega al navegador; la máquina juega de forma determinista (ganar,
+                    tapar, centro, esquinas, lados)</td>
+            </tr>
+            <tr>
+                <td>10 Examen tipo test</td>
+                <td>6</td>
+                <td>8</td>
+                <td>8</td>
+                <td>preguntas saltadas, revisión de pendientes y dos modos de corrección; T3 tiene 7 caminos;
+                    predicados que se evalúan después de una acción</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>En los diagramas grandes se usan <strong>cajas discontinuas</strong> que agrupan estados (como STx, pero solo
+        para los que nombran) y, en el de las reservas, etiquetas cortas con el detalle en la tabla de transiciones.</p>
+    <p>Las soluciones se probaron igual que las demás, con peticiones que reenvían el formulario completo: 31, 30, 34,
+        31 y 44 peticiones (las de las reservas se generan con fechas calculadas a partir del día en que se
+        ejecutan).</p>
+
+    <h2>Notación</h2>
+    <p>Igual que en los diagramas de los ejemplos del repositorio: evento entrante en <strong>rojo</strong>, predicado en negro, acciones
+        en <strong>verde</strong> y evento saliente en <strong>morado</strong>; <strong>STx</strong> es "cualquier
+        estado". Se añaden, en gris, las acciones previas ("antes: AC0") y, en azul, el número de transición (T1,
+        T2...) para enlazar el diagrama con las tablas.</p>
+
+    <h2>Las soluciones en PHP</h2>
+    <p>Cada <code>solucion/index.php</code> está programado <strong>a partir del autómata</strong>, con la estructura
+        del <code>index.php</code> del Boletín 01-E01 de los ejemplos del repositorio: constantes <code>ST0</code>, <code>EE0</code>...,
+        el array <code>$automata[estado][evento]</code>, un <code>switch</code> con un <code>case</code> por
+        transición, los predicados en variables <code>$pl0</code>, <code>$pl1</code>... y una función por evento
+        saliente (<code>es0()</code>, <code>es1()</code>...). Se abren con <code>php -S localhost:8000</code> desde su
+        carpeta.</p>
+    <p>Se probaron con peticiones reales que recorren <strong>todos los caminos</strong> de las tablas de transiciones
+        (9, 13, 12, 20 y 13 peticiones; las de la Tarea 02B reenviando el formulario completo con todos sus campos
+        ocultos, como el navegador, y repetidas 13 veces porque las letras se esconden al azar), además de estados y
+        campos ocultos manipulados y de textos con HTML. Ninguna produjo avisos de PHP.</p>
+
+    <h2>Observaciones sobre los ejemplos del repositorio</h2>
+    <ul>
+        <li><strong>Boletín 02-E01</strong>: en el ejemplo del enunciado están cambiadas las etiquetas: 2095,32 es el
+            impuesto <strong>estatal</strong> (5 %) y 1676,26 el <strong>autonómico</strong> (4 %). Los impuestos se
+            calculan sobre el líquido (<code>total / 1,09</code>), como en la solución de los ejemplos del repositorio.</li>
+        <li><strong>Boletín 01-E01</strong> (autómata de los ejemplos del repositorio, rehecho en
+            <a href="02-Ejemplos/05-B01-E01-Operaciones/Automata-B01-E01.html"><code>02-Ejemplos/05-B01-E01-Operaciones</code></a>):
+            falta el predicado "el segundo número no es 0"; con 0, <code>$numero1 % $numero2</code> lanza
+            <code>DivisionByZeroError</code> en PHP 8 (su tabla de descriptores ya tiene el hueco PL2 sin rellenar).
+            Además, el enunciado pide el <strong>cociente</strong>, que no se calcula; en el ejemplo del boletín el
+            producto de 30 y 10 aparece como 800 (es 300); y <code>formatoEnteroValido()</code> acepta números que no
+            caben en un <code>int</code> (<code>99999999999999999999</code> se convierte en <code>PHP_INT_MAX</code>
+            sin avisar).</li>
+        <li><strong>Boletín 03-E08</strong>: la fórmula de Keith y Craver está escrita en C; en PHP las divisiones deben
+            ser <code>intdiv</code> y el <code>y--</code> se aplica <strong>después</strong> de sumar el año. Así da el
+            mismo día que <code>DateTime::format('w')</code> en todas las fechas probadas.</li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

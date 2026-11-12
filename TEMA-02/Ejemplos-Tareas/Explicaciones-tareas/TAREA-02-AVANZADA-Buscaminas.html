@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscaminas (TAREA-02, nivel avanzado): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="buscaminas-tarea-02-nivel-avanzado-como-se-llega-a-la-solucion-paso-a-paso">Buscaminas (TAREA-02, nivel
+    avanzado): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-configuracion-tablero-vacio-y-estado-en-campos-ocultos">3.2.- Paso 2: configuración,
+              tablero vacío y estado en campos ocultos</a></li>
+          <li><a href="#33-paso-3-colocar-minas-calcular-numeros-descubrir-y-perder">3.3.- Paso 3: colocar minas,
+              calcular números, descubrir y perder</a></li>
+          <li><a href="#34-paso-4-recursividad-banderas-victoria-y-marcador-solucion-01">3.4.- Paso 4: recursividad,
+              banderas, victoria y marcador (solución 01)</a></li>
+          <li><a href="#35-paso-5-solucion-completa-con-ampliaciones-acorde-y-estado-cifrado">3.5.- Paso 5 (solución
+              completa con ampliaciones): acorde y estado cifrado</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-las-dos-soluciones-comparadas">4.- Las dos soluciones comparadas</a></li>
+      <li><a href="#5-pruebas-finales">5.- Pruebas finales</a></li>
+      <li><a href="#6-refactorizacion-y-mejoras-posibles">6.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#7-errores-tipicos-en-esta-tarea">7.- Errores típicos en esta tarea</a></li>
+      <li><a href="#8-autoevaluacion">8.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-Buscaminas/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Buscaminas/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Buscaminas/SOLUCION-01/">solución 01</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Buscaminas/SOLUCION-02/">solución 02</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Buscaminas/SOLUCION%20PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p><strong>Juan</strong> reta a <strong>Carlos</strong>: "¿Serías capaz de programar un Buscaminas completo solo con
+      PHP, sin una línea de
+      JavaScript y sin sesiones?". Carlos acepta y abre el editor para dibujar la tabla de botones, pero
+      <strong>María</strong> lo
+      frena: "Un tablero de experto tiene 480 casillas. Cada clic es una petición nueva y el servidor no se acuerda de
+      nada. ¿Cómo vas a mandar 480 casillas, dos veces (lo que hay y lo que se ve), en cada página? ¿Y cómo sabrás que
+      el jugador no las ha tocado?". Carlos entiende que el primer problema no es el juego, sino <strong>el formato del
+        estado</strong>.
+    </p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Un paso a paso para las dos soluciones.</strong> La carpeta <code>SOLUCION PASO A PASO</code> está al nivel
+    de la tarea porque
+    recorre las dos: el <strong>paso 4</strong> es idéntico a <code>SOLUCION-01</code> (solo cambia el comentario de
+    cabecera de <code>index.php</code>) y
+    el <strong>paso 5</strong> es idéntico a <code>SOLUCION-02</code>. Es decir, primero se construye la solución que
+    cumple R1–R10 y después,
+    sobre ella, se añaden las dos ampliaciones opcionales.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;SOLUCION PASO A PASO/paso3&quot; &quot;SOLUCION PASO A PASO/paso4&quot;
+</code></pre>
+  <p>(desde la carpeta <code>TAREA-02-AVANZADA-Buscaminas</code>; en VS Code: seleccionar los dos ficheros, botón
+    derecho,
+    <em>Comparar seleccionados</em>).
+  </p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 10 requisitos (R1…R10) que <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-Buscaminas/Requisitos.md">Requisitos.md</a>
+    convierte en 13 requisitos funcionales y 22 no funcionales. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Configurar</td>
+          <td>R1 · RF-01…RF-03</td>
+          <td>Niveles en <code>const NIVELES</code>; validar el personalizado mostrando <strong>todos</strong> los
+            errores; formulario pegajoso.</td>
+        </tr>
+        <tr>
+          <td>Tablero y primer clic</td>
+          <td>R2, R3 · RF-04</td>
+          <td>Una tabla de <code>&lt;button name="celda" value="fila-columna"&gt;</code>. Las minas <strong>no
+              existen</strong> hasta el primer clic.</td>
+        </tr>
+        <tr>
+          <td>Descubrir</td>
+          <td>R4 · RF-05, RF-06</td>
+          <td>Números con color; los ceros abren a sus vecinas con una <strong>función recursiva</strong>.</td>
+        </tr>
+        <tr>
+          <td>Banderas y marcador</td>
+          <td>R5, R6 · RF-07, RF-08</td>
+          <td>Modo <em>Descubrir</em> / <em>Bandera</em> que se mantiene; minas restantes, jugadas y tiempo
+            <code>mm:ss</code>.
+          </td>
+        </tr>
+        <tr>
+          <td>Terminar</td>
+          <td>R7 · RF-09…RF-11</td>
+          <td>Victoria (banderas en las minas), derrota (mina en rojo, banderas mal puestas) y tablero sin botones.</td>
+        </tr>
+        <tr>
+          <td>Estado y desconfianza</td>
+          <td>R8, R9 · RF-12, RF-13</td>
+          <td>La partida viaja en campos <code>hidden</code>, <strong>una cadena por fila</strong>; todo se revalida al
+            volver.</td>
+        </tr>
+        <tr>
+          <td>Organización</td>
+          <td>R10 · RNF-07…RNF-10</td>
+          <td>Cuatro ficheros con una responsabilidad cada uno; <code>vecinos()</code> reutilizada tres veces.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son: <strong>sin <code>$_SESSION</code></strong> y con
+    <strong>una cadena por fila</strong>
+    (RNF-03, RNF-04), <strong>relleno recursivo</strong> (RNF-06), <strong>lógica sin HTML</strong> (RNF-07) y
+    <strong>no confiar en el cliente</strong>
+    (RNF-12, RNF-13, RNF-16).
+  </p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Cuál es el máximo de minas de un tablero personalizado?</td>
+          <td>El menor entre el 35 % y "casillas − 9" (<code>maximoMinas()</code>): así siempre cabe la zona segura del
+            primer clic. En 5 × 5, 8 minas.</td>
+        </tr>
+        <tr>
+          <td>¿Se pueden poner banderas antes del primer clic?</td>
+          <td>Sí (RF-07). Cuentan como jugadas, pero no ponen en marcha el reloj.</td>
+        </tr>
+        <tr>
+          <td>¿Cuándo empieza el reloj?</td>
+          <td>En el primer clic de <em>descubrir</em>, que es cuando se colocan las minas
+            (<code>inicio = time()</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa al pulsar una casilla con bandera en modo <em>Descubrir</em>?</td>
+          <td>Aviso <em>Esa casilla tiene una bandera: quítala antes de descubrirla (modo «Bandera»).</em> y no cuenta
+            como jugada.</td>
+        </tr>
+        <tr>
+          <td>¿Y al pulsar una casilla ya descubierta?</td>
+          <td>Nada en la solución 01; en la 02 es el <strong>acorde</strong>.</td>
+        </tr>
+        <tr>
+          <td>¿Con qué modo empieza una partida nueva?</td>
+          <td><em>Descubrir</em>, aunque la anterior estuviera en modo bandera.</td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa si llega un clic sobre una partida terminada (petición forzada)?</td>
+          <td>Se ignora: solo se juega si <code>resultado</code> es <code>EN_JUEGO</code>.</td>
+        </tr>
+        <tr>
+          <td>¿El reloj avanza en pantalla?</td>
+          <td>No: sin JavaScript, el tiempo solo se recalcula en cada petición.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo se representa una mina?</td>
+          <td><code>MINA = -1</code> en la matriz y <code>'*'</code> en la cadena de la fila.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). Así quien
+      corrija sabrá que no es un olvido, y tú no cambiarás de criterio a mitad de la tarea.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><em>Experto</em> y <em>Empezar</em></td>
+          <td>Tablero de 16 × 30 todo oculto; "Minas restantes: 99"</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Personalizado 5 × 5 con 9 minas</td>
+          <td>"Para un tablero de 5 x 5 el número de minas debe estar entre 1 y 8." y los valores conservados</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Filas 3, columnas 40, minas <code>abc</code></td>
+          <td>Tres errores a la vez</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Primer clic en cualquier casilla</td>
+          <td>Nunca es una mina y siempre abre una zona vacía</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Personalizado 16 × 30 con 1 mina, un clic</td>
+          <td>Se descubre todo el tablero y se gana; la mina queda con bandera</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Modo bandera, clic en una casilla; después modo descubrir sobre ella</td>
+          <td>🚩, "Minas restantes" baja en 1; el aviso de la bandera</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Pisar una mina</td>
+          <td>"¡BOOM! Has pisado la mina de la fila…", todas las minas, la pisada en rojo, ❌ en las banderas mal
+            puestas, sin botones</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><code>celda=99-99</code></td>
+          <td>"La casilla indicada no existe." y la partida no cambia</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Cambiar <code>partida[minas]</code> o una fila del tablero en el HTML</td>
+          <td>"Los datos de la partida no son válidos (¿se ha modificado la página?). Empieza una nueva partida."</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Ctrl+U en mitad de una partida</td>
+          <td>Solución 01: se ven los <code>*</code>. Solución 02: un único campo en base64 ilegible</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 3, 8 y 9 no se pueden provocar con el formulario normal (los <code>&lt;input type="number"&gt;</code>
+    tienen <code>min</code> y
+    <code>max</code>, y los botones los genera el servidor): hay que editar el HTML con F12 o enviar la petición con
+    <code>curl</code>.
+  </p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada clic en una casilla es una petición nueva: el script empieza desde
+    cero y tiene
+    que <strong>reconstruir la partida</strong> entera a partir de lo que envíe el formulario. La pista del enunciado
+    propone un
+    único array asociativo, que se documenta en la cabecera de <code>logica.php</code> desde el paso 1:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Niveles, límites, estados, resultados</td>
+          <td>constantes</td>
+          <td><code>config.php</code></td>
+          <td>Añadir un nivel solo toca este fichero (RNF-08)</td>
+        </tr>
+        <tr>
+          <td><code>filas</code>, <code>columnas</code>, <code>minas</code></td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>Dimensiones de la partida</td>
+        </tr>
+        <tr>
+          <td><code>colocadas</code></td>
+          <td>bool (<code>0</code>/<code>1</code>)</td>
+          <td>campo oculto</td>
+          <td>Distingue "antes" y "después" del primer clic (R3)</td>
+        </tr>
+        <tr>
+          <td><code>tablero</code></td>
+          <td>matriz de int (<code>MINA</code> o 0…8)</td>
+          <td><strong>una cadena por fila</strong> (<code>"01*1000"</code>)</td>
+          <td>R8: 16 campos en vez de 480</td>
+        </tr>
+        <tr>
+          <td><code>estado</code></td>
+          <td>matriz de <code>'O'</code>, <code>'D'</code>, <code>'B'</code></td>
+          <td><strong>una cadena por fila</strong> (<code>"DDOOBOO"</code>)</td>
+          <td>Lo que ve el jugador</td>
+        </tr>
+        <tr>
+          <td><code>jugadas</code>, <code>inicio</code>, <code>fin</code></td>
+          <td>int (<code>time()</code>)</td>
+          <td>campos ocultos</td>
+          <td>Marcador (R6)</td>
+        </tr>
+        <tr>
+          <td><code>resultado</code>, <code>explotada</code></td>
+          <td>string</td>
+          <td>campos ocultos</td>
+          <td>Fin de la partida y mina en rojo (R7)</td>
+        </tr>
+        <tr>
+          <td>Modo del clic</td>
+          <td><code>'descubrir'</code> / <code>'bandera'</code></td>
+          <td>botones de radio del formulario del tablero</td>
+          <td>No es parte de la partida, es una preferencia</td>
+        </tr>
+        <tr>
+          <td>Minas restantes, tiempo <code>mm:ss</code></td>
+          <td>—</td>
+          <td><strong>se calculan</strong></td>
+          <td>A partir de las banderas y de <code>inicio</code> / <code>fin</code></td>
+        </tr>
+        <tr>
+          <td>Errores, aviso de la jugada</td>
+          <td>array / string</td>
+          <td>variables</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Elegir bien el formato del estado ahorra cientos de campos.</strong> Con un campo por casilla, un tablero
+      de experto
+      necesitaría 960 campos ocultos (480 del tablero y 480 del estado). Con una cadena por fila son 32, más 9 datos
+      sueltos. El truco funciona porque cada casilla cabe en <strong>un carácter</strong>: por eso las constantes de
+      estado son
+      letras (<code>OCULTA = 'O'</code>) y la mina se escribe <code>'*'</code>. <code>implode('', $fila)</code>
+      convierte la fila en cadena y
+      <code>str_split($texto)</code> hace el camino inverso.
+    </p>
+  </div>
+
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>R10 fija los ficheros, y la solución añade un quinto, <code>estado.php</code>, para separar <strong>cómo se
+      guarda</strong> la partida de
+    <strong>cómo se juega</strong>. Esa separación es la que permite, en el paso 5, cambiar el formato del estado sin
+    tocar el resto.
+    Cada fichero carga el que necesita con <code>require_once</code>:
+  </p>
+  <pre><code class="language-text">config.php   &lt;- logica.php   &lt;- estado.php  (guardar / recuperar la partida, validar la configuración)
+                             &lt;- vista.php   (funciones que DEVUELVEN HTML)
+index.php    -&gt; estado.php + vista.php      (lee $_POST, llama a la lógica, hace el echo)
+</code></pre>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Fichero</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>crearMatriz()</code> / <code>nuevaPartida()</code> / <code>maximoMinas()</code></td>
+          <td>logica</td>
+          <td>Matriz rellena / partida <strong>sin minas</strong> / máximo de minas</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>leerCoordenadas()</code></td>
+          <td>logica</td>
+          <td><code>"fila-columna"</code> → <code>[fila, columna]</code> o <code>null</code></td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>partidaACamposOcultos()</code> / <code>recuperarPartida()</code></td>
+          <td>estado</td>
+          <td>Partida → campos ocultos / campos → partida validada o <code>null</code></td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarConfiguracion()</code></td>
+          <td>estado</td>
+          <td>Nivel o personalizado → <code>[filas, columnas, minas]</code> o <code>null</code> + errores</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>e()</code> / <code>configuracionDe()</code> / <code>pintarConfiguracion()</code></td>
+          <td>vista</td>
+          <td>Escapar / nivel de la partida en juego / formulario</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>pintarCasilla()</code> / <code>pintarTablero()</code></td>
+          <td>vista</td>
+          <td>Una celda / la tabla con su formulario</td>
+          <td>2 y 3</td>
+        </tr>
+        <tr>
+          <td><code>vecinos()</code></td>
+          <td>logica</td>
+          <td>Coordenadas de las vecinas que existen</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>colocarMinas()</code> / <code>calcularNumeros()</code></td>
+          <td>logica</td>
+          <td>Minas al azar fuera de la zona segura / números</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>descubrir()</code> / <code>jugarCasilla()</code></td>
+          <td>logica</td>
+          <td>Descubrir (recursiva en el paso 4) / jugada completa</td>
+          <td>3 y 4</td>
+        </tr>
+        <tr>
+          <td><code>pintarMarcador()</code></td>
+          <td>vista</td>
+          <td>Marcador y mensaje final</td>
+          <td>3 y 4</td>
+        </tr>
+        <tr>
+          <td><code>contarEstado()</code> / <code>haGanado()</code> / <code>alternarBandera()</code> /
+            <code>segundosJugados()</code>
+          </td>
+          <td>logica</td>
+          <td>Banderas, victoria, tiempo</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>jugarAcorde()</code> / <code>comprobarVictoria()</code> / <code>cifrarPartida()</code> /
+            <code>descifrarPartida()</code>
+          </td>
+          <td>logica / estado</td>
+          <td>Ampliaciones (solución 02)</td>
+          <td>5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Fíjate en <strong>qué se pasa por referencia</strong>: <code>colocarMinas(array &amp;$partida, …)</code>,
+      <code>calcularNumeros(array &amp;$tablero)</code>,
+      <code>alternarBandera(array &amp;$partida, …)</code> y <code>jugarCasilla(array &amp;$partida, …)</code> modifican
+      lo que reciben;
+      <code>descubrir(array $tablero, array &amp;$estado, …)</code> recibe el tablero <strong>por valor</strong> (solo
+      lo lee) y el estado <strong>por
+        referencia</strong> (lo cambia). La firma documenta la intención: quien lee <code>descubrir()</code> sabe, sin
+      mirar dentro, que no
+      va a mover ninguna mina. Y <code>validarConfiguracion()</code> devuelve el resultado y deja los errores en
+      <code>array &amp;$errores</code>.
+    </p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>La partida tiene un subestado que no se ve pero que cambia el comportamiento: <strong>antes</strong> del primer
+    clic de
+    <em>descubrir</em> no hay minas (<code>colocadas</code> es <code>false</code>). Las transiciones (<em>evento
+      [condición] / acción</em>):
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración válida]</td>
+          <td><code>nuevaPartida()</code>, modo <em>descubrir</em></td>
+          <td>En juego, sin minas</td>
+        </tr>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración no válida]</td>
+          <td>mostrar todos los errores, formulario pegajoso</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td>clic [estado recibido no válido]</td>
+          <td>error</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>En juego</td>
+          <td>clic [la casilla no existe]</td>
+          <td>error</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>En juego</td>
+          <td>clic en modo bandera [casilla no descubierta]</td>
+          <td>poner/quitar bandera, jugadas + 1</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>En juego</td>
+          <td>clic en modo descubrir [bandera]</td>
+          <td>aviso</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>En juego, sin minas</td>
+          <td>clic en modo descubrir</td>
+          <td>colocar minas fuera de la zona, <code>inicio = time()</code>, descubrir</td>
+          <td>En juego, con minas (o Ganada)</td>
+        </tr>
+        <tr>
+          <td>En juego, con minas</td>
+          <td>clic en modo descubrir [mina]</td>
+          <td><code>PERDIDA</code>, <code>explotada</code>, <code>fin = time()</code></td>
+          <td>Perdida</td>
+        </tr>
+        <tr>
+          <td>En juego, con minas</td>
+          <td>clic en modo descubrir [no es mina]</td>
+          <td>descubrir (y sus vecinas si es un 0)</td>
+          <td>En juego / Ganada</td>
+        </tr>
+        <tr>
+          <td>Ganada / Perdida</td>
+          <td>clic (petición forzada)</td>
+          <td>se ignora</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Empezar</em></td>
+          <td>nueva partida</td>
+          <td>En juego, sin minas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La flecha "sin minas → con minas" es la que obliga a guardar <code>colocadas</code>, y la que hace que la
+    validación del estado
+    tenga que distinguir dos casos: antes del primer clic el tablero no puede tener ninguna mina; después, exactamente
+    las declaradas.</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden:
+    primero el
+    <strong>estado</strong> (que la partida sobreviva a un clic), después <strong>perder</strong> (que es lo más
+    sencillo y además enseña el
+    tablero entero), después <strong>ganar</strong> y por último las <strong>ampliaciones</strong>.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs en los seis ficheros</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Configuración, tablero vacío y estado en campos <code>hidden</code> (ya validado)</td>
+          <td>R1, R2, R8, R9, R10</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Colocar minas, calcular números, descubrir (sin recursión) y perder</td>
+          <td>R3, R4 (en parte), R7 (derrota)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Recursividad, banderas, victoria y marcador = <strong>SOLUCION-01</strong></td>
+          <td>R4, R5, R6, R7</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td><strong>Ampliaciones:</strong> acorde, estado cifrado y relleno iterativo = <strong>SOLUCION-02</strong>
+          </td>
+          <td>RF-A1, RNF-A1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> Con cinco ficheros PHP es muy fácil escribir una función en el sitio
+    equivocado (por
+    ejemplo, un <code>echo</code> dentro de <code>logica.php</code>). Los TODO reparten el trabajo
+    <strong>antes</strong> de escribirlo: cada fichero dice
+    en su cabecera de qué se encarga y cada función aparece con su <strong>firma</strong> completa, incluidos los
+    <code>&amp;</code>:
+  </p>
+  <pre><code class="language-php">// Función auxiliar TODO: descubrir(array $tablero, array &amp;$estado, int $fila, int $columna): int
+//      RECURSIVA: si la casilla es un 0, descubre también sus vecinas
+</code></pre>
+  <p>En <code>index.php</code> los TODO siguen la estructura de siempre: inicializar, leer el modo con una lista blanca,
+    valores
+    por defecto del formulario, ¿nueva partida?, ¿jugada?, y el HTML. <code>estilos.css</code> ya está completo desde el
+    paso 1
+    (no cambia hasta el paso 5): el aspecto no es lo que se está aprendiendo aquí.</p>
+  <p><strong>Decisión clave.</strong> La cabecera de <code>logica.php</code> ya describe el array de la partida, con
+    <code>'colocadas' =&gt; false</code> y el
+    comentario <em>las minas se colocan tras el PRIMER clic</em>. R3 está en el diseño desde el principio.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título y nada más, pero <strong>no hay errores de PHP</strong>. Con la extensión <em>Todo
+        Tree</em> de VS Code
+      verás la lista de lo que queda por hacer.</p>
+  </div>
+
+  <h3 id="32-paso-2-configuracion-tablero-vacio-y-estado-en-campos-ocultos">3.2.- Paso 2: configuración, tablero vacío y
+    estado en campos ocultos</h3>
+  <p><strong>Objetivo.</strong> Elegir el nivel, crear una partida sin minas, dibujar el tablero de botones y conseguir
+    que la
+    partida <strong>vaya y vuelva</strong> en campos ocultos (R1, R2, R8), validada (R9).</p>
+  <p><strong>Por qué ahora.</strong> Sin estado no hay juego: cada clic empezaría de cero. Y, a diferencia de otras
+    tareas, aquí la
+    validación del estado <strong>no se deja para el final</strong>: <code>recuperarPartida()</code> es la función
+    inversa de
+    <code>partidaACamposOcultos()</code> y las dos dependen de la misma decisión de formato (<code>'*'</code>,
+    <code>'O'</code>, <code>'D'</code>, <code>'B'</code>, una cadena
+    por fila). Se escriben juntas, con el formato fresco en la cabeza, y así <code>estado.php</code> queda terminado en
+    este paso
+    y ya no cambia hasta la solución 02.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>config.php</code> completo: <code>NIVELES</code>, los límites del personalizado, <code>MINA</code>,
+      <code>OCULTA</code>/<code>DESCUBIERTA</code>/<code>BANDERA</code> y
+      <code>EN_JUEGO</code>/<code>GANADA</code>/<code>PERDIDA</code>.
+    </li>
+    <li><code>validarConfiguracion()</code>: si el nivel está en <code>NIVELES</code> se usa tal cual; si es
+      <code>personalizado</code>, se validan los
+      tres números con <code>filter_var(..., FILTER_VALIDATE_INT)</code> y rangos. El máximo de minas
+      <strong>solo</strong> se comprueba si
+      filas y columnas son correctas (un <code>elseif</code>): con filas 3 no tiene sentido calcular el 35 % de nada.
+    </li>
+    <li><code>partidaACamposOcultos()</code>: los datos sueltos, <code>colocadas</code> como
+      <code>0</code>/<code>1</code> y dos cadenas por fila. Para el tablero
+      hay que traducir <code>MINA</code> (-1) a <code>'*'</code> con <code>array_map()</code> antes del
+      <code>implode()</code>.
+    </li>
+    <li><code>recuperarPartida()</code>: enteros con <code>filter_var</code>, dimensiones y minas dentro de los límites,
+      <code>resultado</code> en una
+      lista blanca, <code>explotada</code> con formato, y cada fila con una expresión regular que comprueba <strong>a la
+        vez</strong> la
+      longitud y los caracteres (código debajo de la lista). Si algo falla, <code>null</code>.
+    </li>
+    <li><code>leerCoordenadas()</code>: <code>preg_match('/^(\d{1,2})-(\d{1,2})$/', …)</code> y que la casilla esté
+      dentro del tablero.</li>
+    <li><code>pintarConfiguracion()</code> genera los radios con un <code>foreach</code> sobre <code>NIVELES</code>;
+      <code>configuracionDe()</code> hace el camino
+      inverso (de una partida en juego al nivel que le corresponde) para que el formulario muestre con qué se juega
+      (RF-03).
+    </li>
+    <li><code>pintarCasilla()</code> todavía solo pinta botones (oculta o con bandera).</li>
+  </ul>
+  <pre><code class="language-php">// recuperarPartida() (paso 2, estado.php)
+if (preg_match('/^[*0-8]{' . $columnas . '}$/', $textoTablero) !== 1
+    || preg_match('/^[ODB]{' . $columnas . '}$/', $textoEstado) !== 1) {
+    return null;
+}
+// ...
+if ($minasContadas != ($partida['colocadas'] ? $minas : 0)) {
+    return null;
+}
+</code></pre>
+  <p>La última comprobación ya tiene en cuenta el subestado del apartado 2.2, aunque en este paso todavía no se coloca
+    ninguna mina: así no habrá que volver a <code>estado.php</code>.</p>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Lista blanca en todo lo que no es un número.</strong> El modo se lee como
+      <code>$modo = ($_POST['modo'] ?? '') === 'bandera' ? 'bandera' : 'descubrir';</code>: cualquier valor que no sea
+      exactamente <code>bandera</code> se convierte en <code>descubrir</code>. <code>resultado</code> se compara con
+      <code>in_array(..., true)</code> contra las
+      tres constantes. Es más seguro enumerar lo que <strong>sí</strong> vale que intentar adivinar todo lo que no vale.
+    </p>
+  </div>
+
+  <p><strong>Lo que queda pendiente.</strong> En <code>index.php</code>, la jugada lee y valida la casilla, pero después
+    solo hay dos TODO
+    (bandera en el paso 4, descubrir en el paso 3). Pulsar una casilla vuelve a pintar la misma partida: justo lo que
+    hace falta para comprobar que el estado sobrevive al viaje.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1, 2, 3 y 8. Elige <em>Experto</em>: 16 × 30 botones. Con Ctrl+U busca <code>partida[tablero][0]</code> (30
+      ceros) y
+      <code>partida[estado][0]</code> (30 <code>O</code>). Pulsa una casilla: la página se recarga igual y sin errores.
+      Con F12, cambia el
+      <code>value</code> de un botón por <code>99-99</code> ("La casilla indicada no existe.") y una letra de
+      <code>partida[estado][0]</code> por una <code>X</code>
+      ("Los datos de la partida no son válidos…"). Para el caso 3, quita los atributos <code>min</code>/<code>max</code>
+      con F12 o usa
+      <code>curl -d "nueva=1&amp;nivel=personalizado&amp;filas=3&amp;columnas=40&amp;minas=abc" http://localhost:8000/</code>.
+    </p>
+  </div>
+
+  <h3 id="33-paso-3-colocar-minas-calcular-numeros-descubrir-y-perder">3.3.- Paso 3: colocar minas, calcular números,
+    descubrir y perder</h3>
+  <p><strong>Objetivo.</strong> Que el primer clic coloque las minas (R3), que cada casilla tenga su número y que pisar
+    una mina
+    termine la partida (R7, derrota).</p>
+  <p><strong>Por qué ahora y por qué perder antes que ganar.</strong> Perder es más sencillo (una sola casilla decide)
+    y, sobre todo,
+    <strong>al perder se enseñan todas las minas</strong>: es la mejor herramienta de prueba para comprobar a ojo que
+    los números
+    están bien calculados. Ganar necesita el relleno recursivo y contar casillas, y eso puede esperar al paso 4.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>vecinos()</code>: dos bucles de -1 a 1 que descartan la propia casilla y las que se salen del tablero. Es
+      la función
+      que la pista pide reutilizar: la usan <code>colocarMinas()</code>, <code>calcularNumeros()</code> y, en el paso 4,
+      <code>descubrir()</code>.
+    </li>
+    <li><code>colocarMinas()</code> sigue la pista del enunciado: numerar las casillas, quitar las prohibidas, barajar y
+      coger las
+      primeras (código debajo de la lista). Al final llama a <code>calcularNumeros()</code> y pone
+      <code>colocadas</code> a <code>true</code>.
+    </li>
+    <li><code>calcularNumeros(array &amp;$tablero)</code>: para cada casilla sin mina, cuenta las vecinas con mina.</li>
+    <li><code>descubrir()</code>: de momento solo marca la casilla como descubierta. La recursión es un TODO del paso 4.
+    </li>
+    <li><code>jugarCasilla()</code>: si es el primer clic, coloca las minas y arranca el reloj; suma la jugada; si hay
+      mina, la
+      partida se pierde y se apunta cuál ha explotado (<code>"{$fila}-{$columna}"</code>); si no, descubre.</li>
+    <li><code>pintarCasilla()</code> completa: número con su clase <code>n1</code>…<code>n8</code>, la mina explotada y,
+      con la partida terminada, todas
+      las minas y las banderas mal puestas (❌). <code>pintarMarcador()</code> de momento solo pinta el mensaje final.
+    </li>
+  </ul>
+  <pre><code class="language-php">// colocarMinas() (paso 3, logica.php)
+$prohibidas = [$filaSegura * $columnas + $columnaSegura];
+foreach (vecinos($filaSegura, $columnaSegura, $filas, $columnas) as [$f, $c]) {
+    $prohibidas[] = $f * $columnas + $c;
+}
+$candidatas = array_diff(range(0, $filas * $columnas - 1), $prohibidas);
+shuffle($candidatas);
+foreach (array_slice($candidatas, 0, $partida['minas']) as $posicion) {
+    $partida['tablero'][intdiv($posicion, $columnas)][$posicion % $columnas] = MINA;
+}
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Por qué el primer clic siempre abre una zona.</strong> Si se evitara solo la casilla pulsada, el primer
+      clic nunca
+      perdería, pero podría salir un 3 y el jugador tendría que adivinar. Evitando también sus vecinas, la casilla
+      pulsada tiene <strong>cero</strong> minas alrededor: siempre es un 0. Por eso <code>maximoMinas()</code> deja
+      libres al menos 9 casillas
+      (la pulsada y sus 8 vecinas): con menos, <code>array_slice()</code> no encontraría sitio para todas las minas.</p>
+  </div>
+
+  <p><strong>Trucos provisionales.</strong> En este paso <code>pintarMarcador()</code> ya tiene escrito el mensaje de
+    victoria, que usa una
+    variable <code>$tiempo</code> que todavía no existe: no da problemas porque aún no se puede ganar, y el paso 4 la
+    define. El
+    primer clic abre una sola casilla (vacía) en lugar de una zona: también lo arregla el paso 4.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 4 y caso 7. Empieza en <em>Principiante</em> y pulsa: la casilla sale vacía, nunca con mina. Sigue pulsando
+      hasta
+      pisar una: "¡BOOM! Has pisado la mina de la fila…", la mina en rojo, el resto de minas a la vista y ningún botón.
+      Comprueba con el tablero destapado que cada número cuenta bien sus minas. Con Xdebug, pon un punto de ruptura en
+      <code>colocarMinas()</code> y mira <code>$prohibidas</code>: 4 casillas en una esquina, 6 en un borde y 9 en el
+      centro.
+    </p>
+  </div>
+
+  <h3 id="34-paso-4-recursividad-banderas-victoria-y-marcador-solucion-01">3.4.- Paso 4: recursividad, banderas,
+    victoria y marcador (solución 01)</h3>
+  <p><strong>Objetivo.</strong> Abrir las zonas vacías con una función recursiva (R4), banderas (R5), marcador (R6) y
+    victoria (R7).
+    Al terminar este paso se cumplen R1–R10: es la <code>SOLUCION-01</code>.</p>
+  <p><strong>Por qué ahora.</strong> Con <code>vecinos()</code> y <code>descubrir()</code> escritos, la recursión es
+    <strong>una sola llamada</strong> más. Las
+    banderas, la victoria y el marcador son cálculos sobre la matriz <code>estado</code>, que ya viaja y se valida.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>La recursión en <code>descubrir()</code>: si la casilla es un 0, se llama a sí misma con cada vecina y suma lo
+      que
+      descubren (código debajo de la lista).</li>
+    <li><code>contarEstado()</code> usa <code>array_count_values()</code> en cada fila: sirve para las banderas
+      (marcador) y para las
+      descubiertas (victoria).</li>
+    <li><code>haGanado()</code>: descubiertas = filas × columnas − minas. Al ganar, <code>jugarCasilla()</code> pone
+      bandera en todas las minas.</li>
+    <li><code>alternarBandera()</code>: oculta ↔ bandera (en una descubierta no hace nada) y suma una jugada.</li>
+    <li>En <code>jugarCasilla()</code>, el aviso si la casilla tiene bandera; en <code>index.php</code>, el
+      <code>if ($modo == 'bandera')</code>.
+    </li>
+    <li><code>segundosJugados()</code> (0 si no ha empezado; si ha terminado, <code>fin − inicio</code>) y el formato
+      <code>mm:ss</code> con
+      <code>sprintf('%02d:%02d', intdiv($segundos, 60), $segundos % 60)</code>.
+    </li>
+    <li>En <code>pintarTablero()</code>, los radios del modo, <strong>solo</strong> si la partida sigue en juego
+      (RF-11).</li>
+  </ul>
+  <pre><code class="language-php">// descubrir() (paso 4, logica.php)
+// Caso base: ya descubierta o con bandera -&gt; no hacemos nada
+if ($estado[$fila][$columna] != OCULTA) {
+    return 0;
+}
+$estado[$fila][$columna] = DESCUBIERTA;
+$descubiertas = 1;
+if ($tablero[$fila][$columna] == 0) {
+    foreach (vecinos($fila, $columna, count($tablero), count($tablero[0])) as [$f, $c]) {
+        $descubiertas += descubrir($tablero, $estado, $f, $c);
+    }
+}
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>El caso base hace dos trabajos.</strong> <code>!= OCULTA</code> detiene la recursión en las casillas ya
+      descubiertas (sin él, dos
+      ceros vecinos se llamarían el uno al otro sin fin) y, a la vez, respeta las banderas (RF-06: <em>las casillas con
+        bandera no se descubren</em>). Una sola condición cumple un requisito y evita una recursión infinita.</p>
+  </div>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p><code>$tablero</code> se pasa por valor en cada llamada recursiva y, aun así, no se copia 480 veces: PHP usa
+      <em>copia en
+        escritura</em> (<em>copy-on-write</em>), y un array que se recibe por valor y no se modifica no se duplica. Lo
+      que sí crece
+      con cada casilla vacía es la <strong>pila de llamadas</strong>: es lo que el enunciado te pide observar con
+      Xdebug, y es el
+      motivo de la versión iterativa de la solución 02.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 5: personalizado 16 × 30 con 1 mina. Un clic descubre todo y sale el mensaje de enhorabuena con la mina
+      marcada. Caso 6: en modo bandera, una casilla pasa a 🚩 y "Minas restantes" baja; pon más banderas que minas y
+      verás un número negativo; en modo descubrir sobre la bandera sale el aviso. Comprueba que el modo bandera
+      <strong>se
+        mantiene</strong> entre clics y que, al pulsar <em>Empezar</em>, vuelve a <em>descubrir</em>. Pierde con
+      banderas mal puestas: ❌.
+    </p>
+  </div>
+
+  <h3 id="35-paso-5-solucion-completa-con-ampliaciones-acorde-y-estado-cifrado">3.5.- Paso 5 (solución completa con
+    ampliaciones): acorde y estado cifrado</h3>
+  <p><strong>Objetivo.</strong> Las dos ampliaciones opcionales: el <strong>acorde</strong> (RF-A1) y el <strong>estado
+      protegido</strong> (RNF-A1). Al
+    terminar este paso se tiene la <code>SOLUCION-02</code>.</p>
+  <p><strong>Por qué al final.</strong> Son opcionales y se apoyan en una base que funciona y está probada. Además, este
+    paso
+    demuestra que la organización en ficheros funcionaba: <code>estado.php</code> cambia <strong>por completo</strong> y
+    <code>index.php</code> no cambia
+    ni una línea (solo el comentario de cabecera), porque <code>partidaACamposOcultos()</code> y
+    <code>recuperarPartida()</code> mantienen su
+    firma.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>config.php</code>: <code>CLAVE_SECRETA</code> y <code>ALGORITMO_CIFRADO = 'aes-256-gcm'</code>, con un
+      comentario que avisa de que en una
+      aplicación real la clave no se escribe en el código (se leería, por ejemplo, con <code>getenv()</code>).</li>
+    <li><code>estado.php</code>: <code>cifrarPartida()</code> hace <code>json_encode()</code> →
+      <code>openssl_encrypt()</code> con un vector de inicialización
+      aleatorio (<code>random_bytes()</code>) → <code>base64_encode($iv . $tag . $cifrado)</code>.
+      <code>descifrarPartida()</code> hace el camino
+      inverso y devuelve <code>null</code> si <code>openssl_decrypt()</code> falla. <code>partidaACamposOcultos()</code>
+      genera <strong>un único</strong> campo.
+    </li>
+    <li><code>logica.php</code>: <code>jugarAcorde()</code> (se llama desde <code>jugarCasilla()</code> al pulsar una
+      casilla <strong>ya descubierta</strong>),
+      <code>comprobarVictoria()</code> y <code>descubrir()</code> iterativa.
+    </li>
+    <li><code>vista.php</code>: los números descubiertos son botones (<code>class='numero'</code>) mientras la partida
+      sigue en juego.</li>
+  </ul>
+  <pre><code class="language-php">// recuperarPartida() (paso 5, estado.php): ya no se revalida casilla a casilla
+function recuperarPartida(mixed $datos): ?array
+{
+    return is_string($datos) ? descifrarPartida($datos) : null;
+}
+</code></pre>
+  <p><strong>Una refactorización por el camino.</strong> El bloque "si se ha ganado, cerrar la partida y poner banderas
+    en las minas"
+    estaba dentro de <code>jugarCasilla()</code>. El acorde también puede ganar la partida, así que, en vez de copiarlo,
+    se saca
+    a <code>comprobarVictoria(array &amp;$partida)</code> y se llama desde los dos sitios: la señal "código repetido" de
+    los apuntes.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Con Ctrl+U: un solo <code>&lt;input type='hidden' name='partida'&gt;</code> con texto en base64, y cada vez
+      distinto aunque la
+      partida no cambie (el vector de inicialización es aleatorio). Cambia un carácter con F12: "Los datos de la
+      partida no son válidos…". Acorde: pon las banderas alrededor de un 2 y pulsa el 2; con una sola bandera, "Para
+      despejar alrededor de un 2 necesitas 2 bandera(s) a su alrededor (tienes 1)."; con una bandera mal puesta,
+      explota.</p>
+  </div>
+
+  <h2 id="4-las-dos-soluciones-comparadas">4.- Las dos soluciones comparadas</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>SOLUCION-01 (paso 4)</th>
+          <th>SOLUCION-02 (paso 5)</th>
+          <th>Por qué</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Estado en la página</td>
+          <td>9 campos + 2 cadenas por fila, en claro</td>
+          <td><strong>Un</strong> campo: JSON cifrado con AES-256-GCM y en base64</td>
+          <td>Confidencialidad: con Ctrl+U ya no se ven las minas</td>
+        </tr>
+        <tr>
+          <td>Validar lo recibido</td>
+          <td><code>recuperarPartida()</code> lo revisa todo (enteros, límites, regex de cada fila, minas contadas)</td>
+          <td>Si <code>openssl_decrypt()</code> no devuelve <code>false</code>, el contenido lo generó
+            <strong>nuestro</strong> servidor
+          </td>
+          <td>Integridad: GCM añade una etiqueta (<code>$tag</code>) que detecta cualquier bit cambiado</td>
+        </tr>
+        <tr>
+          <td>Casilla pulsada</td>
+          <td><code>leerCoordenadas()</code></td>
+          <td><code>leerCoordenadas()</code> (igual)</td>
+          <td><code>celda</code> no va dentro del campo cifrado: sigue siendo un dato del cliente</td>
+        </tr>
+        <tr>
+          <td>Relleno de zonas vacías</td>
+          <td><strong>Recursivo</strong> (R4, RNF-06)</td>
+          <td><strong>Iterativo</strong> con una pila (<code>array_push</code> / <code>array_pop</code>)</td>
+          <td>Mismo resultado; la pila se gestiona a mano en vez de usar la de llamadas de PHP</td>
+        </tr>
+        <tr>
+          <td>Clic en un número</td>
+          <td>No hace nada</td>
+          <td><strong>Acorde</strong> (<code>jugarAcorde()</code>)</td>
+          <td>Ampliación RF-A1; por eso los números son botones</td>
+        </tr>
+        <tr>
+          <td>Victoria</td>
+          <td>Dentro de <code>jugarCasilla()</code></td>
+          <td><code>comprobarVictoria()</code>, usada dos veces</td>
+          <td>Evitar código repetido</td>
+        </tr>
+        <tr>
+          <td>Volver <em>Atrás</em> tras perder</td>
+          <td>Se puede seguir jugando</td>
+          <td><strong>También</strong></td>
+          <td>Un estado antiguo sigue siendo auténtico: solo las sesiones (temas posteriores) lo evitan</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dos detalles de la versión iterativa: una casilla puede entrar <strong>varias veces</strong> en
+    <code>$pendientes</code> (es vecina de
+    varios ceros), y por eso el <code>continue</code> comprueba al sacarla si sigue oculta; y el orden en que se
+    descubren las
+    casillas cambia, pero el resultado final es el mismo.
+  </p>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si entregas las ampliaciones, <strong>no sustituyas</strong> la versión recursiva: R4 y RNF-06 la exigen y la
+      rúbrica le da
+      1,5 puntos. La versión iterativa de la solución 02 está para comparar las dos formas de recorrer una zona (pon un
+      punto de ruptura en <code>descubrir()</code> y observa la pila de llamadas en una y el array
+      <code>$pendientes</code> en la otra).
+    </p>
+  </div>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>Cifrar <strong>no es lo mismo</strong> que codificar. <code>base64_encode()</code> solo convierte bytes en texto
+      imprimible: cualquiera lo
+      deshace con <code>base64_decode()</code>. Lo que protege la partida es <code>openssl_encrypt()</code> con una
+      clave que <strong>solo</strong> está en
+      el servidor. Y aun así el cifrado no impide reenviar una página anterior válida (pregunta de reflexión 2): para
+      eso el servidor tiene que <strong>recordar</strong> cuál es el estado actual, y eso ya es una sesión.</p>
+  </div>
+
+  <h2 id="5-pruebas-finales">5.- Pruebas finales</h2>
+  <p>Con cada solución hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del último
+    paso: el paso
+    5 cambia por completo cómo viaja la partida y podría haber estropeado algo que antes funcionaba.</p>
+  <ul>
+    <li>☐ Los tres niveles y un personalizado; formulario pegajoso con errores; RF-03 (el formulario muestra la partida
+      en juego).</li>
+    <li>☐ Casos límite: 5 × 5 con 8 minas (el máximo), 16 × 30 con 1 mina, primer clic en una esquina y en un borde.
+    </li>
+    <li>☐ Banderas: antes del primer clic, más banderas que minas, quitar una bandera, el modo se mantiene.</li>
+    <li>☐ Final: ganar (minas con bandera, mensaje con tiempo y jugadas) y perder (mina en rojo, ❌), tablero sin
+      botones.</li>
+    <li>☐ Maliciosos: <code>celda=99-99</code>, <code>celda=a-b</code>, filas del tablero con otra longitud o con
+      letras, <code>partida[minas]</code> cambiado tras el primer clic, <code>partida[resultado]=hackeado</code>.</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code>.</li>
+  </ul>
+  <h2 id="6-refactorizacion-y-mejoras-posibles">6.- Refactorización y mejoras posibles</h2>
+  <p>La solución ya está organizada en funciones cortas, así que la refactorización se hizo sobre la marcha (la más
+    visible, <code>comprobarVictoria()</code> en el paso 5). Quedan detalles que se pueden mejorar, buenos para
+    practicar:</p>
+  <ul>
+    <li><strong>Estado mínimo.</strong> La solución 01 guarda los números del tablero, pero se pueden
+      <strong>calcular</strong> a partir de las
+      minas con <code>calcularNumeros()</code>. Hoy <code>recuperarPartida()</code> comprueba que hay tantas
+      <code>*</code> como minas, pero no que los
+      números sean los correctos: si alguien cambia un <code>1</code> por un <code>2</code>, la partida se acepta.
+      Guardar solo las minas (o
+      recalcular los números al recuperar) elimina ese problema sin escribir una validación más.
+    </li>
+    <li><strong>Arrays donde se espera texto.</strong> <code>index.php</code> hace <code>(string) $_POST['celda']</code>
+      y el formulario pegajoso
+      <code>(string) ($_POST[$campo] ?? '')</code>; <code>recuperarPartida()</code> hace <code>(string)</code> con cada
+      fila. Si llega <code>celda[]=1</code> o
+      <code>nivel[]=x</code>, la conversión de un array a texto produce un aviso de PHP (y
+      <code>array_key_exists()</code> con un array como
+      clave, un <code>TypeError</code>). Comprobar antes con <code>is_string()</code>, como ya hace la solución 02 en
+      <code>recuperarPartida()</code>,
+      cumpliría del todo RNF-16.
+    </li>
+    <li><strong>Las preguntas de reflexión.</strong> RNF-11 y el criterio 12 de la rúbrica piden responderlas en un
+      comentario al
+      principio de <code>index.php</code>, y ninguna de las dos soluciones lo hace (las ideas están en los comentarios
+      de
+      <code>estado.php</code>). En tu entrega no deben faltar: la autoevaluación del apartado 8 te da las pistas.
+    </li>
+    <li>Pequeños detalles de la vista: "1 jugadas" en singular, y la clave secreta de la solución 02 escrita en
+      <code>config.php</code>, que su propio comentario manda sacar del código.
+    </li>
+  </ul>
+  <h2 id="7-errores-tipicos-en-esta-tarea">7.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Un campo oculto por casilla</td>
+          <td>Cientos de campos; formularios enormes</td>
+          <td>Una cadena por fila con <code>implode</code> / <code>str_split</code> (R8)</td>
+        </tr>
+        <tr>
+          <td>Colocar las minas al crear la partida</td>
+          <td>El primer clic puede perder (R3)</td>
+          <td><code>colocadas = false</code> y colocarlas en el primer clic de <em>descubrir</em></td>
+        </tr>
+        <tr>
+          <td>Evitar solo la casilla pulsada</td>
+          <td>El primer clic puede dar un número y obligar a adivinar</td>
+          <td>Evitar también sus vecinas con <code>vecinos()</code></td>
+        </tr>
+        <tr>
+          <td>Recursión sin caso base para las descubiertas</td>
+          <td>Recursión infinita entre dos ceros vecinos</td>
+          <td><code>if ($estado[$fila][$columna] != OCULTA) return 0;</code></td>
+        </tr>
+        <tr>
+          <td>Escribir <code>vecinos()</code> tres veces con bucles distintos</td>
+          <td>Errores en los bordes en un sitio sí y en otro no</td>
+          <td>Una función reutilizada (RNF-10)</td>
+        </tr>
+        <tr>
+          <td><code>echo</code> dentro de <code>logica.php</code> o <code>vista.php</code></td>
+          <td>Mezcla de responsabilidades; no se puede probar ni reutilizar</td>
+          <td>La lógica devuelve datos, la vista devuelve HTML, <code>index.php</code> hace el <code>echo</code></td>
+        </tr>
+        <tr>
+          <td>Confiar en el <code>value</code> del botón</td>
+          <td><code>celda=99-99</code> produce <em>Undefined array key</em></td>
+          <td><code>leerCoordenadas()</code> con formato y límites</td>
+        </tr>
+        <tr>
+          <td>Creer que <code>base64_encode()</code> protege</td>
+          <td>Cualquiera lo descodifica</td>
+          <td>Cifrado autenticado con una clave del servidor</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="8-autoevaluacion">8.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué las minas no se colocan al crear la partida? <strong>Porque R3 exige que el primer clic sea seguro, y
+          hasta que no se pulsa no se sabe qué casilla (y qué vecinas) hay que evitar.</strong></li>
+      <li>¿Para qué sirve el campo <code>colocadas</code>? <strong>Para distinguir una partida sin minas (todavía no se
+          ha descubierto
+          nada) de una con minas; la validación espera 0 minas en el primer caso y exactamente las declaradas en el
+          segundo.</strong></li>
+      <li>¿Por qué <code>descubrir()</code> recibe <code>$tablero</code> por valor y <code>$estado</code> por
+        referencia? <strong>Porque solo lee el tablero y
+          solo modifica el estado; la firma lo deja claro y PHP no copia un array que no se modifica.</strong></li>
+      <li>En la solución 01, ¿puedes saber con Ctrl+U dónde están las minas? <strong>Sí: las <code>*</code> de
+          <code>partida[tablero]</code>.
+          Guardar el estado en el cliente significa que el cliente lo puede leer y modificar.</strong></li>
+      <li>¿Qué pasa si, después de perder, pulsas <em>Atrás</em> y vuelves a hacer clic? <strong>Que el navegador
+          reenvía un estado
+          anterior que es válido (y, en la solución 02, auténtico), y la partida continúa como si no hubieras
+          perdido.</strong></li>
+      <li>¿Por qué hay que validar el <code>value</code> del botón aunque lo genere el servidor? <strong>Porque
+          cualquiera puede cambiarlo
+          con F12 o enviar la petición con <code>curl</code>: todo lo que llega del navegador es un dato del
+          cliente.</strong></li>
+      <li>¿Qué aporta la "G" de AES-256-GCM? <strong>Autenticación: además de cifrar, calcula una etiqueta y
+          <code>openssl_decrypt()</code> devuelve <code>false</code> si se ha cambiado un solo bit.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

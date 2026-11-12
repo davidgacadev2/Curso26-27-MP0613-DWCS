@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata de una máquina expendedora</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata de una máquina expendedora</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>El instituto quiere poner una máquina de bebidas en la cafetería y el profesor de la asignatura le pide a
+            <strong>Carlos</strong> que simule su programa en PHP antes de comprarla. <strong>Juan</strong> le cuenta lo
+            que no se ve desde fuera: la máquina tiene que saber dar el <strong>cambio</strong> con las monedas que
+            tiene, no solo calcularlo. —Si no tiene monedas de 10 céntimos, ese café no lo puede vender.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Programa en PHP una <strong>máquina expendedora</strong> (sin sesiones: el estado de la máquina viaja en un campo
+        oculto):</p>
+    <ul>
+        <li>Productos: agua (0,80 €, 3 unidades), café (1,10 €, 2), zumo (1,50 €, <strong>agotado</strong>) y bocadillo
+            (2,35 €, 1). Monedas aceptadas: 5, 10, 20, 50 céntimos, 1 € y 2 €. El cajón para el cambio empieza con una
+            moneda de 50, una de 20, dos de 10 y dos de 5 céntimos.
+        </li>
+        <li>Se <strong>elige</strong> un producto (si está agotado o no existe, se avisa). Después se van
+            <strong>introduciendo monedas</strong> hasta llegar al precio; una moneda no aceptada se devuelve.
+        </li>
+        <li>Al llegar al precio, si se puede dar el <strong>cambio exacto</strong> con las monedas del cajón (incluidas
+            las que se acaban de introducir), se entrega el producto y el cambio; si no, se <strong>devuelve todo el
+                dinero</strong> ("No hay cambio suficiente").
+        </li>
+        <li><em>Cancelar</em> devuelve lo introducido. En las pantallas de entrega y de devolución hay que pulsar
+            <em>Recoger</em>.
+        </li>
+        <li><strong>Mantenimiento</strong>: con la clave <code>2468</code> se entra en un panel que muestra existencias
+            y monedas y permite <strong>reponer</strong> (5 unidades de cada producto y 5 monedas de cada tipo).
+        </li>
+        <li>Si el campo oculto llega manipulado, la máquina se <strong>reinicia</strong>.
+        </li>
+    </ul>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Nueve. <em>Elegir</em> y <em>Moneda</em> llevan un dato (qué producto,
+            qué moneda): van en el valor del botón, <code>accion=elegir:cafe</code>, <code>accion=moneda:200</code>.
+        </li>
+        <li><strong>Estados.</strong> Siete: esperando selección, esperando el pago, producto entregado, dinero
+            devuelto, pidiendo la clave y mantenimiento (más ST0). "Entregado" y "devuelto" son estados distintos porque
+            muestran cosas distintas, aunque desde los dos solo se pueda <em>Recoger</em>.
+        </li>
+        <li><strong>Variables de estado.</strong> La máquina entera en JSON: existencias, monedas del cajón, producto
+            elegido y monedas introducidas.
+        </li>
+        <li><strong>Predicados.</strong> El más interesante es <strong>PL5: se puede dar el cambio</strong>. No basta
+            con restar: hay que <strong>buscar</strong> una combinación con las monedas que hay. Coger siempre la moneda
+            más grande no funciona con monedas limitadas (60 céntimos con una de 50 y tres de 20: tras la de 50 faltan
+            10 y no hay; con tres de 20 sí sale), así que la búsqueda retrocede si no encuentra.
+        </li>
+        <li><strong>PL0 en todas las transiciones</strong> (menos T1): si el JSON no es coherente (faltan productos,
+            cantidades negativas, monedas que no existen), la máquina se reinicia.
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <p>La caja discontinua "ST3, ST4" representa los dos estados: <em>Recoger</em> hace lo mismo en los dos. La flecha
+        "cualquiera, !PL0" desde STx resume el primer camino de todas las transiciones T2–T9.</p>
+    <figure><svg viewBox="0 0 700 560" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="n7" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="60" cy="70" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="60" y="75"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="60" y="115"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="60" cy="240" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="245"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text><text x="60" y="285"
+                text-anchor="middle" font-size="11" fill="#333">Carga</text>
+            <circle cx="230" cy="240" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="230" y="245"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text><text x="196" y="278" text-anchor="end"
+                font-size="11" fill="#333">Esperando</text><text x="196" y="291" text-anchor="end" font-size="11"
+                fill="#333">selección</text>
+            <circle cx="460" cy="240" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="460" y="245"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text><text x="494" y="278"
+                text-anchor="start" font-size="11" fill="#333">Esperando</text><text x="494" y="291" text-anchor="start"
+                font-size="11" fill="#333">el pago</text>
+            <circle cx="640" cy="100" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="105"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text><text x="640" y="145"
+                text-anchor="middle" font-size="11" fill="#333">Producto</text><text x="640" y="158"
+                text-anchor="middle" font-size="11" fill="#333">entregado</text>
+            <circle cx="640" cy="380" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="385"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text><text x="640" y="425"
+                text-anchor="middle" font-size="11" fill="#333">Dinero</text><text x="640" y="438" text-anchor="middle"
+                font-size="11" fill="#333">devuelto</text>
+            <circle cx="230" cy="460" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="230" y="465"
+                text-anchor="middle" font-weight="bold" font-size="14">ST5</text><text x="264" y="498"
+                text-anchor="start" font-size="11" fill="#333">Pidiendo</text><text x="264" y="511" text-anchor="start"
+                font-size="11" fill="#333">la clave</text>
+            <circle cx="60" cy="460" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="465"
+                text-anchor="middle" font-weight="bold" font-size="14">ST6</text><text x="96" y="434"
+                text-anchor="start" font-size="11" fill="#333">Mantenimiento</text>
+            <path d="M60.0,101.0 Q60.0,155.0 60.0,207.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="70" y="150" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Carga</tspan>
+            </text><text x="70" y="163" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#555555" font-style="italic">(se enciende)</tspan>
+            </text>
+            <path d="M87.3,84.7 Q170.5,129.5 214.4,210.9" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="160" y="110" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">cualquiera</tspan>
+                <tspan fill="#111111">!PL0</tspan>
+            </text><text x="160" y="123" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M91.0,240.0 Q145.0,240.0 197.0,240.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="145" y="228" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T1</tspan>
+                <tspan fill="#2e7d32">AC0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M217.0,213.0 C160.3,142.3 299.7,142.3 244.4,210.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="280" y="105" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Elegir</tspan>
+            </text><text x="280" y="118" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL1 || !PL2</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M261.0,240.0 Q345.0,240.0 427.0,240.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="345" y="228" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Elegir</tspan>
+                <tspan fill="#111111">PL1 &amp;&amp; PL2</tspan>
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M431.6,252.5 Q345.0,290.6 260.2,253.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="345" y="300" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cancelar</tspan>
+                <tspan fill="#111111">!PL6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M447.0,213.0 C390.3,142.3 529.7,142.3 474.4,210.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="440" y="60" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Moneda</tspan>
+            </text><text x="440" y="73" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL3</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text><text x="440" y="86" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL3 &amp;&amp; !PL4</tspan>
+                <tspan fill="#2e7d32">AC4</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M484.5,221.0 Q550.0,170.0 614.0,120.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="565" y="185" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Moneda</tspan>
+            </text><text x="565" y="198" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL4 &amp;&amp; PL5</tspan>
+            </text><text x="565" y="211" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC4, AC5</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M484.5,259.0 Q550.0,310.0 614.0,359.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="585" y="268" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Moneda</tspan>
+            </text><text x="585" y="281" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL4 &amp;&amp; !PL5</tspan>
+            </text><text x="585" y="294" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC4, AC6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text><text x="585" y="307" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cancelar</tspan>
+                <tspan fill="#111111">PL6</tspan>
+            </text><text x="585" y="320" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text>
+            <rect x="560" y="480" width="130" height="34" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="625.0" y="501.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST3, ST4</text>
+            <path d="M560,500 Q420,470 260,252" fill="none" stroke="#3a5f9f" stroke-width="2" marker-end="url(#n7)" />
+            <text x="420" y="445" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Recoger</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M221.1,269.7 Q197.0,350.0 220.5,428.4" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="192" y="398" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Mantenim.</tspan>
+            </text><text x="192" y="411" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M238.9,430.3 Q263.0,350.0 239.5,271.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="272" y="405" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Clave</tspan>
+                <tspan fill="#111111">!PL7</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text><text x="272" y="418" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T9</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Volver</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M199.0,460.0 Q145.0,460.0 93.0,460.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="145" y="482" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Clave</tspan>
+                <tspan fill="#111111">PL7</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M73.0,487.0 C129.7,557.7 -9.7,557.7 45.6,489.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="110" y="540" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Reponer</tspan>
+                <tspan fill="#2e7d32">AC8</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M73.8,432.2 Q123.0,333.0 205.1,261.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n7)" /><text x="130" y="330" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T9</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cerrar</tspan>
+            </text><text x="130" y="343" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+        </svg>
+        <figcaption>Figura 1. Diagrama de la máquina expendedora</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>se enciende la máquina (página sin parámetros)</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Elegir</td>
+                <td>un botón de producto (<code>elegir:codigo</code>)</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Moneda</td>
+                <td>un botón de moneda (<code>moneda:valor</code>)</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE3</td>
+                <td>Cancelar</td>
+                <td>en el pago: devolver; en la clave: volver</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE4</td>
+                <td>Recoger</td>
+                <td>recoger el producto o el dinero</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE5</td>
+                <td>Mantenimiento</td>
+                <td>ir a pedir la clave</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE6</td>
+                <td>Clave</td>
+                <td>enviar la clave</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE7, EE8</td>
+                <td>Reponer, Cerrar</td>
+                <td>botones del panel</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>seleccion</td>
+                <td>productos (los agotados marcados) y un aviso si lo hay</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>pago</td>
+                <td>precio, crédito, lo que falta, botones de monedas</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>entregado</td>
+                <td>"Recoja su ..." y el cambio</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>devuelto</td>
+                <td>motivo y monedas devueltas</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>pedirClave</td>
+                <td></td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES5</td>
+                <td>panel</td>
+                <td>existencias y monedas del cajón</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estados</td>
+                <td>ST0–ST6</td>
+                <td>—</td>
+                <td>Carga, EsperandoSeleccion, EsperandoPago, Entregado, Devuelto, PidiendoClave, Mantenimiento</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td></td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE1</td>
+                <td><code>$m</code></td>
+                <td>JSON: existencias, cajón, producto, crédito</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE2</td>
+                <td>bandeja</td>
+                <td>monedas o producto que recoge el cliente (no viaja)</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>máquina coherente</td>
+                <td>el JSON tiene la forma y los valores esperados</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>el producto existe</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>hay existencias</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>moneda aceptada</td>
+                <td>5, 10, 20, 50, 100 o 200</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>llega al precio</td>
+                <td>crédito + moneda ≥ precio</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>hay cambio</td>
+                <td><code>buscarCambio(crédito − precio, cajón + crédito) !== null</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>hay crédito</td>
+                <td>se ha introducido alguna moneda</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL7</td>
+                <td>clave correcta</td>
+                <td><code>hash_equals('2468', clave)</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>máquina nueva</td>
+                <td>existencias y cajón iniciales</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>recuperar la máquina</td>
+                <td>decodificar y comprobar (PL0)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>leer el dato</td>
+                <td>producto o moneda del valor del botón</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td>elegir</td>
+                <td>producto = elegido; crédito vacío</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td>añadir la moneda</td>
+                <td>al crédito</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>cobrar</td>
+                <td>monedas al cajón, sacar el cambio, existencias − 1</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>devolver</td>
+                <td>el crédito a la bandeja</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC7</td>
+                <td>vaciar la bandeja</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC8</td>
+                <td>reponer</td>
+                <td>5 de cada producto y 5 de cada moneda</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC9</td>
+                <td>guardar</td>
+                <td>la máquina en el campo oculto (en todas las respuestas)</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga</th>
+                <th>Elegir</th>
+                <th>Moneda</th>
+                <th>Cancelar</th>
+                <th>Recoger</th>
+                <th>Manten.</th>
+                <th>Clave</th>
+                <th>Reponer</th>
+                <th>Cerrar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T6</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>T3</td>
+                <td>T4</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST5</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T9</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T7</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST6</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T8</td>
+                <td>T9</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>AC0</td>
+                <td>ES0 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T2–T9</td>
+                <td>AC1</td>
+                <td><code>!PL0</code></td>
+                <td>ST1</td>
+                <td>AC0</td>
+                <td>ES0 "se ha reiniciado" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; !PL1</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0 "no existe" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; !PL2</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0 "agotado" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></td>
+                <td>ST2</td>
+                <td>AC3</td>
+                <td>ES1 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; !PL3</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES1 "moneda no aceptada" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL3 &amp;&amp; !PL4</code></td>
+                <td>ST2</td>
+                <td>AC4</td>
+                <td>ES1 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; PL5</code></td>
+                <td>ST3</td>
+                <td>AC4, AC5</td>
+                <td>ES2 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; !PL5</code></td>
+                <td>ST4</td>
+                <td>AC4, AC6</td>
+                <td>ES3 "no hay cambio" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC1</td>
+                <td><code>PL0 &amp;&amp; PL6</code></td>
+                <td>ST4</td>
+                <td>AC6</td>
+                <td>ES3 "cancelada" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC1</td>
+                <td><code>PL0 &amp;&amp; !PL6</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>PL0</code></td>
+                <td>ST1</td>
+                <td>AC7</td>
+                <td>ES0 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1</td>
+                <td><code>PL0</code></td>
+                <td>ST5</td>
+                <td>---</td>
+                <td>ES4 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1</td>
+                <td><code>PL0 &amp;&amp; PL7</code></td>
+                <td>ST6</td>
+                <td>---</td>
+                <td>ES5 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1</td>
+                <td><code>PL0 &amp;&amp; !PL7</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0 "clave incorrecta" [AC9]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>AC1</td>
+                <td><code>PL0</code></td>
+                <td>ST6</td>
+                <td>AC8</td>
+                <td>ES5 [AC9]</td>
+            </tr>
+            <tr>
+                <td>T9</td>
+                <td>AC1</td>
+                <td><code>PL0</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0 [AC9]</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados (T3, con PL0 cierto)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>PL3</th>
+                <th>PL4</th>
+                <th>PL5</th>
+                <th>moneda no aceptada</th>
+                <th>falta dinero</th>
+                <th>entregar</th>
+                <th>devolver</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>PL5 solo se calcula si PL4 es cierto (si no se llega al precio no hay cambio que dar).</p>
+    <h2>5.- Del autómata al código</h2>
+    <p>Fragmento de <code>solucion/index.php</code>. Observa que PL3 y PL4 se calculan <strong>antes</strong> de cambiar
+        nada, y que AC4 (añadir la moneda) se hace en tres de los cuatro caminos:</p>
+    <pre><code>case 3:                                                // ---- T3 (ST2, Moneda)
+    $moneda = filter_var($dato, FILTER_VALIDATE_INT);  // AC2: leer la moneda
+    $precio = PRODUCTOS[$m['producto']][1];
+    $pl3 = in_array($moneda, MONEDAS, true);           // PL3: moneda aceptada
+    $creditoTotal = array_sum($m['credito']) + ($pl3 ? $moneda : 0);
+    $pl4 = $pl3 &amp;&amp; $creditoTotal &gt;= $precio;           // PL4: llega al precio
+    if (!$pl3) {                                       // PL0 &amp;&amp; !PL3
+        $estado = ST2;
+        es1($m, 'Moneda no aceptada: se la devolvemos.');
+    } elseif (!$pl4) {                                 // PL0 &amp;&amp; PL3 &amp;&amp; !PL4
+        $estado = ST2;
+        $m['credito'][] = $moneda;                     // AC4
+        es1($m);
+    } else {
+        $m['credito'][] = $moneda;                     // AC4
+        $cajon = $m['cajon'];                          // las monedas introducidas también sirven para el cambio
+        foreach ($m['credito'] as $c) {
+            $cajon[$c]++;
+        }
+        $cambio = buscarCambio($creditoTotal - $precio, $cajon);
+        if ($cambio !== null) {                        // PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; PL5
+            $estado = ST3;
+            // AC5: cobrar, entregar y dar el cambio (ver el fichero)
+            es2($m);
+        } else {                                       // PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; !PL5
+            $estado = ST4;
+            $m['bandeja'] = $m['credito'];             // AC6: devolver el crédito
+            $m['producto'] = null;
+            $m['credito'] = [];
+            es3($m, 'No hay cambio suficiente');
+        }
+    }
+    break;</code></pre>
+    <p>La búsqueda del cambio (PL5), recursiva y con vuelta atrás:</p>
+    <pre><code>function buscarCambio(int $cambio, array $disponibles, int $desde = 0): ?array
+{
+    if ($cambio === 0) {
+        return [];
+    }
+    for ($i = $desde; $i &lt; count(MONEDAS); $i++) {
+        $moneda = MONEDAS[$i];
+        if ($moneda &lt;= $cambio &amp;&amp; $disponibles[$moneda] &gt; 0) {
+            $disponibles[$moneda]--;
+            $resto = buscarCambio($cambio - $moneda, $disponibles, $i);
+            if ($resto !== null) {
+                return [$moneda, ...$resto];
+            }
+            $disponibles[$moneda]++;
+        }
+    }
+    return null;
+}
+// buscarCambio(60, [200 =&gt; 0, 100 =&gt; 0, 50 =&gt; 1, 20 =&gt; 3, 10 =&gt; 0, 5 =&gt; 0])  -&gt;  [20, 20, 20]</code></pre>
+    <h2>6.- Pruebas</h2>
+    <p>30 peticiones; algunos caminos:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>zumo; "pizza"</td>
+                <td>T2 <code>!PL2</code>; T2 <code>!PL1</code></td>
+                <td>"agotado"; "no existe"</td>
+            </tr>
+            <tr>
+                <td>café, 3 céntimos, 1 €, 20 céntimos</td>
+                <td>T2, T3 <code>!PL3</code>, <code>!PL4</code>, entregar</td>
+                <td>cambio 0,10 €</td>
+            </tr>
+            <tr>
+                <td>máquina nueva, agua con 2 €</td>
+                <td>T3 <code>!PL5</code></td>
+                <td>1,20 € de cambio imposible (el cajón solo suma 1,00 €): se devuelven los 2 €</td>
+            </tr>
+            <tr>
+                <td>agua, 50 céntimos, Cancelar</td>
+                <td>T4 <code>PL6</code></td>
+                <td>devuelve 0,50 €</td>
+            </tr>
+            <tr>
+                <td>bocadillo, Cancelar</td>
+                <td>T4 <code>!PL6</code></td>
+                <td>vuelve a la selección</td>
+            </tr>
+            <tr>
+                <td>clave 0000; clave 2468; Reponer; Cerrar</td>
+                <td>T7 <code>!PL7</code>, T7 <code>PL7</code>, T8, T9</td>
+                <td>aviso; panel; zumo con 5 unidades</td>
+            </tr>
+            <tr>
+                <td>zumo con 2 € tras reponer</td>
+                <td>entregar</td>
+                <td>cambio de 0,50 €</td>
+            </tr>
+            <tr>
+                <td>JSON de la máquina cambiado</td>
+                <td><code>!PL0</code></td>
+                <td>"se ha reiniciado"</td>
+            </tr>
+            <tr>
+                <td>Moneda en ST3</td>
+                <td><code>---</code> → T1</td>
+                <td>selección</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade <strong>"Elegir otro producto"</strong> mientras se paga, conservando el crédito. ¿Qué celda de la
+            tabla deja de ser <code>---</code>? ¿Qué pasa si el crédito ya supera el precio del nuevo producto?
+        </li>
+        <li>Muestra en la selección qué productos <strong>no se podrían pagar con una moneda de 2 €</strong> por falta
+            de cambio. ¿Es un predicado nuevo, una acción o parte de un evento saliente?
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

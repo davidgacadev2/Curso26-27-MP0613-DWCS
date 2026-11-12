@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario mensual con festivos (TAREA-02, nivel básico): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="calendario-mensual-con-festivos-tarea-02-nivel-basico-como-se-llega-a-la-solucion-paso-a-paso">Calendario
+    mensual con festivos (TAREA-02, nivel básico): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-el-formulario-la-validacion-y-los-festivos">3.2.- Paso 2: el formulario, la validación
+              y los festivos</a></li>
+          <li><a href="#33-paso-3-los-dias-del-mes-y-la-tabla">3.3.- Paso 3: los días del mes y la tabla</a></li>
+          <li><a href="#34-paso-4-solucion-completa-navegacion-y-resumen">3.4.- Paso 4 (solución completa): navegación y
+              resumen</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-BASICA-Calendario/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-BASICA-Calendario/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-BASICA-Calendario/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-BASICA-Calendario/SOLUCION%20PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p>En la secretaría del instituto necesitan saber rápidamente cuántos días lectivos tiene cada mes y qué festivos
+      caen en él. <strong>Carlos</strong> se ofrece a hacer una página en PHP que muestre el calendario de cualquier
+      mes. "Es una
+      tabla de siete columnas, en una tarde está", le dice a <strong>María</strong>. Ella coge un calendario de papel y
+      le pregunta:
+      "¿Cuántas celdas vacías hay antes del 1 de mayo de 2027? ¿Y cuántas filas tiene febrero de ese año?". Carlos no
+      lo sabe. "Pues eso es lo que tiene que calcular tu programa", sonríe María, "y tienes que saber la respuesta
+      <strong>antes</strong> de programarlo, o no sabrás si está bien".
+    </p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;SOLUCION PASO A PASO/paso2&quot; &quot;SOLUCION PASO A PASO/paso3&quot;
+</code></pre>
+  <p>(desde la carpeta <code>TAREA-02-BASICA-Calendario</code>; en VS Code: seleccionar los dos ficheros, botón derecho,
+    <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 10 requisitos (R1…R10) que <a
+      href="DOCUMENTACION/TAREA-02-BASICA-Calendario/Requisitos.md">Requisitos.md</a>
+    convierte en 10 requisitos funcionales comprobables. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Pedir el mes</td>
+          <td>R1, R2, R3 · RF-01…RF-05</td>
+          <td>Formulario GET con <code>&lt;select&gt;</code> de meses y año; sin parámetros, el mes actual; validar
+            <strong>en el servidor</strong> y mostrar <strong>todos</strong> los errores; formulario pegajoso.</td>
+        </tr>
+        <tr>
+          <td>Dibujar el calendario</td>
+          <td>R4, R5, R6 · RF-06, RF-07</td>
+          <td>Tabla que empieza en lunes, con celdas vacías al principio y al final; días del mes calculados <strong>a
+              mano</strong>; clases para fin de semana, festivo y hoy.</td>
+        </tr>
+        <tr>
+          <td>Festivos y resumen</td>
+          <td>R7, R9 · RF-08, RF-10</td>
+          <td>Un array <code>'mm-dd' =&gt; nombre</code> en un fichero que hace <code>return</code>; contar laborables y
+            listar los festivos del mes.</td>
+        </tr>
+        <tr>
+          <td>Navegar</td>
+          <td>R8 · RF-09</td>
+          <td>Enlaces al mes anterior y al siguiente, con cambio de año y sin salir de 1900–2100.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son tres: <strong>prohibido <code>date('t')</code> y
+      <code>cal_days_in_month()</code></strong> (RNF-04: hay que escribir <code>esBisiesto()</code> y
+    <code>diasEnMes()</code>), <strong>funciones que reciben
+      parámetros y devuelven valores, sin <code>global</code></strong> (RNF-07: también las que generan HTML, que lo
+    devuelven como cadena) y
+    <strong>ningún aviso de PHP con ninguna entrada</strong> (RNF-12), incluidas las URL escritas a mano.
+  </p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <p>Al leer con calma aparecen preguntas. Conviene escribir la respuesta <strong>antes</strong> de programar:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Qué pasa si llega solo uno de los dos datos (<code>?mes=5</code>)?</td>
+          <td>Si llega alguno, los dos son obligatorios (RF-04): sale el error del año.</td>
+        </tr>
+        <tr>
+          <td>¿Qué muestra el formulario si el mes enviado no vale (<code>mes=13</code>)?</td>
+          <td>El año se devuelve tal como llegó; el mes no se puede seleccionar (no existe la opción 13) y el
+            desplegable queda en el primero.</td>
+        </tr>
+        <tr>
+          <td>¿Un festivo que cae en domingo cuenta?</td>
+          <td>Se marca con las dos clases (<code>finde festivo</code>); para los laborables da igual: ya no lo era por
+            ser domingo.</td>
+        </tr>
+        <tr>
+          <td>En los límites, ¿enlace deshabilitado u oculto?</td>
+          <td>Oculto: en enero de 1900 no hay enlace al mes anterior y en diciembre de 2100, al siguiente.</td>
+        </tr>
+        <tr>
+          <td>¿Qué es "hoy"?</td>
+          <td>La fecha del <strong>servidor</strong> (<code>date('Y-n-j')</code>), con su zona horaria.</td>
+        </tr>
+        <tr>
+          <td>¿Y los festivos móviles (Semana Santa)?</td>
+          <td>Fuera de alcance: son una ampliación opcional.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). Así quien
+      corrija sabrá que no es un olvido, y tú no cambiarás de criterio a mitad de la tarea.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son ejemplos concretos de entrada y salida. Escríbelos en
+    una tabla
+    antes de programar, comprobando las respuestas con un calendario de papel: serán las pruebas de cada paso. Los
+    casos 7 y 8 no están en los requisitos; se añaden porque son los <strong>límites</strong> del algoritmo de la tabla.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><code>index.php</code> sin parámetros</td>
+          <td>Mes actual, con hoy resaltado y ese mes y año en el formulario</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><code>?mes=13&amp;anio=hola</code></td>
+          <td>Dos errores (mes y año) y ningún calendario</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><code>?mes=5</code></td>
+          <td>"El campo «Año» es obligatorio."</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><code>?mes=5&amp;anio=1899</code></td>
+          <td>Error del año: "debe ser un número entero entre 1900 y 2100"</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Mayo de 2027</td>
+          <td>Empieza en sábado (5 celdas vacías); 31 días, 20 laborables; festivos el 1 y el 17, con <em>Día das Letras
+              Galegas</em> al pasar el ratón</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Febrero de 2024 / febrero de 2100</td>
+          <td>29 días / 28 días (2100 es divisible por 100 y no por 400)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Febrero de 2027</td>
+          <td>Empieza en lunes y tiene 28 días: <strong>4 filas exactas</strong>, sin ninguna celda vacía</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Agosto de 2027</td>
+          <td>Empieza en domingo: 6 celdas vacías antes del día 1</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Diciembre de 2026 / enero de 1900</td>
+          <td>Enlace siguiente a <em>Enero 2027</em> / ningún enlace al mes anterior</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Marzo de 2027</td>
+          <td>"Este mes no tiene festivos de fecha fija."</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td><code>?mes=5&amp;anio=&lt;b&gt;hola&lt;/b&gt;</code></td>
+          <td>Error del año y, en el código fuente (Ctrl+U), el valor del campo escapado:
+            <code>&amp;lt;b&amp;gt;hola&amp;lt;/b&amp;gt;</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>En esta tarea <strong>no hay estado que conservar</strong>: cada petición trae en la URL todo lo que necesita
+    (<code>?mes=5&amp;anio=2027</code>).
+    HTTP no tiene estado, pero aquí no importa, porque cada página es independiente de la anterior; por eso los
+    enlaces de navegación son simples <code>&lt;a href&gt;</code> y cualquier mes se puede guardar en marcadores.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mes y año pedidos</td>
+          <td>int (o <code>null</code> si no valen)</td>
+          <td><code>$_GET</code>, o <code>date('n')</code> y <code>date('Y')</code></td>
+          <td>Lo único que entra</td>
+        </tr>
+        <tr>
+          <td>Errores</td>
+          <td>array de strings</td>
+          <td>variable <code>$errores</code></td>
+          <td>Hay que mostrar <strong>todos</strong> (R2)</td>
+        </tr>
+        <tr>
+          <td>Festivos</td>
+          <td>array <code>'mm-dd' =&gt; nombre</code></td>
+          <td><code>festivos.php</code> (<code>return [...]</code>)</td>
+          <td>Datos fijos, separados del código (R7)</td>
+        </tr>
+        <tr>
+          <td>Límites, nombres de meses y días</td>
+          <td>constantes</td>
+          <td><code>funciones.php</code></td>
+          <td>Valores fijos con nombre (RNF-08)</td>
+        </tr>
+        <tr>
+          <td>Días del mes, día 1, laborables, festivos del mes</td>
+          <td>—</td>
+          <td><strong>se calculan</strong></td>
+          <td>Dependen solo de mes y año</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La clave <code>'mm-dd'</code> <strong>no lleva año</strong>: así el mismo array vale para cualquier año, que es lo
+    que define un festivo de
+    fecha fija. Y con ceros a la izquierda (<code>'05-07'</code>, no <code>'5-7'</code>), que es lo que construye
+    <code>sprintf('%02d-%02d', ...)</code>.</p>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Un fichero que hace <code>return</code>.</strong> <code>festivos.php</code> no crea ninguna variable:
+      devuelve el array, y quien lo carga
+      elige el nombre (<code>$festivos = require 'festivos.php';</code>). Así no aparecen variables "escondidas" que
+      vienen de un
+      <code>include</code> y nadie sabe de dónde salen, y las funciones que lo necesitan lo reciben <strong>como
+        parámetro</strong>, sin <code>global</code>.
+    </p>
+  </div>
+
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Cuatro ficheros con una responsabilidad cada uno: <code>festivos.php</code> (datos), <code>funciones.php</code>
+    (constantes y lógica),
+    <code>index.php</code> (decide qué hacer y muestra la página) y <code>estilos.css</code>. <code>index.php</code>
+    sigue la estructura de siempre de
+    los apuntes:
+  </p>
+  <pre><code class="language-text">1. Inicializar          -&gt; require_once funciones.php, cargar festivos, $errores vacío
+2. Recibir y validar    -&gt; ¿llegan mes o año? validarlos; si no, el mes actual
+3. Preparar el formulario -&gt; valores del formulario pegajoso
+4. Mostrar la página    -&gt; formulario; si hay errores, la lista; si no, navegación + calendario + resumen
+</code></pre>
+  <p>En la solución, los cálculos de la navegación y del resumen (la fase de <em>procesar</em>) se hacen dentro del
+    <code>else</code> de
+    la vista, justo antes de escribirlos. Como son llamadas a funciones que devuelven valores, la vista sigue siendo
+    fácil de leer; aun así, se podrían calcular antes del <code>&lt;!DOCTYPE html&gt;</code> (apartado 5).</p>
+  <p>Cada cálculo es una función pequeña con un verbo (o una pregunta) en el nombre, que <strong>recibe</strong> lo que
+    necesita y
+    <strong>devuelve</strong> un resultado:
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>validarEntero()</code></td>
+          <td>¿Es un entero del rango? Devuelve el entero o <code>null</code> y apunta el error</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>esBisiesto()</code> / <code>diasEnMes()</code></td>
+          <td>Regla del bisiesto / días del mes con <code>switch</code></td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>primerDiaSemana()</code></td>
+          <td>Día de la semana del día 1 (1 = lunes … 7 = domingo)</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>claveFestivo()</code></td>
+          <td>La clave <code>'mm-dd'</code> de un día</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>generarCalendario()</code></td>
+          <td>El HTML de la tabla, como cadena</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>mesAnterior()</code> / <code>mesSiguiente()</code></td>
+          <td><code>[mes, año]</code> de destino, con cambio de año</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>festivosDelMes()</code> / <code>contarLaborables()</code></td>
+          <td>Festivos del mes ordenados / lunes a viernes no festivos</td>
+          <td>4</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Fíjate en
+      <code>validarEntero(?string $valor, int $min, int $max, string $campo, array &amp;$errores): ?int</code>. Devuelve
+      el número, y el error lo <strong>añade</strong> al array que recibe por referencia (<code>&amp;$errores</code>).
+      Así, llamándola dos veces
+      (mes y año), se acumulan todos los errores, que es lo que pide R2. La firma documenta las dos salidas: el valor de
+      retorno y el parámetro que se modifica.</p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>No hay estado guardado, pero la página sí tiene tres "pantallas", y lo que llega en la URL decide cuál se muestra
+    (<em>evento [condición] / acción</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cualquiera</td>
+          <td>abrir la página o pulsar <em>Hoy</em> [sin <code>mes</code> ni <code>anio</code>]</td>
+          <td>mes y año actuales</td>
+          <td>Calendario</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Mostrar</em> o enlace de navegación [mes y año válidos]</td>
+          <td>calcular y dibujar</td>
+          <td>Calendario</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Mostrar</em> o URL a mano [falta uno o alguno no vale]</td>
+          <td>lista con todos los errores</td>
+          <td>Errores (sin calendario)</td>
+        </tr>
+        <tr>
+          <td>Calendario</td>
+          <td><em>« anterior</em> [año de destino ≥ 1900]</td>
+          <td>mes anterior (de enero, a diciembre del año anterior)</td>
+          <td>Calendario</td>
+        </tr>
+        <tr>
+          <td>Calendario</td>
+          <td><em>siguiente »</em> [año de destino ≤ 2100]</td>
+          <td>mes siguiente (de diciembre, a enero del año siguiente)</td>
+          <td>Calendario</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Las dos últimas filas tienen condición porque el enlace <strong>solo se escribe</strong> si la cumple. La tercera
+    es la que
+    obliga a que el calendario y el resumen vayan dentro de un <code>else</code>: con errores, <code>$mes</code> o
+    <code>$anio</code> valen <code>null</code> y no
+    se puede calcular nada.</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> de <code>SOLUCION PASO A PASO</code> es la aplicación completa al terminar ese
+    paso, y todas se ejecutan.
+    El orden no es casual: primero lo que <strong>entra</strong> (sin datos válidos no se puede calcular nada), después
+    lo que se
+    <strong>ve</strong> (la tabla) y al final lo que se apoya en todo lo anterior.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs en los tres ficheros PHP</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Constantes, festivos, formulario, lectura y validación</td>
+          <td>R1, R2, R3, R7</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Bisiestos, días del mes y la tabla del calendario</td>
+          <td>R4, R5, R6</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td><strong>Solución completa:</strong> navegación entre meses y resumen</td>
+          <td>R8, R9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> El HTML de esta tarea es pequeño (un formulario y una tabla que se genera
+    entera), así que
+    no hay un paso de maqueta aparte: el paso 1 ya reparte el trabajo entre los ficheros. En <code>index.php</code>, un
+    TODO por
+    cada parte de la estructura de los apuntes; en <code>funciones.php</code>, la <strong>firma</strong> de cada función
+    con lo que recibe y lo
+    que devuelve:</p>
+  <pre><code class="language-php">// Función auxiliar TODO: validarEntero(?string $valor, int $min, int $max, string $campo, array &amp;$errores): ?int
+//      devuelve el entero o null, añadiendo el mensaje de error a $errores (paso POR REFERENCIA)
+</code></pre>
+  <p>Y en <code>festivos.php</code>, el formato de los datos:
+    <code>// TODO: return [ '01-01' =&gt; 'Año Nuevo', ... ];</code>.</p>
+  <p><strong>Decisión clave.</strong> Ya en el paso 1, <code>funciones.php</code> lleva un comentario que explica por
+    qué <strong>no se cierra</strong> la
+    etiqueta <code>?&gt;</code>: un fichero que solo tiene PHP no debe enviar al navegador espacios o saltos de línea
+    accidentales.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título <em>Calendario mensual</em> y nada más, pero <strong>no hay errores de
+        PHP</strong>. Con la extensión
+      <em>Todo Tree</em> de VS Code verás la lista de lo que queda por hacer. A partir de ahora, cada TODO que se
+      programa se
+      borra.
+    </p>
+  </div>
+
+  <h3 id="32-paso-2-el-formulario-la-validacion-y-los-festivos">3.2.- Paso 2: el formulario, la validación y los
+    festivos</h3>
+  <p><strong>Objetivo.</strong> Formulario GET con el mes actual por defecto, validación en el servidor con todos los
+    errores y
+    formulario pegajoso (R1, R2, R3). También se rellenan los datos: constantes y <code>festivos.php</code> (R7).</p>
+  <p><strong>Por qué ahora.</strong> Todo lo demás necesita un mes y un año <strong>enteros y válidos</strong>. Además,
+    el <code>&lt;select&gt;</code> necesita
+    <code>NOMBRES_MESES</code>, así que las constantes se escriben ya. Los TODO que quedan pasan a llevar el paso en que
+    se harán:
+    <code>// TODO (paso 3): function esBisiesto(int $anio): bool</code>.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Si llega <code>mes</code> <strong>o</strong> <code>anio</code>, se validan los dos; si no llega ninguno, se usa
+      el mes actual. El <code>?? null</code> evita
+      el aviso <em>Undefined array key</em> cuando falta uno:</li>
+  </ul>
+  <pre><code class="language-php">if (isset($_GET['mes']) || isset($_GET['anio'])) {
+    $mes  = validarEntero($_GET['mes'] ?? null, 1, 12, 'Mes', $errores);
+    $anio = validarEntero($_GET['anio'] ?? null, ANIO_MIN, ANIO_MAX, 'Año', $errores);
+} else {
+</code></pre>
+  <ul>
+    <li><code>validarEntero()</code> hace <code>trim()</code>, distingue <strong>vacío</strong> ("El campo «Año» es
+      obligatorio.") de <strong>no válido</strong> ("…debe
+      ser un número entero entre 1900 y 2100.") y usa <code>filter_var()</code> con <code>FILTER_VALIDATE_INT</code> y
+      <code>min_range</code>/<code>max_range</code>: una sola llamada comprueba que es un entero y que está en el rango.
+      <code>'hola'</code>, <code>'5.5'</code> y
+      <code>'13'</code> dan <code>false</code>.
+    </li>
+    <li><code>NOMBRES_MESES</code> empieza con <code>1 =&gt; 'Enero'</code>, y las demás claves siguen en 2, 3… Así
+      <code>NOMBRES_MESES[$mes]</code> funciona
+      directamente con el número del mes.</li>
+    <li>El formulario pegajoso usa los valores válidos o, si no lo eran, lo que llegó:
+      <code>$anioFormulario = $anio ?? ($_GET['anio'] ?? '');</code>, que se escribe con
+      <code>htmlspecialchars()</code>. También
+      <code>$_SERVER['PHP_SELF']</code> pasa por <code>htmlspecialchars()</code> en el <code>action</code> y en el
+      enlace <em>Hoy</em>.
+    </li>
+    <li>Si hay errores se muestran todos en una lista; si no, de momento no se dibuja nada: el <code>else</code> solo
+      tiene los TODO
+      de los pasos 3 y 4.</li>
+  </ul>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Fiarse de <code>min="1900" max="2100"</code> del <code>&lt;input type="number"&gt;</code>. Eso solo lo comprueba
+      el navegador; escribiendo la
+      URL a mano (<code>?mes=13&amp;anio=hola</code>) llega cualquier cosa. La validación del navegador es una ayuda
+      para el usuario,
+      no una medida de seguridad: el servidor tiene que validar <strong>siempre</strong> (RNF-10).</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 2, 3, 4 y 11. Con <code>?mes=13&amp;anio=hola</code> deben salir <strong>dos</strong> errores, no uno. Con
+      <code>?mes=5&amp;anio=2027</code> no sale
+      ningún error y tampoco calendario (todavía no existe), pero el desplegable muestra <em>Mayo</em> y el año
+      <em>2027</em>. Pon un
+      punto de ruptura en <code>validarEntero()</code> y mira cómo crece <code>$errores</code> en la segunda llamada.
+    </p>
+  </div>
+
+  <h3 id="33-paso-3-los-dias-del-mes-y-la-tabla">3.3.- Paso 3: los días del mes y la tabla</h3>
+  <p><strong>Objetivo.</strong> Calcular los días del mes sin <code>date('t')</code> y dibujar la tabla que empieza en
+    lunes, con los
+    resaltados (R4, R5, R6).</p>
+  <p><strong>Por qué ahora.</strong> Con mes y año válidos ya se puede calcular. Es la parte con más trampas, y conviene
+    tenerla bien
+    probada antes de añadir el resumen, que reutiliza las mismas funciones.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>esBisiesto()</code>: <code>($anio % 4 == 0 &amp;&amp; $anio % 100 != 0) || $anio % 400 == 0</code>.</li>
+    <li><code>diasEnMes()</code> con <code>switch</code>: el caso 2 pregunta a <code>esBisiesto()</code>; los casos 4,
+      6, 9 y 11 van <strong>seguidos sin
+        <code>return</code> entre ellos</strong> (todos caen en el mismo <code>return 30;</code>); el
+      <code>default</code> devuelve 31.</li>
+    <li><code>primerDiaSemana()</code>: <code>date('N', mktime(0, 0, 0, $mes, 1, $anio))</code>, que da 1 para el lunes
+      y 7 para el domingo,
+      justo el orden de la tabla. Las celdas vacías iniciales son ese número menos 1.</li>
+    <li><code>generarCalendario()</code> en tres partes: celdas vacías iniciales, días del mes y celdas vacías finales.
+      La variable
+      <code>$columna</code> (0 = lunes … 6 = domingo) controla cuándo se cierra cada fila:
+    </li>
+  </ul>
+  <pre><code class="language-php">// Si llegamos al domingo cerramos la fila (y abrimos otra si quedan días)
+$columna++;
+if ($columna == 7) {
+    $html .= &quot;&lt;/tr&gt;\n&quot;;
+    if ($dia &lt; $totalDias) {
+        $html .= &quot;&lt;tr&gt;&quot;;
+    }
+    $columna = 0;
+}
+</code></pre>
+  <p>El <code>if ($dia &lt; $totalDias)</code> es el detalle fino: si el último día cae en domingo, no se abre una fila
+    que se quedaría
+    vacía; y como <code>$columna</code> vuelve a 0, tampoco se añaden celdas finales (<code>if ($columna != 0)</code>).
+    Es justo el caso 7.</p>
+  <ul>
+    <li>Los resaltados son una lista de clases que se unen con <code>implode(' ', $clases)</code>: <code>finde</code> si
+      <code>$columna &gt;= 5</code>,
+      <code>festivo</code> si <code>array_key_exists(claveFestivo($mes, $dia), $festivos)</code> y <code>hoy</code> si
+      <code>"{$anio}-{$mes}-{$dia}"</code> coincide
+      con <code>date('Y-n-j')</code>. Un día puede tener varias a la vez.
+    </li>
+    <li>El nombre del festivo va en <code>title='...'</code>, escapado con
+      <code>htmlspecialchars(..., ENT_QUOTES)</code>: el atributo usa
+      comillas simples, y un festivo con apóstrofo lo cerraría antes de tiempo.</li>
+  </ul>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Usar <code>date('w')</code> en lugar de <code>date('N')</code>: <code>'w'</code> da 0 para el
+      <strong>domingo</strong>, así que en los meses que empiezan en
+      domingo saldrían -1 celdas vacías (ninguna) y el día 1 aparecería en la columna del lunes. Otro clásico: comparar
+      la fecha de hoy con <code>date('Y-m-d')</code> (con ceros,
+      <code>2027-05-07</code>) contra una cadena construida con enteros (<code>2027-5-7</code>). Por eso la solución usa
+      <code>'Y-n-j'</code>, sin ceros.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 5, 6, 7 y 8. Mayo de 2027 debe tener 5 celdas vacías antes del día 1, febrero de 2027 exactamente cuatro
+      filas y agosto de 2027 seis celdas vacías. Pasa el ratón por el 17 de mayo. Como propone el enunciado, ejecuta
+      <code>generarCalendario()</code> paso a paso con Xdebug y vigila <code>$columna</code>: es la mejor forma de
+      entender cuándo se cierra
+      cada <code>&lt;tr&gt;</code>. Mira también el código fuente (Ctrl+U): el HTML de la tabla tiene que estar bien
+      anidado.
+    </p>
+  </div>
+
+  <h3 id="34-paso-4-solucion-completa-navegacion-y-resumen">3.4.- Paso 4 (solución completa): navegación y resumen</h3>
+  <p><strong>Objetivo.</strong> Enlaces al mes anterior y al siguiente (R8) y el resumen del mes (R9).</p>
+  <p><strong>Por qué al final.</strong> Son funciones que se apoyan en todo lo anterior: <code>contarLaborables()</code>
+    usa <code>diasEnMes()</code>,
+    <code>primerDiaSemana()</code> y <code>claveFestivo()</code>; la navegación necesita un mes y un año ya validados.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>mesAnterior()</code> y <code>mesSiguiente()</code> devuelven <strong>dos valores en un array</strong>, y
+      <code>index.php</code> los recoge con
+      desestructuración: <code>[$mesSig, $anioSig] = mesSiguiente($mes, $anio);</code>. El cambio de año está en la
+      propia
+      función: <code>$mes == 12 ? [1, $anio + 1] : [$mes + 1, $anio]</code>.</li>
+    <li>Cada enlace se escribe solo si el año de destino está dentro del rango:
+      <code>if ($anioAnt &gt;= ANIO_MIN)</code>. Cuando no
+      hay enlace anterior se escribe un <code>&lt;span&gt;&lt;/span&gt;</code> vacío para que el enlace siguiente siga a
+      la derecha (la
+      navegación es un <code>display: flex</code> con <code>space-between</code>). En la URL, el <code>&amp;</code> se
+      escribe <code>&amp;amp;</code>.</li>
+    <li><code>festivosDelMes()</code> parte cada clave con <code>explode('-', $clave)</code>, convierte las dos partes a
+      entero y se queda con
+      las del mes; <code>ksort()</code> las ordena por día, aunque en el fichero estuvieran desordenadas.</li>
+    <li><code>contarLaborables()</code> recorre los días llevando el día de la semana, que avanza con
+      <code>$diaSemana % 7 + 1</code>
+      (del 7, domingo, vuelve al 1, lunes); cuenta los que son <code>&lt;= 5</code> y no son festivo.</li>
+  </ul>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Cada decisión del análisis simplifica un paso posterior.</strong> Como los festivos tienen la clave
+      <code>'mm-dd'</code> y existe
+      <code>claveFestivo()</code>, comprobar si un día es festivo es lo mismo en la tabla (paso 3) que en los laborables
+      (paso 4):
+      un <code>array_key_exists()</code>. Y como el array no lleva año, la navegación a cualquier año no necesita ningún
+      dato nuevo.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 9 y 10. Desde diciembre de 2026, el enlace siguiente debe decir <em>Enero 2027</em>; en enero de 1900 no
+      debe haber
+      enlace anterior, y en diciembre de 2100, ninguno siguiente. Mayo de 2027: 31 días y 20 laborables (el 1 de mayo
+      cae
+      en sábado y no resta). Diciembre de 2026: festivos el 6, el 8 y el 25, en ese orden.</p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 4 añade código dentro del mismo <code>else</code> que dibuja el calendario y podría haber estropeado algo
+    que antes
+    funcionaba. Una lista de comprobación para esta tarea:</p>
+  <ul>
+    <li>☐ Casos correctos: varios meses de distintos años, el mes actual y el enlace <em>Hoy</em> desde otro mes.</li>
+    <li>☐ Casos límite: meses que empiezan en lunes y en domingo; meses que terminan en domingo; febrero en años
+      bisiestos (2024, 2000) y no bisiestos (2100, 1900); enero de 1900 y diciembre de 2100.</li>
+    <li>☐ Errores: falta un dato, los dos datos mal, decimales (<code>5.5</code>), espacios, valores fuera de rango.
+    </li>
+    <li>☐ Maliciosos: HTML en <code>anio</code>; arrays donde se espera un texto (<code>?mes[]=1&amp;anio=2027</code>).
+    </li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code> y el HTML de la tabla válido.</li>
+  </ul>
+  <p>Una de estas líneas <strong>falla</strong>: la de los arrays (ver el apartado siguiente).</p>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución ya está organizada en funciones cortas y no tiene FIXME pendientes. Aun así, quedan detalles que se
+    podrían mejorar, buenos para practicar:</p>
+  <ul>
+    <li><strong>Un array donde se espera un texto.</strong> Con <code>?mes[]=1&amp;anio=2027</code>,
+      <code>$_GET['mes']</code> es un array, y
+      <code>validarEntero()</code> declara <code>?string $valor</code>: PHP lanza un <code>TypeError</code> y la página
+      termina con un error fatal, lo
+      que contradice RNF-12. Se arregla comprobando <code>is_string()</code> antes de llamarla (o aceptando
+      <code>mixed</code> y
+      comprobándolo dentro), como se hace en los apuntes.
+    </li>
+    <li><strong>Lógica repetida.</strong> "Es fin de semana" se decide dos veces y de dos formas:
+      <code>$columna &gt;= 5</code> en
+      <code>generarCalendario()</code> y <code>$diaSemana &lt;= 5</code> en <code>contarLaborables()</code>. Una función
+      <code>esLaborable()</code> o un único recorrido
+      de los días evitaría que un cambio (por ejemplo, que el sábado sea laborable) se haga solo en un sitio.
+    </li>
+    <li><strong>Una función más fácil de probar.</strong> <code>generarCalendario()</code> llama a
+      <code>date('Y-n-j')</code> por dentro, así que su
+      resultado cambia según el día en que se ejecuta. Si recibiera la fecha de hoy como parámetro, se podría probar el
+      resaltado de hoy con cualquier fecha.</li>
+    <li><strong>Procesar antes de mostrar.</strong> Calcular <code>mesAnterior()</code>, <code>mesSiguiente()</code>,
+      <code>festivosDelMes()</code> y
+      <code>contarLaborables()</code> en la parte de arriba de <code>index.php</code>, guardando los resultados en
+      variables, y dejar en el
+      HTML solo los <code>echo</code>. Es la estructura de siempre de los apuntes y hace que la vista no llame a la
+      lógica.
+    </li>
+    <li><strong>El mes en el formulario pegajoso.</strong> Con <code>mes=13</code> no hay ninguna opción seleccionada y
+      el navegador muestra
+      <em>Enero</em>, que no es lo que se envió. Se podría añadir una opción vacía <em>(elige un mes)</em> seleccionada
+      en ese caso.
+    </li>
+    <li><strong>Las ampliaciones</strong> (Jueves y Viernes Santo con <code>easter_date()</code>, número de semana ISO
+      con <code>date('W', ...)</code>) son la
+      siguiente <strong>vuelta</strong> del proceso: cada una empieza otra vez por el análisis. Por ejemplo, los
+      festivos móviles
+      dependen del año, así que ya no caben en un array <code>'mm-dd'</code> fijo: habría que calcularlos y añadirlos al
+      array del
+      año pedido.</li>
+  </ul>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>"Hoy" es la fecha del <strong>servidor</strong>: si en <code>php.ini</code> no está configurada
+      <code>date.timezone</code> (por ejemplo,
+      <code>Europe/Madrid</code>), PHP usa UTC, y entre las 00:00 y la 01:00 o las 02:00 de la hora española el día
+      resaltado sería
+      todavía el de ayer. Se puede fijar en el código con <code>date_default_timezone_set('Europe/Madrid');</code>.
+    </p>
+  </div>
+
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Validar solo con <code>min</code>/<code>max</code> del HTML</td>
+          <td><code>?mes=13</code> llega igual</td>
+          <td>Validar en PHP con <code>filter_var()</code></td>
+        </tr>
+        <tr>
+          <td>Parar en el primer error</td>
+          <td>Solo se ve un error de dos</td>
+          <td>Acumular en <code>$errores</code> y mostrarlos todos</td>
+        </tr>
+        <tr>
+          <td><code>date('w')</code> en lugar de <code>date('N')</code></td>
+          <td>Los meses que empiezan en domingo salen empezando en lunes</td>
+          <td><code>'N'</code>: 1 = lunes … 7 = domingo</td>
+        </tr>
+        <tr>
+          <td>Olvidar el <code>% 100</code> o el <code>% 400</code> del bisiesto</td>
+          <td>Febrero de 2100 con 29 días</td>
+          <td><code>(% 4 y no % 100) o % 400</code></td>
+        </tr>
+        <tr>
+          <td>Abrir siempre un <code>&lt;tr&gt;</code> al cerrar el domingo</td>
+          <td>Fila vacía al final de febrero de 2027</td>
+          <td><code>if ($dia &lt; $totalDias)</code></td>
+        </tr>
+        <tr>
+          <td>Claves de festivos sin ceros (<code>'5-1'</code>)</td>
+          <td>Ningún festivo coincide</td>
+          <td><code>sprintf('%02d-%02d', ...)</code></td>
+        </tr>
+        <tr>
+          <td><code>$mes - 1</code> y <code>$mes + 1</code> sin más</td>
+          <td>Enlaces a los meses 0 y 13</td>
+          <td><code>mesAnterior()</code> / <code>mesSiguiente()</code> con cambio de año</td>
+        </tr>
+        <tr>
+          <td><code>echo</code> dentro de las funciones y <code>global $festivos</code></td>
+          <td>Funciones que no se pueden reutilizar ni probar</td>
+          <td>Recibir parámetros y devolver el HTML como cadena</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué esta tarea no necesita campos <code>hidden</code>? <strong>Porque cada petición lleva en la URL todo
+          lo que necesita
+          (mes y año): no hay nada que recordar de una petición a la siguiente.</strong></li>
+      <li>¿Por qué <code>validarEntero()</code> recibe <code>$errores</code> por referencia? <strong>Para añadir el
+          mensaje al array del que llama y
+          poder acumular los errores del mes y del año.</strong></li>
+      <li>¿Cuántas celdas vacías hay antes del día 1 si <code>date('N', ...)</code> devuelve 6? <strong>5: el día 1 cae
+          en sábado.</strong></li>
+      <li>¿Es bisiesto el año 2100? ¿Y el 2000? <strong>2100 no (divisible por 100 y no por 400); 2000 sí (divisible por
+          400).</strong></li>
+      <li>¿Por qué las claves de los festivos no llevan el año? <strong>Porque son festivos de fecha fija: el mismo
+          array vale
+          para cualquier año.</strong></li>
+      <li>¿Qué pasa en <code>generarCalendario()</code> si el último día del mes cae en domingo? <strong>Se cierra la
+          fila, no se abre
+          otra porque <code>$dia</code> ya es el último, y como <code>$columna</code> vuelve a 0 no se añaden celdas
+          vacías finales.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

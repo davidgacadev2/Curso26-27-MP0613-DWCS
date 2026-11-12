@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata de la Tarea 02B: juego de tablero con letras ocultas</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata de la Tarea 02B: juego de tablero con letras ocultas</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>La tarea del tema es un juego: un tablero con un rombo de asteriscos que esconden las letras de una palabra.
+            <strong>Carlos</strong> ha visto las tres soluciones de ejemplo y en todas la lógica está repartida entre
+            <code>if</code>, variables <code>primeraVez</code>, <code>finJuego</code>... <strong>María</strong> le reta
+            a hacerlo con un autómata: —Es el mejor ejercicio para ver que funciona: tiene cinco situaciones distintas y
+            tres cosas que puede hacer el jugador.</p>
+    </div>
+    <h2>1.- Enunciado (resumen de los requisitos)</h2>
+    <ul>
+        <li>La página pide la <strong>longitud del lado</strong> del tablero y una <strong>palabra</strong>, con los
+            botones <em>Enviar</em> y <em>Borrar</em>. Se comprueba que el lado es un número <strong>impar entre 5 y
+                30</strong> y que la palabra tiene <strong>5 letras como mínimo</strong>; si no, se muestra cuál es el
+            error.
+        </li>
+        <li>Con datos correctos aparece el tablero: las casillas del borde muestran <code>o</code> y sobre ellas se
+            dibuja un <strong>rombo de asteriscos</strong>. Las letras de la palabra se esconden <strong>al
+                azar</strong> debajo de los asteriscos (si no caben, la palabra se recorta).
+        </li>
+        <li>Cada asterisco es un <strong>botón</strong>. Si esconde una letra: <strong>+5 puntos</strong>, el asterisco
+            se cambia por la letra y esa letra <strong>desaparece</strong> de la caja de texto de la palabra. Si no:
+            <strong>−2 puntos</strong> y un fallo seguido más.
+        </li>
+        <li>El <strong>marcador</strong> aparece en cuanto se pulsa el primer asterisco.
+        </li>
+        <li>El juego termina al acertar <strong>todas las letras</strong> o al <strong>cuarto fallo seguido</strong>;
+            entonces se muestra un mensaje y el tablero queda deshabilitado.
+        </li>
+        <li>Todo el estado de la partida (el tablero, las letras, la palabra, los puntos, los fallos) se guarda en
+            <strong>campos ocultos</strong>.
+        </li>
+    </ul>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Tres: la <strong>carga</strong> de la página (también el enlace
+            <em>Borrar</em>, que lleva a la página sin parámetros), <em>Enviar</em> la configuración y <strong>pulsar un
+                asterisco</strong> (<em>Jugada</em>, con el valor <code>fila x columna</code>).
+        </li>
+        <li><strong>Estados.</strong> Cinco. ST0 carga y ST1 configurando, como siempre. Después, el tablero recién
+            creado (ST2) y el tablero con jugadas (ST3) son estados <strong>distintos</strong> porque la página muestra
+            cosas distintas: el marcador solo aparece desde la primera jugada. Y ST4, fin de la partida, porque ahí los
+            asteriscos ya no se pueden pulsar.
+        </li>
+        <li><strong>Variables de estado.</strong> La partida entera viaja en campos ocultos: el lado, el tablero
+            (<code>*</code>, <code>o</code> o la letra descubierta), las letras escondidas, la palabra que queda, los
+            puntos y los fallos seguidos.
+        </li>
+        <li><strong>Predicados de la configuración.</strong> Tres atómicos: lado entre 5 y 30 (PL0), lado impar (PL1),
+            palabra de 5 letras o más (PL2). Separarlos permite dar el aviso concreto de cada error.
+        </li>
+        <li><strong>Predicados de la jugada.</strong> La jugada es válida (PL3: la partida recuperada de los ocultos es
+            coherente y la casilla es un asterisco sin descubrir), la casilla esconde una letra (PL4), era la última
+            letra (PL5), ya llevaba 3 fallos seguidos (PL6). PL5 y PL6 se evalúan <strong>antes</strong> de actualizar
+            los puntos: describen la situación de la que se parte, y así todos los predicados se comprueban antes de las
+            acciones.
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 610" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="m4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="60" cy="60" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="60" y="65"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="60" y="105"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="60" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text><text x="60" y="305"
+                text-anchor="middle" font-size="11" fill="#333">Carga de página</text>
+            <circle cx="215" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="215" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text><text x="181" y="298" text-anchor="end"
+                font-size="11" fill="#333">Configurando</text>
+            <circle cx="430" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="430" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text><text x="466" y="234"
+                text-anchor="start" font-size="11" fill="#333">Tablero nuevo</text><text x="466" y="247"
+                text-anchor="start" font-size="11" fill="#333">(sin marcador)</text>
+            <circle cx="430" cy="470" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="430" y="475"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text><text x="466" y="444"
+                text-anchor="start" font-size="11" fill="#333">Jugando</text>
+            <circle cx="640" cy="470" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="475"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text><text x="640" y="515"
+                text-anchor="middle" font-size="11" fill="#333">Fin de la</text><text x="640" y="528"
+                text-anchor="middle" font-size="11" fill="#333">partida</text>
+            <path d="M60.0,91.0 Q60.0,160.0 60.0,227.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="75" y="165" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#c0392b" font-weight="bold">Carga</text><text x="75" y="179" text-anchor="start"
+                font-family="Arial, sans-serif" font-size="10.5" fill="#555555" font-style="italic">(o "Borrar")</text>
+            <path d="M91.0,260.0 Q137.5,260.0 182.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="138" y="237" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T1</text><text x="138" y="251" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES0</text>
+            <path d="M202.0,233.0 C145.3,162.3 284.7,162.3 229.4,230.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="275" y="30" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="275" y="44" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="275" y="58" text-anchor="start" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0</text><text x="275" y="72" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">!PL0 || !PL1 || !PL2</text><text
+                x="275" y="86" text-anchor="start" font-family="Consolas, monospace" font-size="11.5"
+                fill="#2e7d32">AC9</text><text x="275" y="100" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#8e44ad" font-weight="bold">ES1</text>
+            <path d="M246.0,260.0 Q322.5,260.0 397.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="322" y="181" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="322" y="195" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="322" y="209" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0</text><text x="322" y="223" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1 &amp;&amp;
+                PL2</text><text x="322" y="237" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5"
+                fill="#2e7d32">AC3, AC4, AC5</text><text x="322" y="251" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES2 [AC8]</text>
+            <path d="M430.0,291.0 Q430.0,365.0 430.0,437.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="445" y="318" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T3</text><text x="445" y="332" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Jugada</text><text
+                x="445" y="346" text-anchor="start" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC1, AC2</text><text x="445" y="360" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL3 &amp;&amp; PL4 &amp;&amp;
+                !PL5</text><text x="445" y="374" text-anchor="start" font-family="Consolas, monospace" font-size="11.5"
+                fill="#2e7d32">AC6</text><text x="445" y="388" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#111111">o PL3 &amp;&amp; !PL4 &amp;&amp; !PL6</text><text x="445" y="402"
+                text-anchor="start" font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC7</text><text
+                x="445" y="416" text-anchor="start" font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad"
+                font-weight="bold">ES3 [AC8]</text>
+            <path d="M443.0,497.0 C499.7,567.7 360.3,567.7 415.6,499.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="380" y="545" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T3</text><text x="380" y="559" text-anchor="end"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Jugada</text><text
+                x="380" y="573" text-anchor="end" font-family="Consolas, monospace" font-size="11.5" fill="#111111">los
+                mismos dos casos</text><text x="380" y="587" text-anchor="end" font-family="Consolas, monospace"
+                font-size="11.5" fill="#111111">que de ST2 a ST3</text><text x="380" y="601" text-anchor="end"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES3 [AC8]</text>
+            <path d="M461.0,470.0 Q535.0,470.0 607.0,470.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m4)" /><text x="540" y="505" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T3</text><text x="540" y="519" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Jugada</text><text
+                x="540" y="533" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5"
+                fill="#111111">PL3 &amp;&amp; PL4 &amp;&amp; PL5</text><text x="540" y="547" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC6 → ES4</text><text x="540" y="561"
+                text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#111111">o PL3 &amp;&amp;
+                !PL4 &amp;&amp; PL6</text><text x="540" y="575" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="11.5" fill="#2e7d32">AC7 → ES5</text>
+            <path d="M401.8,457.1 Q284.7,403.7 229.4,289.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                stroke-dasharray="6 4" marker-end="url(#m4)" /><text x="245" y="395" text-anchor="end"
+                font-family="Consolas, monospace" font-size="10.5" fill="#5b8fd6">T3</text><text x="245" y="409"
+                text-anchor="end" font-family="Consolas, monospace" font-size="11.5" fill="#c0392b"
+                font-weight="bold">Jugada</text><text x="245" y="423" text-anchor="end"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">!PL3</text><text x="245" y="437"
+                text-anchor="end" font-family="Arial, sans-serif" font-size="10.5" fill="#555555"
+                font-style="italic">(jugada no válida:</text><text x="245" y="451" text-anchor="end"
+                font-family="Arial, sans-serif" font-size="10.5" fill="#555555" font-style="italic">página
+                manipulada)</text><text x="245" y="465" text-anchor="end" font-family="Consolas, monospace"
+                font-size="11.5" fill="#8e44ad" font-weight="bold">ES0</text><text x="530" y="140" text-anchor="start"
+                font-size="10.5" fill="#555" font-style="italic">Enviar desde ST2, ST3 o ST4:</text><text x="530"
+                y="154" text-anchor="start" font-size="10.5" fill="#555" font-style="italic">igual que desde ST1
+                (T2,</text><text x="530" y="168" text-anchor="start" font-size="10.5" fill="#555"
+                font-style="italic">empieza otra partida)</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama de la Tarea 02B (la flecha discontinua es el camino de una jugada no válida)
+        </figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>página sin parámetros (primera vez o enlace "Borrar")</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Enviar</td>
+                <td>el usuario envía el lado y la palabra</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Jugada</td>
+                <td>el usuario pulsa un asterisco (<code>jugada=FxC</code>)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>configuracion</td>
+                <td>formulario de lado y palabra, vacío</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>configuracionConErrores</td>
+                <td>lo escrito y los avisos (rango, impar, longitud de la palabra)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>tableroNuevo</td>
+                <td>formulario y tablero con todos los asteriscos activos, sin marcador</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>tableroConMarcador</td>
+                <td>formulario, marcador (puntos y fallos seguidos) y tablero</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>partidaGanada</td>
+                <td>marcador, "FIN DEL JUEGO: ¡has descubierto todas las letras!" y tablero deshabilitado</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES5</td>
+                <td>partidaPerdida</td>
+                <td>marcador, "FIN DEL JUEGO: 4 fallos seguidos." y tablero deshabilitado</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST0</td>
+                <td>CargaPagina</td>
+                <td>la página aún no se ha mostrado</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST1</td>
+                <td>Configurando</td>
+                <td>se espera el lado y la palabra</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST2</td>
+                <td>TableroNuevo</td>
+                <td>tablero creado, aún sin jugadas</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST3</td>
+                <td>Jugando</td>
+                <td>ya se ha hecho al menos una jugada</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST4</td>
+                <td>FinPartida</td>
+                <td>se ganó o se perdió; el tablero no se puede pulsar</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td>estado actual</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE1</td>
+                <td><code>$lado</code></td>
+                <td>lado del tablero</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE2</td>
+                <td><code>$tablero[f][c]</code></td>
+                <td><code>*</code> sin descubrir, <code>o</code> borde, o la letra descubierta</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE3</td>
+                <td><code>$letras[f][c]</code></td>
+                <td>la letra escondida en esa casilla (si hay)</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE4</td>
+                <td><code>$palabra</code></td>
+                <td>las letras que quedan por descubrir</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE5</td>
+                <td><code>$puntos</code></td>
+                <td>puntos acumulados</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE6</td>
+                <td><code>$fallos</code></td>
+                <td>fallos seguidos</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE7</td>
+                <td><code>$f</code>, <code>$c</code></td>
+                <td>fila y columna de la jugada</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>lado en rango</td>
+                <td><code>$lado</code> es un entero entre 5 y 30</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>lado impar</td>
+                <td><code>$lado % 2 == 1</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>palabra válida</td>
+                <td>5 letras o más (sin tildes, ñ ni espacios, como en las soluciones)</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>jugada válida</td>
+                <td>la partida recuperada es coherente y <code>$tablero[$f][$c]</code> es <code>*</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>acierto</td>
+                <td><code>$letras[$f][$c]</code> existe</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>última letra</td>
+                <td><code>strlen($palabra) == 1</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>cuarto fallo</td>
+                <td><code>$fallos == 3</code> (antes de este fallo)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>validar configuración</td>
+                <td><code>trim</code>, <code>FILTER_VALIDATE_INT</code>, <code>preg_match('/^[A-Za-z]{5,}$/')</code>
+                </td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>recuperar la partida</td>
+                <td>leer y comprobar los campos ocultos (forma del rombo, letras, palabra)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>leer la jugada</td>
+                <td><code>sscanf($_GET['jugada'], '%dx%d')</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td>crear el tablero</td>
+                <td><code>*</code> dentro del rombo y <code>o</code> fuera</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td>esconder las letras</td>
+                <td><code>shuffle</code> de las casillas con asterisco; recortar la palabra si no cabe</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>empezar el marcador</td>
+                <td><code>$puntos = 0; $fallos = 0</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>acierto</td>
+                <td>descubrir la letra, quitarla de <code>$palabra</code>, <code>$puntos += 5</code>,
+                    <code>$fallos = 0</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC7</td>
+                <td>fallo</td>
+                <td><code>$puntos -= 2; $fallos++</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC8</td>
+                <td>guardar la partida</td>
+                <td>escribir VE1–VE6 en campos ocultos (al generar ES2 y ES3)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC9</td>
+                <td>avisos de configuración</td>
+                <td>un aviso por cada predicado PL0, PL1, PL2 que no se cumple</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga (EE0)</th>
+                <th>Enviar (EE1)</th>
+                <th>Jugada (EE2)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>T3</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>T3</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+            </tr>
+        </tbody>
+    </table>
+    <ul>
+        <li>El formulario de configuración sigue a la vista durante la partida: <em>Enviar</em> desde ST2, ST3 o ST4
+            empieza <strong>otra partida</strong> (T2), como en las soluciones de ejemplo.
+        </li>
+        <li>En ST1 y ST4 no hay asteriscos que pulsar (<code>---</code>): si llega una jugada, se empieza de nuevo (T1).
+        </li>
+        <li>ST2 y ST3 comparten la transición T3: lo único que cambia entre ellos es lo que se muestra.
+        </li>
+    </ul>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes de los PLs</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0</td>
+                <td><code>!PL0 || !PL1 || !PL2</code></td>
+                <td>ST1</td>
+                <td>AC9</td>
+                <td>ES1</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></td>
+                <td>ST2</td>
+                <td>AC3, AC4, AC5</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>!PL3</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; !PL5</code></td>
+                <td>ST3</td>
+                <td>AC6</td>
+                <td>ES3 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; PL5</code></td>
+                <td>ST4</td>
+                <td>AC6</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL3 &amp;&amp; !PL4 &amp;&amp; !PL6</code></td>
+                <td>ST3</td>
+                <td>AC7</td>
+                <td>ES3 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1, AC2</td>
+                <td><code>PL3 &amp;&amp; !PL4 &amp;&amp; PL6</code></td>
+                <td>ST4</td>
+                <td>AC7</td>
+                <td>ES5</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados</h3>
+    <p>T2 (como en el Boletín 03-E08, con tres predicados de validación):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th>PL2</th>
+                <th><code>!PL0 || !PL1 || !PL2</code></th>
+                <th><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>T3: PL4, PL5 y PL6 solo se evalúan si PL3 es cierto; PL5 solo importa si hay acierto (PL4) y PL6 solo si hay
+        fallo (!PL4):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL3</th>
+                <th>PL4</th>
+                <th>PL5</th>
+                <th>PL6</th>
+                <th><code>!PL3</code></th>
+                <th>acierto, sigue</th>
+                <th>acierto, gana</th>
+                <th>fallo, sigue</th>
+                <th>fallo, pierde</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>x</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>En <strong>ST2</strong> dos de los caminos de T3 <strong>no pueden darse nunca</strong>: la palabra tiene al
+            menos 5 letras (PL5 es falso: no puede ser la última) y aún no hay fallos (PL6 es falso). Desde ST2 solo se
+            llega a ST3 (o a ST1 si la jugada no es válida). No hace falta una transición distinta para ST2: los mismos
+            <code>if</code> sirven, y esos caminos simplemente no se toman. Es un buen ejemplo de
+            <strong>invariante</strong>: algo que se sabe cierto en un estado y que el diagrama ayuda a descubrir.</p>
+    </div>
+    <h2>5.- Del autómata al código</h2>
+    <p>Fragmento de T3 en <code>solucion/index.php</code>. Los predicados PL5 y PL6 se calculan <strong>antes</strong>
+        de las acciones AC6 y AC7, que cambian <code>$palabra</code> y <code>$fallos</code>:</p>
+    <pre><code>case 3:                                                    // ---- T3
+    $partida = recuperarPartida($_GET);                    // AC1
+    $jugada = sscanf((string) $_GET['jugada'], '%dx%d');   // AC2
+    [$f, $c] = is_array($jugada) ? $jugada : [null, null];
+    $pl3 = $partida !== null &amp;&amp; $partida['fallos'] !== false &amp;&amp; is_int($f) &amp;&amp; is_int($c)   // PL3: jugada válida
+        &amp;&amp; ($partida['tablero'][$f][$c] ?? '') === '*';
+    if (!$pl3) {                                           // !PL3
+        $estado = ST1;
+        es0();
+        break;
+    }
+    $pl4 = isset($partida['letras'][$f][$c]);              // PL4: esconde una letra
+    $pl5 = strlen($partida['palabra']) === 1;              // PL5: era la última
+    $pl6 = $partida['fallos'] === FALLOS_MAXIMOS;          // PL6: llevaba 3 fallos
+    if ($pl4) {
+        // AC6: descubrir la letra, quitarla de la palabra, +5 puntos, fallos a 0
+        if (!$pl5) {                                       // PL3 &amp;&amp; PL4 &amp;&amp; !PL5
+            $estado = ST3;
+            es3($partida);
+        } else {                                           // PL3 &amp;&amp; PL4 &amp;&amp; PL5
+            $estado = ST4;
+            es4($partida);
+        }
+    } else {
+        // AC7: -2 puntos, un fallo más
+        if (!$pl6) {                                       // PL3 &amp;&amp; !PL4 &amp;&amp; !PL6
+            $estado = ST3;
+            es3($partida);
+        } else {                                           // PL3 &amp;&amp; !PL4 &amp;&amp; PL6
+            $estado = ST4;
+            es5($partida);
+        }
+    }
+    break;</code></pre>
+    <div class="caja recomendacion">
+        <div class="titulo-caja">Recomendación</div>
+        <p><code>recuperarPartida()</code> (AC1) es la parte más larga de la solución, y no por casualidad:
+            <strong>toda</strong> la partida vuelve del navegador y se puede cambiar. Comprueba que el lado es válido,
+            que cada casilla tiene el valor que le corresponde según el rombo (<code>o</code> fuera, <code>*</code> o
+            una letra dentro), que las letras escondidas están dentro del rombo y que la palabra que queda tiene
+            exactamente las letras que siguen escondidas. Si algo no cuadra, devuelve <code>null</code> y la jugada no
+            es válida (PL3 falso). En el tema 5, con las <strong>sesiones</strong>, la partida se guardará en el
+            servidor y esta comprobación será mucho más sencilla.</p>
+    </div>
+    <h2>6.- Pruebas: un camino por cada fila</h2>
+    <p>Las pruebas se hicieron reenviando el formulario completo de cada página (con todos sus campos ocultos), como
+        hace el navegador:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Primera carga</td>
+                <td>T1</td>
+                <td>formulario vacío; <code>estado</code> = 1</td>
+            </tr>
+            <tr>
+                <td>lado 6, palabra "sol"</td>
+                <td>T2: <code>!PL1</code>, <code>!PL2</code></td>
+                <td>avisos de lado impar y de longitud de la palabra (no el de rango)</td>
+            </tr>
+            <tr>
+                <td>lado 3</td>
+                <td>T2: <code>!PL0</code></td>
+                <td>aviso de rango</td>
+            </tr>
+            <tr>
+                <td>lado "abc"</td>
+                <td>T2: <code>!PL0</code>, <code>!PL1</code></td>
+                <td>avisos de rango e impar</td>
+            </tr>
+            <tr>
+                <td>palabra "piñata"</td>
+                <td>T2: <code>!PL2</code></td>
+                <td>aviso de la palabra</td>
+            </tr>
+            <tr>
+                <td>lado 5, "teclado"</td>
+                <td>T2: <code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></td>
+                <td>tablero de 13 asteriscos con 7 letras escondidas; sin marcador; <code>estado</code> = 2</td>
+            </tr>
+            <tr>
+                <td>un asterisco sin letra</td>
+                <td>T3: fallo, sigue</td>
+                <td>puntos −2, fallos seguidos 1; <code>estado</code> = 3</td>
+            </tr>
+            <tr>
+                <td>un asterisco con letra</td>
+                <td>T3: acierto, sigue</td>
+                <td>puntos 3, fallos 0; la letra aparece en el tablero</td>
+            </tr>
+            <tr>
+                <td>casilla 0x0 (borde)</td>
+                <td>T3: <code>!PL3</code></td>
+                <td>vuelve a la configuración</td>
+            </tr>
+            <tr>
+                <td>7 aciertos seguidos</td>
+                <td>T3: acierto, gana</td>
+                <td>"¡has descubierto todas las letras!", 35 puntos, tablero deshabilitado; <code>estado</code> = 4</td>
+            </tr>
+            <tr>
+                <td>jugada en ST4</td>
+                <td><code>---</code> → T1</td>
+                <td>vuelve a la configuración</td>
+            </tr>
+            <tr>
+                <td>4 fallos seguidos</td>
+                <td>T3: fallo, pierde</td>
+                <td>"FIN DEL JUEGO: 4 fallos seguidos.", −8 puntos</td>
+            </tr>
+            <tr>
+                <td>Enviar en ST4 y en ST2</td>
+                <td>T2</td>
+                <td>empieza otra partida</td>
+            </tr>
+            <tr>
+                <td>palabra oculta cambiada</td>
+                <td>T3: <code>!PL3</code></td>
+                <td>vuelve a la configuración</td>
+            </tr>
+            <tr>
+                <td>lado 5, palabra de 20 letras</td>
+                <td>T2</td>
+                <td>se recorta a 13 letras (las que caben)</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade un botón <em>Rendirse</em> que muestre todas las letras y termine la partida. ¿Desde qué estados se
+            puede pulsar? Añade la columna a la tabla de eventos-estados y su transición.
+        </li>
+        <li>El enunciado dice "más de 3 fallos seguidos". Cambia el límite a una constante configurable: ¿qué predicado
+            cambia? ¿Cambia la comprobación de predicados?
+        </li>
+        <li>Haz que el marcador se vea también en ST2 (con 0 puntos). ¿Siguen haciendo falta ST2 y ST3, o se pueden
+            juntar? Redibuja el diagrama.
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

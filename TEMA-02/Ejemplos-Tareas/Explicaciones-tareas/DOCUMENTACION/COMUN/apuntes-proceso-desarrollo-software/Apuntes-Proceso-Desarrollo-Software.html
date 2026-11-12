@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El proceso de desarrollo de software: cómo afrontar un problema de programación</title><style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+:root { --verde: #c6efa0; --verde-borde: #7cb342; --azul: #dbe9fb; --azul-borde: #5b8fd6; --amarillo: #fff6c4;
+        --amarillo-borde: #d9b200; --naranja: #ffe2c4; --naranja-borde: #e08a2e; --gris: #f1f1f1; --morado: #ece2fb; --morado-borde: #8e6bd1; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #222; max-width: 820px; margin: 0 auto; padding: 0 12px; background: #fff; }
+.cabecera > span { flex: 1; } .cabecera > span:last-child { text-align: right; } .cabecera .centro { flex: 2; }
+.cabecera { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #999; padding: 6px 0; margin-bottom: 14px; font-size: 9pt; }
+.cabecera .centro { text-align: center; color: #5a4fcf; font-weight: bold; font-style: italic; }
+h1 { font-size: 17pt; color: #3c3c8c; border-bottom: 3px solid #b39ddb; padding-bottom: 4px; }
+h2 { font-size: 13.5pt; background: #c9b8f0; padding: 4px 8px; margin-top: 26px; page-break-after: avoid; }
+h3 { font-size: 11.5pt; color: #3c3c8c; margin-top: 18px; page-break-after: avoid; }
+h4 { font-size: 10.5pt; color: #5a4fcf; margin: 14px 0 4px; page-break-after: avoid; }
+ul { margin: 4px 0 8px; padding-left: 22px; }
+li { margin: 2px 0; }
+code { font-family: Consolas, "Courier New", monospace; font-size: 9.5pt; color: #6a1b9a; background: #f6f2fb; padding: 0 2px; }
+pre { background: #f7f7f9; border: 1px solid #ddd; border-left: 4px solid #8e6bd1; padding: 8px 10px; overflow-x: auto; page-break-inside: avoid; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre code { color: #222; background: none; padding: 0; font-size: 9pt; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9.5pt; page-break-inside: avoid; }
+th { background: #e8e1f7; } th, td { border: 1px solid #aaa; padding: 4px 6px; text-align: left; vertical-align: top; }
+.caja { border: 1px solid #888; border-radius: 2px; padding: 4px 12px 6px; margin: 12px 0; page-break-inside: avoid; }
+.titulo-caja { font-weight: bold; margin: 4px 0 2px; }
+.caso { background: var(--verde); border-color: var(--verde-borde); }
+.debes { background: var(--azul); border-color: var(--azul-borde); }
+.saber { background: var(--amarillo); border-color: var(--amarillo-borde); }
+.recomendacion { background: var(--naranja); border-color: var(--naranja-borde); }
+.resuelto { background: var(--gris); }
+.resuelto { page-break-inside: auto; }
+.resuelto pre { background: #fff; page-break-inside: auto; }
+.autoeval { background: var(--morado); border-color: var(--morado-borde); }
+figure { margin: 12px 0; text-align: center; page-break-inside: avoid; }
+figure svg, figure img { max-width: 100%; height: auto; }
+figure img { border: 1px solid #ccc; }
+figcaption { font-size: 9pt; color: #555; font-style: italic; margin-top: 4px; }
+.pie { margin-top: 30px; border-top: 1px dashed #999; font-size: 8.5pt; color: #666; text-align: center; padding-top: 6px; }
+@media print { body { max-width: none; } a { color: inherit; text-decoration: none; } }
+</style></head><body>
+<h1>El proceso de desarrollo de software: cómo afrontar un problema de programación</h1>
+<div class="caja caso"><div class="titulo-caja">Caso práctico</div>
+<p><strong>Carlos</strong> acaba de empezar a programar en PHP. El Bar Baio le encarga una página para que los equipos se <strong>apunten al torneo de futbolín</strong>. Carlos abre el editor y empieza a escribir: un poco de HTML, un <code>if</code> para el formulario, vuelve al HTML, prueba algo con el fichero, borra, copia un trozo de Internet... Tres horas después nada funciona y ya no sabe ni qué ha cambiado.</p>
+<p><strong>María</strong> se sienta a su lado: "Te has puesto a programar como un pollo sin cabeza, saltando de un sitio a otro. Vamos a hacerlo con orden: primero entendemos <strong>qué</strong> hay que hacer, luego pensamos <strong>cómo</strong> organizarlo y, al final, lo programamos <strong>parte a parte</strong>, comprobando cada parte antes de pasar a la siguiente". <strong>Juan</strong> añade: "Y cuando algo falle, no cambies cosas al azar: usa el depurador".</p>
+</div>
+<p>En estas notas aprenderás a:</p>
+<ul><li><strong>analizar</strong> un problema: requisitos funcionales y no funcionales, entradas y salidas, maqueta y datos,
+</li><li><strong>diseñar</strong> la solución: dividir el problema en módulos y funciones y dibujar diagramas que ayudan a pensar,
+</li><li><strong>programar de forma incremental</strong>, parte a parte, empezando por una maqueta y una lista de TODOs,
+</li><li><strong>probar y depurar</strong> con método: casos de prueba, Xdebug, las herramientas del navegador y (bien usada) la IA,
+</li><li><strong>refactorizar</strong> el código para que sea fácil de entender y de cambiar.
+</li></ul>
+<p>Todo se explica con un <strong>ejemplo guiado</strong> que recorre el proceso completo: la inscripción en el torneo de futbolín. Su código, paso a paso, está en la carpeta <strong>Ejemplo guiado - Torneo</strong>.</p>
+<h2>1.- Visión general: un proceso iterativo e incremental</h2>
+<p>Desarrollar software no es "escribir código". Antes de escribir la primera línea hay que saber qué se quiere conseguir y cómo se va a organizar; y después de escribirla hay que comprobar que hace lo que debe. El proceso tiene tres grandes fases que <strong>se repiten</strong>:</p>
+<figure><svg viewBox="0 0 700 215" width="700" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" font-size="13"> <defs><marker id="fl1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#444"/></marker></defs> <rect x="10" y="50" width="190" height="84" rx="8" fill="#c6efa0" stroke="#7cb342" stroke-width="1.5"/> <text x="105" y="78" text-anchor="middle" font-weight="bold">1. ANÁLISIS</text> <text x="105" y="98" text-anchor="middle">¿QUÉ hay que hacer?</text> <text x="105" y="118" text-anchor="middle" font-size="11">requisitos, E/S, maqueta, datos</text> <rect x="250" y="50" width="190" height="84" rx="8" fill="#dbe9fb" stroke="#5b8fd6" stroke-width="1.5"/> <text x="345" y="78" text-anchor="middle" font-weight="bold">2. DISEÑO</text> <text x="345" y="98" text-anchor="middle">¿CÓMO lo organizo?</text> <text x="345" y="118" text-anchor="middle" font-size="11">módulos, funciones, diagramas</text> <rect x="490" y="50" width="205" height="84" rx="8" fill="#ffe2c4" stroke="#e08a2e" stroke-width="1.5"/> <text x="592" y="78" text-anchor="middle" font-weight="bold" font-size="12">3. CODIFICACIÓN Y PRUEBAS</text> <text x="592" y="98" text-anchor="middle">¿FUNCIONA?</text> <text x="592" y="118" text-anchor="middle" font-size="11">parte a parte, depurar, refactorizar</text> <line x1="200" y1="92" x2="247" y2="92" stroke="#444" stroke-width="1.5" marker-end="url(#fl1)"/> <line x1="440" y1="92" x2="487" y2="92" stroke="#444" stroke-width="1.5" marker-end="url(#fl1)"/> <path d="M545,48 C545,8 625,8 625,46" fill="none" stroke="#e08a2e" stroke-width="1.5" marker-end="url(#fl1)"/> <text x="585" y="18" text-anchor="middle" font-size="11">programar → probar → corregir</text> <path d="M592,136 C592,195 105,195 105,138" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#fl1)"/> <text x="345" y="205" text-anchor="middle" font-size="12" font-weight="bold">REPETIR: siguiente funcionalidad o cambios en los requisitos</text> </svg><figcaption>Figura 1. Las fases del desarrollo y el ciclo que se repite</figcaption></figure>
+<table><thead><tr><th>Fase</th><th>Pregunta que responde</th><th>Qué se obtiene</th></tr></thead><tbody><tr><td>Análisis</td><td>¿Qué hay que hacer? ¿Qué entra y qué sale? ¿Qué datos hay que guardar?</td><td>Requisitos, ejemplos de entradas y salidas, maqueta, estructuras de datos</td></tr><tr><td>Diseño</td><td>¿Cómo organizo la solución?</td><td>Módulos y funciones (con sus parámetros y resultados), diagramas</td></tr><tr><td>Codificación y pruebas</td><td>¿Funciona? ¿Funciona en todos los casos?</td><td>Código probado, construido parte a parte</td></tr></tbody></table>
+<p>Es un proceso <strong>iterativo</strong> (se repite) e <strong>incremental</strong> (en cada vuelta se añade algo que funciona). Nadie hace un análisis perfecto a la primera: al programar descubrirás casos que no habías pensado y tendrás que volver atrás. No es un fracaso: es como se trabaja.</p>
+<div class="caja debes"><div class="titulo-caja">Debes conocer</div>
+<p><strong>Cuanto más tarde se descubre un error, más cuesta arreglarlo.</strong> Un requisito mal entendido se corrige en un minuto si se detecta al hablar con el cliente; si se detecta cuando la aplicación ya está terminada, puede obligar a rehacer media aplicación. Por eso merece la pena dedicar tiempo al análisis y al diseño, aunque al principio parezca que "no se avanza".</p>
+</div>
+<h2>2.- Análisis</h2>
+<div class="caja caso"><div class="titulo-caja">Caso práctico</div>
+<p>María le pide a Carlos que apague el editor de código y abra un fichero de texto en blanco: "Primero escribe con tus palabras qué tiene que hacer la página. Si no sabes explicarlo en español, no vas a saber explicárselo al ordenador".</p>
+</div>
+<h3>2.1.- Estudio inicial: requisitos funcionales y no funcionales</h3>
+<p>Lo primero es leer el enunciado (o escuchar al cliente) con calma, varias veces, y convertirlo en una lista de <strong>requisitos</strong>:</p>
+<ul><li>Los <strong>requisitos funcionales (RF)</strong> dicen <strong>QUÉ</strong> debe hacer la aplicación: las funciones, los datos que recibe, los cálculos, los mensajes que muestra. Ejemplo: "Si hay errores, volver a mostrar el formulario con los datos escritos y un mensaje junto a cada campo incorrecto".
+</li><li>Los <strong>requisitos no funcionales (RNF)</strong> dicen <strong>CÓMO</strong> debe hacerlo o con qué <strong>restricciones</strong>: tecnología, seguridad, rendimiento, usabilidad, accesibilidad, mantenibilidad. Ejemplo: "Todos los datos que se muestran en la página se escapan con <code>htmlspecialchars</code>".
+</li></ul>
+<p>Este es el enunciado del ejemplo guiado, tal como lo cuenta el dueño del bar:</p>
+<pre><code>"Quiero que los equipos se puedan apuntar al torneo de futbolín desde la web. Cada equipo
+tiene un nombre y dos jugadores. Necesito un correo para avisarles y, si quieren, un
+teléfono. Hay tres categorías: mixta, juvenil y sénior. Caben 16 equipos como mucho. En la
+misma página quiero ver los equipos que ya están apuntados."</code></pre>
+<p>Y estos son sus requisitos (la lista completa está en <code>00-analisis/requisitos.md</code>):</p>
+<table><thead><tr><th>Id</th><th>Requisito funcional</th></tr></thead><tbody><tr><td>RF1</td><td>Mostrar un formulario con: nombre del equipo, jugador 1, jugador 2, correo, teléfono (opcional) y categoría.</td></tr><tr><td>RF2</td><td>Validar los datos: nombre del equipo de 3 a 30 caracteres y no repetido; jugadores de 2 a 40 letras y distintos; correo válido; teléfono de 9 cifras que empiece por 6, 7, 8 o 9; categoría de la lista.</td></tr><tr><td>RF3</td><td>Si hay errores, volver a mostrar el formulario con los datos escritos y un mensaje junto a cada campo incorrecto.</td></tr><tr><td>RF4</td><td>Si todo es correcto, guardar la inscripción con la fecha y mostrar una confirmación. Recargar la página no debe inscribir dos veces.</td></tr><tr><td>RF5</td><td>Mostrar la lista de equipos inscritos y las plazas libres.</td></tr><tr><td>RF6</td><td>Con 16 equipos, no mostrar el formulario y avisar de que el torneo está completo.</td></tr></tbody></table>
+<table><thead><tr><th>Id</th><th>Requisito no funcional</th></tr></thead><tbody><tr><td>RNF1</td><td>PHP 8.2 sin frameworks ni base de datos: las inscripciones se guardan en un fichero JSON.</td></tr><tr><td>RNF2</td><td>Seguridad: se escapa toda la salida (XSS), no se confía en la validación del navegador y el fichero se escribe con bloqueo.</td></tr><tr><td>RNF3</td><td>Funciona sin JavaScript; página en UTF-8 y en español.</td></tr><tr><td>RNF4</td><td>Accesible: cada campo con su <code>&lt;label&gt;</code> y los errores como texto junto al campo.</td></tr><tr><td>RNF5</td><td>Código organizado: lógica en <code>funciones.php</code>, página en <code>index.php</code>, estilos en <code>estilos.css</code>.</td></tr><tr><td>RNF6</td><td>Los límites (16 equipos, longitudes) y las categorías, en constantes.</td></tr></tbody></table>
+<div class="caja recomendacion"><div class="titulo-caja">Recomendación</div>
+<p>Un buen requisito es <strong>concreto y comprobable</strong>: al terminar, tiene que ser posible decir "sí, se cumple" o "no, no se cumple". "El formulario debe ser fácil de usar" no se puede comprobar; "cada campo tiene su etiqueta y, si es incorrecto, un mensaje de error junto a él" sí. Numera los requisitos (RF1, RF2...) para poder referirte a ellos en el código, en las pruebas y al hablar con el cliente. Y si algo no está claro (¿el teléfono es obligatorio?, ¿"Los Pulpos" y "los pulpos" son el mismo equipo?), <strong>pregunta</strong>; si no puedes preguntar, apunta la decisión que tomas.</p>
+</div>
+<h3>2.2.- Entradas y salidas: ejemplos y maqueta</h3>
+<p>El siguiente paso es concretar <strong>qué entra</strong> en el programa (datos que escribe el usuario, ficheros que se leen, parámetros de la URL...) y <strong>qué sale</strong> (páginas, mensajes, ficheros que se escriben). La mejor forma es escribir <strong>ejemplos concretos</strong>, antes de programar.</p>
+<h4>Interfaz de texto (consola)</h4>
+<p>Si el programa funciona en la consola, crea un fichero de texto con ejemplos de entradas y de las salidas que esperas. Por ejemplo, para un programa que calcula la nota final de cada alumno a partir de un fichero:</p>
+<pre><code>=== notas.txt (ENTRADA) ===          === salida esperada (SALIDA) ===
+Ana Pérez;7;8;6.5                    Ana Pérez: 7.17 (Notable)
+Brais Otero;4;5;3                    Brais Otero: 4.00 (Suspenso)
+Carmen Núñez;10;9;9.5                Carmen Núñez: 9.50 (Sobresaliente)
+Diego Lago;7;;8                      Línea 4: falta una nota
+Eva;once;8;9                         Línea 5: "once" no es una nota válida
+                                     Media del grupo: 6.89 (3 alumnos válidos)</code></pre>
+<p>Al escribirlo te das cuenta de cosas que el enunciado no decía: ¿con cuántos decimales?, ¿qué hago si falta una nota?, ¿las líneas incorrectas cuentan para la media? Además, esos ejemplos serán después tus <strong>casos de prueba</strong>.</p>
+<h4>Interfaz gráfica (web): la maqueta</h4>
+<p>Si el programa tiene una interfaz gráfica, crea desde el principio un <strong>esqueleto</strong> de la aplicación: un <strong>wireframe</strong> (un boceto de la distribución, en papel o con herramientas como Excalidraw o Penpot) o una <strong>maqueta</strong> (<em>mockup</em>), que en web suele hacerse directamente con <strong>HTML y CSS, sin nada de PHP</strong>, con datos inventados. Sirve para enseñársela al cliente, decidir qué campos hay y dónde salen los mensajes, y además el HTML se aprovecha después.</p>
+<figure><img src="maqueta.png" alt="Maqueta del formulario de inscripción y de la lista de equipos" width="560"><figcaption>Figura 2. Maqueta del torneo (paso 1 del ejemplo guiado): solo HTML y CSS, con un error y una confirmación de ejemplo</figcaption></figure>
+<p>Para el torneo, los ejemplos de entradas y salidas están en <code>00-analisis/entradas-salidas.txt</code>: una inscripción correcta, campos vacíos, datos incorrectos, un nombre repetido, un intento de XSS, el torneo completo y qué pasa al recargar la página.</p>
+<h3>2.3.- Los datos y las estructuras de datos</h3>
+<p>Ahora hay que decidir <strong>qué datos</strong> maneja el programa y <strong>dónde y cómo</strong> se guarda cada uno. Hay dos situaciones muy distintas:</p>
+<p><strong>a) Guardar en tiempo de ejecución</strong> (mientras se ejecuta el script, en variables):</p>
+<ul><li><strong>Tipos de datos primitivos</strong> (simples): <code>int</code>, <code>float</code>, <code>string</code>, <code>bool</code> y <code>null</code>. Ejemplo: el número máximo de equipos (<code>int</code>), el correo (<code>string</code>), si el torneo está completo (<code>bool</code>).
+</li><li><strong>Tipos de datos compuestos</strong>, para agrupar varios datos:
+<ul><li><strong>arrays</strong>: listas (índices 0, 1, 2...), arrays asociativos (clave =&gt; valor) y arrays de arrays (multidimensionales),
+</li><li><strong>objetos</strong> (clases y tipos de datos abstractos), que agrupan datos y las operaciones que se pueden hacer con ellos (tema 3).
+</li></ul>
+</li></ul>
+<p>Elegir bien la estructura simplifica muchísimo el código. Compara tres formas de guardar un equipo:</p>
+<pre><code>&lt;?php
+// MAL: variables sueltas. ¿Y si hay 16 equipos? ¿$nombre1, $nombre2... $nombre16?
+$nombreEquipo = 'Los Pulpos'; $jugador1 = 'Ana Pérez'; $jugador2 = 'Brais Otero';
+
+// BIEN: un array asociativo por equipo, y una LISTA de equipos
+$equipo = [
+    'nombre'    =&gt; 'Los Pulpos',
+    'jugadores' =&gt; ['Ana Pérez', 'Brais Otero'],     // una lista dentro del array
+    'email'     =&gt; 'ana@example.com',
+    'categoria' =&gt; 'mixta',
+];
+$equipos[] = $equipo;                                 // añadir a la lista
+echo count($equipos);                                 // cuántos hay
+echo $equipos[0]['jugadores'][1];                     // "Brais Otero"
+
+// TAMBIÉN BIEN (tema 3): un objeto, que además puede validar sus datos
+$equipo = new Equipo('Los Pulpos', ['Ana Pérez', 'Brais Otero'], 'ana@example.com', 'mixta');</code></pre>
+<p><strong>b) Guardar entre ejecuciones o de forma centralizada: persistencia.</strong> Una aplicación web tiene una particularidad muy importante:</p>
+<div class="caja debes"><div class="titulo-caja">Debes conocer</div>
+<p><strong>HTTP no tiene estado.</strong> Cada vez que el navegador pide una página, el script PHP se ejecuta <strong>desde cero</strong> y, al terminar, <strong>todas sus variables desaparecen</strong>. Si un dato tiene que sobrevivir a la siguiente petición (los equipos inscritos, el carrito, la partida...), hay que guardarlo en algún sitio.</p>
+</div>
+<table><thead><tr><th>Dónde se guarda</th><th>Cuánto dura</th><th>Quién lo ve</th><th>Ejemplo</th></tr></thead><tbody><tr><td>Variables</td><td>Solo durante la petición</td><td>Ese script</td><td>Los errores de validación</td></tr><tr><td>Campos ocultos del formulario (<code>hidden</code>)</td><td>Mientras el usuario siga enviando el formulario</td><td>El usuario (¡y puede cambiarlo!)</td><td>El estado de un juego en la tarea del tema 2</td></tr><tr><td>Cookies y sesiones (más adelante en el módulo)</td><td>Mientras dure la sesión o la cookie</td><td>Ese usuario</td><td>Usuario identificado, carrito</td></tr><tr><td><strong>Ficheros</strong> (texto, CSV, JSON)</td><td>Permanente</td><td>Todos los usuarios</td><td>Los equipos del torneo (<code>datos/equipos.json</code>)</td></tr><tr><td><strong>Bases de datos</strong> (tema 4)</td><td>Permanente</td><td>Todos los usuarios</td><td>Lo mismo, con búsquedas y muchos usuarios a la vez</td></tr></tbody></table>
+<p>En el ejemplo guiado los datos quedan así:</p>
+<table><thead><tr><th>Dato</th><th>Estructura</th><th>Dónde</th></tr></thead><tbody><tr><td>Datos del formulario</td><td>array asociativo <code>campo =&gt; string</code></td><td>petición (<code>$_POST</code>)</td></tr><tr><td>Errores de validación</td><td>array asociativo <code>campo =&gt; mensaje</code></td><td>variable</td></tr><tr><td>Un equipo</td><td>array asociativo (<code>nombre</code>, <code>jugadores</code>, <code>email</code>, <code>telefono</code>, <code>categoria</code>, <code>fecha</code>)</td><td>fichero</td></tr><tr><td>Todos los equipos</td><td>lista de equipos</td><td>fichero JSON (persistencia)</td></tr><tr><td>Máximo de equipos y categorías</td><td>constantes</td><td>código</td></tr></tbody></table>
+<h3>2.4.- Diagramas de datos (a partir del tema 4)</h3>
+<p>Cuando los datos son muchos y están relacionados entre sí, las tablas anteriores se quedan cortas. Para diseñar una <strong>base de datos</strong> se usan el <strong>diagrama Entidad-Relación</strong> (las "cosas" que hay que guardar, sus atributos y cómo se relacionan) y el <strong>modelo relacional</strong> (las tablas que resultan). Los verás en el tema 4 y en el módulo de Bases de datos.</p>
+<figure><svg viewBox="0 0 640 170" width="640" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" font-size="12"> <rect x="60" y="70" width="120" height="40" fill="#dbe9fb" stroke="#5b8fd6" stroke-width="1.5"/> <text x="120" y="95" text-anchor="middle" font-weight="bold">EQUIPO</text> <rect x="460" y="70" width="120" height="40" fill="#dbe9fb" stroke="#5b8fd6" stroke-width="1.5"/> <text x="520" y="95" text-anchor="middle" font-weight="bold">JUGADOR</text> <polygon points="320,60 380,90 320,120 260,90" fill="#fff6c4" stroke="#d9b200" stroke-width="1.5"/> <text x="320" y="94" text-anchor="middle">tiene</text> <line x1="180" y1="90" x2="260" y2="90" stroke="#444"/><line x1="380" y1="90" x2="460" y2="90" stroke="#444"/> <text x="220" y="82" text-anchor="middle">(1,1)</text><text x="420" y="82" text-anchor="middle">(2,2)</text> <g fill="#fff" stroke="#888"> <ellipse cx="30" cy="25" rx="26" ry="13"/><ellipse cx="95" cy="22" rx="30" ry="13"/><ellipse cx="165" cy="22" rx="30" ry="13"/> <ellipse cx="40" cy="150" rx="34" ry="13"/><ellipse cx="120" cy="155" rx="36" ry="13"/><ellipse cx="200" cy="150" rx="28" ry="13"/> <ellipse cx="490" cy="25" rx="22" ry="13"/><ellipse cx="565" cy="25" rx="32" ry="13"/> </g> <g stroke="#888"><line x1="40" y1="37" x2="85" y2="70"/><line x1="100" y1="35" x2="110" y2="70"/><line x1="160" y1="35" x2="150" y2="70"/> <line x1="50" y1="137" x2="85" y2="110"/><line x1="120" y1="142" x2="120" y2="110"/><line x1="195" y1="137" x2="160" y2="110"/> <line x1="495" y1="38" x2="505" y2="70"/><line x1="560" y1="38" x2="540" y2="70"/></g> <g text-anchor="middle" font-size="11"><text x="30" y="29" text-decoration="underline">id</text><text x="95" y="26">nombre</text><text x="165" y="26">email</text> <text x="40" y="154">teléfono</text><text x="120" y="159">categoría</text><text x="200" y="154">fecha</text> <text x="490" y="29" text-decoration="underline">id</text><text x="565" y="29">nombre</text></g> </svg><figcaption>Figura 3. Diagrama Entidad-Relación del torneo (si se guardara en una base de datos)</figcaption></figure>
+<pre><code>Modelo relacional (las tablas que salen del diagrama; la clave primaria, subrayada en el diagrama):
+  equipos   (id, nombre, email, telefono, categoria, fecha)
+  jugadores (id, nombre, equipo_id)        equipo_id -&gt; equipos.id (clave ajena)</code></pre>
+<h2>3.- Diseño</h2>
+<div class="caja caso"><div class="titulo-caja">Caso práctico</div>
+<p>Carlos ya sabe qué tiene que hacer la página, pero sigue pareciéndole un problema enorme. Juan le dibuja en una servilleta una caja con el nombre de la página y, debajo, cinco cajas más pequeñas: "Ahora ya no tienes un problema grande, tienes cinco pequeños. Y cada uno lo puedes partir otra vez".</p>
+</div>
+<h3>3.1.- Divide y vencerás: módulos y funciones</h3>
+<p>El principio de <strong>divide y vencerás</strong> consiste en <strong>descomponer</strong> un problema grande en problemas más pequeños, y estos en otros más pequeños, hasta que cada uno sea tan sencillo que se pueda resolver con una <strong>función</strong> de pocas líneas. Es el diseño <strong>descendente</strong> (<em>top-down</em>).</p>
+<figure><svg viewBox="0 0 700 250" width="700" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" font-size="12"> <rect x="240" y="10" width="220" height="40" rx="6" fill="#c9b8f0" stroke="#8e6bd1" stroke-width="1.5"/> <text x="350" y="35" text-anchor="middle" font-weight="bold">index.php: inscripción</text> <g fill="#ece2fb" stroke="#8e6bd1" stroke-width="1.2"> <rect x="5" y="95" width="125" height="36" rx="5"/><rect x="145" y="95" width="125" height="36" rx="5"/><rect x="285" y="95" width="125" height="36" rx="5"/><rect x="425" y="95" width="125" height="36" rx="5"/><rect x="565" y="95" width="130" height="36" rx="5"/> </g> <g stroke="#666"><line x1="350" y1="50" x2="67" y2="95"/><line x1="350" y1="50" x2="207" y2="95"/><line x1="350" y1="50" x2="347" y2="95"/><line x1="350" y1="50" x2="487" y2="95"/><line x1="350" y1="50" x2="630" y2="95"/></g> <g text-anchor="middle" font-weight="bold" font-size="11"><text x="67" y="118">1. Inicializar</text><text x="207" y="118">2. Recibir y validar</text><text x="347" y="118">3. Procesar y guardar</text><text x="487" y="118">4. Mensajes</text><text x="630" y="118">5. Enviar el HTML</text></g> <g font-family="Consolas, monospace" font-size="10.5" fill="#333"> <text x="10" y="155">cargarEquipos()</text><text x="10" y="171">datosVacios()</text> <text x="150" y="155">recogerDatos()</text><text x="150" y="171">validarInscripcion()</text><text x="160" y="187">validarEquipo()</text><text x="160" y="203">validarJugador() x2</text><text x="160" y="219">validarEmail()</text><text x="160" y="235">validarTelefono()...</text> <text x="290" y="155">crearEquipo()</text><text x="290" y="171">guardarEquipos()</text><text x="290" y="187">header('Location')</text> <text x="430" y="155">?ok=1 → confirmación</text><text x="430" y="171">plazas libres</text> <text x="570" y="155">e() (escapar)</text><text x="570" y="171">htmlCampoTexto()</text><text x="570" y="187">htmlError()</text> </g> </svg><figcaption>Figura 4. Descomposición de la página de inscripción en partes y funciones</figcaption></figure>
+<p>Casi todos los scripts PHP que atienden un formulario tienen esta misma estructura, en este orden:</p>
+<pre><code>&lt;?php
+require_once __DIR__ . '/funciones.php';
+
+// 1. Inicializar: cargar datos, valores por defecto
+// 2. Recepción y validación de datos (si la petición es POST)
+// 3. Procesar los datos y persistirlos (si no hay errores)
+// 4. Preparar los mensajes de error o informativos
+// 5. Enviar al cliente la página (HTML), sin lógica: solo mostrar variables ya preparadas
+?&gt;
+&lt;!DOCTYPE html&gt;
+...</code></pre>
+<p>Para que las funciones sean realmente útiles:</p>
+<ul><li><strong>Una función, una tarea.</strong> Si para explicar lo que hace necesitas la palabra "y", probablemente son dos funciones.
+</li><li><strong>Nombre con un verbo</strong> que diga lo que hace: <code>validarEmail()</code>, <code>cargarEquipos()</code>, <code>crearEquipo()</code>.
+</li><li><strong>Recibe lo que necesita por parámetros y devuelve el resultado con <code>return</code>.</strong> Evita las variables globales y evita hacer <code>echo</code> dentro de las funciones de lógica: así se pueden probar y reutilizar.
+</li><li><strong>Cortas</strong>: si una función no cabe en la pantalla, divídela.
+</li><li>Separa la <strong>lógica</strong> (validar, calcular, guardar) de la <strong>presentación</strong> (el HTML).
+</li></ul>
+<h3>3.2.- Diagramas de estado-transición</h3>
+<p>Una página web cambia de aspecto según lo que haya pasado: la primera visita, un envío con errores, un envío correcto... Un <strong>diagrama de estado-transición</strong> dibuja los <strong>estados</strong> posibles (cajas) y las <strong>transiciones</strong> entre ellos (flechas), indicando qué las provoca. En la versión "ampliada" se añaden a cada flecha la <strong>condición</strong> entre corchetes y la <strong>acción</strong> que se realiza: <code>evento [condición] / acción</code>.</p>
+<figure><svg viewBox="0 0 720 325" width="720" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" font-size="11.5"> <defs><marker id="fl5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#444"/></marker></defs> <circle cx="22" cy="110" r="8" fill="#333"/> <line x1="30" y1="110" x2="58" y2="110" stroke="#444" stroke-width="1.4" marker-end="url(#fl5)"/> <rect x="60" y="80" width="190" height="60" rx="10" fill="#c6efa0" stroke="#7cb342" stroke-width="1.5"/> <text x="155" y="105" text-anchor="middle" font-weight="bold">Formulario vacío</text><text x="155" y="122" text-anchor="middle">+ lista de equipos</text> <rect x="470" y="80" width="230" height="60" rx="10" fill="#c6efa0" stroke="#7cb342" stroke-width="1.5"/> <text x="585" y="105" text-anchor="middle" font-weight="bold">Confirmación</text><text x="585" y="122" text-anchor="middle">"Inscripción guardada" + formulario vacío</text> <rect x="250" y="220" width="210" height="60" rx="10" fill="#ffebee" stroke="#b71c1c" stroke-width="1.5"/> <text x="355" y="245" text-anchor="middle" font-weight="bold">Formulario con errores</text><text x="355" y="262" text-anchor="middle">(se conservan los datos escritos)</text> <rect x="510" y="225" width="190" height="50" rx="10" fill="#fff6c4" stroke="#d9b200" stroke-width="1.5"/> <text x="605" y="247" text-anchor="middle" font-weight="bold">Torneo completo</text><text x="605" y="263" text-anchor="middle">(sin formulario)</text> <line x1="250" y1="100" x2="467" y2="100" stroke="#444" stroke-width="1.4" marker-end="url(#fl5)"/> <text x="358" y="80" text-anchor="middle">POST [datos válidos] /</text><text x="358" y="94" text-anchor="middle">guardar en JSON, 302 → GET ?ok=1</text> <line x1="140" y1="140" x2="262" y2="218" stroke="#444" stroke-width="1.4" marker-end="url(#fl5)"/> <text x="150" y="190" text-anchor="end">POST [hay errores] /</text><text x="150" y="204" text-anchor="end">mostrar errores</text> <line x1="430" y1="220" x2="520" y2="142" stroke="#444" stroke-width="1.4" marker-end="url(#fl5)"/> <text x="470" y="170" text-anchor="start">POST [válidos] / guardar, 302</text> <path d="M320,282 C320,302 390,302 390,284" fill="none" stroke="#444" stroke-width="1.4" marker-end="url(#fl5)"/> <text x="355" y="316" text-anchor="middle">POST [hay errores] / conservar los datos</text> <path d="M585,78 C585,38 155,38 155,76" fill="none" stroke="#444" stroke-width="1.4" stroke-dasharray="5,3" marker-end="url(#fl5)"/> <text x="370" y="30" text-anchor="middle">GET (recargar con F5 o volver): NO se reenvía el POST</text> <line x1="640" y1="140" x2="640" y2="222" stroke="#444" stroke-width="1.4" marker-end="url(#fl5)"/> <text x="648" y="186">[16 equipos]</text> </svg><figcaption>Figura 5. Diagrama de estado-transición de la página de inscripción</figcaption></figure>
+<p>Dibujarlo antes de programar ayuda a no olvidar casos: ¿qué se ve al recargar la página después de inscribirse?, ¿qué pasa si alguien envía el formulario cuando ya no quedan plazas? Cada flecha se convierte después en un <code>if</code> del código.</p>
+<div class="caja saber"><div class="titulo-caja">Para saber más</div>
+<p>Si después de guardar los datos el script mostrara directamente la página de confirmación, al pulsar F5 el navegador volvería a enviar el formulario y el equipo se inscribiría dos veces. La solución es el patrón <strong>POST/Redirect/GET</strong> (PRG): tras procesar el POST, el servidor responde con una <strong>redirección</strong> (<code>header('Location: index.php?ok=1'); exit;</code>, código 302) y el navegador hace una petición GET nueva. Es la flecha de la parte superior del diagrama.</p>
+</div>
+<h3>3.3.- Diagramas UML de clases (tema 3)</h3>
+<p>Cuando la solución se programe con objetos, el <strong>diagrama de clases UML</strong> muestra cada clase con sus atributos y métodos (<code>-</code> privado, <code>+</code> público) y las relaciones entre clases. Así quedaría el torneo con programación orientada a objetos:</p>
+<figure><svg viewBox="0 0 640 230" width="640" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" font-size="11.5"> <g fill="#fff" stroke="#5b8fd6" stroke-width="1.5"> <rect x="20" y="20" width="230" height="190"/><rect x="390" y="20" width="230" height="190"/> </g> <rect x="20" y="20" width="230" height="26" fill="#dbe9fb" stroke="#5b8fd6" stroke-width="1.5"/> <rect x="390" y="20" width="230" height="26" fill="#dbe9fb" stroke="#5b8fd6" stroke-width="1.5"/> <text x="135" y="38" text-anchor="middle" font-weight="bold">Torneo</text> <text x="505" y="38" text-anchor="middle" font-weight="bold">Equipo</text> <g font-family="Consolas, monospace" font-size="10.5"> <text x="28" y="64">- equipos: Equipo[]</text><text x="28" y="80">+ MAX_EQUIPOS: int = 16</text> <text x="28" y="122">+ inscribir(e: Equipo): void</text><text x="28" y="138">+ quedanPlazas(): bool</text><text x="28" y="154">+ existe(nombre: string): bool</text><text x="28" y="170">+ getEquipos(): array</text><text x="28" y="186">+ guardar(fichero: string): void</text> <text x="398" y="64">- nombre: string</text><text x="398" y="80">- jugadores: array</text><text x="398" y="96">- email: string</text><text x="398" y="112">- categoria: string</text><text x="398" y="128">- fecha: DateTimeImmutable</text> <text x="398" y="162">+ __construct(...)</text><text x="398" y="178">+ getNombre(): string</text><text x="398" y="194">+ toArray(): array</text> </g> <line x1="20" y1="100" x2="250" y2="100" stroke="#5b8fd6"/><line x1="390" y1="142" x2="620" y2="142" stroke="#5b8fd6"/> <polygon points="250,115 262,108 274,115 262,122" fill="#fff" stroke="#444"/> <line x1="274" y1="115" x2="390" y2="115" stroke="#444" stroke-width="1.4"/> <text x="282" y="108">1</text><text x="355" y="108">0..16</text><text x="322" y="132" text-anchor="middle" font-style="italic">inscribe</text> </svg><figcaption>Figura 6. Diagrama de clases UML del torneo</figcaption></figure>
+<h2>4.- Codificación y pruebas</h2>
+<div class="caja caso"><div class="titulo-caja">Caso práctico</div>
+<p>Por fin, Carlos puede abrir el editor. "¿Y ahora lo escribo todo?", pregunta. "Ni se te ocurra", responde María. "Vas a construirlo <strong>por capas</strong>: primero algo que se vea, luego algo que funcione a medias, luego algo que funcione entero. Y cada capa la pruebas antes de seguir".</p>
+</div>
+<h3>4.1.- Desarrollo incremental</h3>
+<p>El <strong>desarrollo incremental</strong> consiste en ir añadiendo funcionalidad <strong>parte a parte</strong>: se programa una parte pequeña, se prueba, se corrige y, solo cuando funciona, se pasa a la siguiente. Así, cuando algo falla, el error está casi seguro en lo último que has escrito.</p>
+<div class="caja debes"><div class="titulo-caja">Debes conocer</div>
+<p><strong>NO intentes resolver todo de golpe, saltando de un lugar a otro como un pollo sin cabeza.</strong> Escribir 200 líneas seguidas y probarlas al final garantiza horas de búsqueda de errores: no sabrás cuál de las 200 líneas falla, y probablemente fallen varias a la vez.</p>
+</div>
+<p>El ejemplo guiado está construido así. Cada carpeta contiene la aplicación completa tal como queda al terminar ese paso, con los mismos nombres de fichero, para poder <strong>compararlas</strong>:</p>
+<table><thead><tr><th>Carpeta</th><th>Qué se añade</th><th>Requisitos que cumple</th></tr></thead><tbody><tr><td><code>paso1-maqueta</code></td><td>Solo HTML y CSS, con datos inventados</td><td>(ninguno: es para validar la interfaz con el cliente)</td></tr><tr><td><code>paso2-todos</code></td><td>La estructura del código con comentarios <code>TODO</code> y las funciones vacías</td><td>(ninguno, pero ya se ejecuta)</td></tr><tr><td><code>paso3-validacion</code></td><td>Recepción y validación de los datos; formulario que conserva lo escrito y muestra errores</td><td>RF1, RF2, RF3</td></tr><tr><td><code>paso4-persistencia</code></td><td>Guardar y cargar en JSON, lista de equipos, plazas, PRG</td><td>Todos</td></tr><tr><td><code>paso5-refactorizado</code></td><td><strong>Solución completa</strong>: el mismo comportamiento con el código mejor organizado</td><td>Todos</td></tr></tbody></table>
+<p>Para ver qué cambia de un paso a otro, desde una terminal abierta en la carpeta del ejemplo:</p>
+<pre><code>git diff --no-index "paso3-validacion" "paso4-persistencia"</code></pre>
+<p>En Visual Studio Code: selecciona los dos ficheros en el explorador (con <em>Ctrl</em>), botón derecho, <em>Comparar seleccionados</em>.</p>
+<div class="caja recomendacion"><div class="titulo-caja">Recomendación</div>
+<p>Usa <strong>git</strong> desde el primer día, aunque trabajes solo: haz un <em>commit</em> cada vez que termines una parte y funcione (<code>git commit -m "Validación del correo"</code>). Si te lías, puedes volver a la última versión buena (<code>git restore</code> o <code>git checkout</code>) y ver exactamente qué has cambiado desde entonces (<code>git diff</code>).</p>
+</div>
+<h3>4.2.- Paso 1: la maqueta (solo HTML y CSS)</h3>
+<p>Se crean los ficheros que hagan falta (<code>index.php</code>, <code>estilos.css</code>...) solo con HTML y CSS. Aunque el fichero se llame <code>.php</code>, todavía no tiene PHP. Se incluyen <strong>ejemplos de todos los estados</strong> (un error, un mensaje de confirmación, una fila en la tabla) para ver cómo quedan (Figura 2).</p>
+<h3>4.3.- Paso 2: detallar las partes con TODOs</h3>
+<p>Antes de programar, se escriben como <strong>comentarios</strong> las partes principales de lo que hay que hacer, en el orden en que se harán, marcadas con <code>TODO</code> ("por hacer"). Es el diseño del apartado 3 trasladado al código:</p>
+<pre><code>&lt;?php
+require_once __DIR__ . '/funciones.php';
+
+// 1. Inicializar
+// TODO (paso 3): $datos con los 6 campos vacíos, $errores vacío, $mensaje vacío
+// TODO (paso 4): $equipos = cargarEquipos()
+
+// 2. Recepción y validación de datos
+// TODO (paso 3): si la petición es POST: $datos = recogerDatos(); $errores = validarInscripcion(...)
+
+// 3. Procesar y persistir los datos
+// TODO (paso 4): si no hay errores: crearEquipo, añadirlo, guardarEquipos y redirigir a ?ok=1
+
+// 4. Mensajes de error o informativos
+// TODO (paso 4): si llega ?ok=1, mensaje "Inscripción guardada. ¡Mucha suerte, &lt;equipo&gt;!"
+
+// 5. Enviar al cliente la página</code></pre>
+<p>En <code>funciones.php</code> se escriben las <strong>firmas</strong> de las funciones (nombre, parámetros y tipo del resultado) con un TODO y un valor provisional (<code>return [];</code>), para que la página ya se pueda ejecutar:</p>
+<pre><code>&lt;?php
+function validarInscripcion(array $datos, array $equipos): array
+{
+    // TODO (paso 3): equipo: obligatorio, de 3 a 30 caracteres, no repetido
+    // TODO (paso 3): jugador1 y jugador2: de 2 a 40 letras, distintos
+    // TODO (paso 3): email válido; teléfono opcional (9 cifras); categoría de la lista
+    return [];
+}</code></pre>
+<div class="caja recomendacion"><div class="titulo-caja">Recomendación</div>
+<p>Instala en VS Code una extensión para los TODO, como <strong>Todo Tree</strong>: busca todos los comentarios <code>TODO</code> y <code>FIXME</code> del proyecto y los muestra en un panel lateral, de forma que siempre sabes qué te queda por hacer. Cuando termines una parte, <strong>borra su TODO</strong>.</p>
+</div>
+<h3>4.4.- Paso 3: recepción y validación de datos</h3>
+<p>Es la parte más delicada: los datos llegan del usuario y <strong>pueden ser cualquier cosa</strong> (vacíos, demasiado largos, con otro formato, maliciosos...). La validación del navegador (<code>required</code>, <code>type="email"</code>) es una ayuda para el usuario, pero <strong>no es seguridad</strong>: se puede saltar en un segundo con las herramientas del navegador. Por eso el formulario del ejemplo lleva <code>novalidate</code>: para que puedas comprobar que el servidor valida.</p>
+<p>Funciones más usadas para recibir y validar:</p>
+<table><thead><tr><th>Función</th><th>Para qué</th><th>Ejemplo</th></tr></thead><tbody><tr><td><code>$_POST['x'] ?? ''</code></td><td>Leer un campo sin avisos si no existe</td><td><code>$email = $_POST['email'] ?? '';</code></td></tr><tr><td><code>is_string()</code></td><td>Comprobar que no han enviado un array (<code>email[]=...</code>)</td><td><code>is_string($valor) ? trim($valor) : ''</code></td></tr><tr><td><code>trim()</code></td><td>Quitar los espacios del principio y del final</td><td><code>trim('  Ana ')</code> da <code>"Ana"</code></td></tr><tr><td><code>mb_strlen()</code></td><td>Longitud en <strong>caracteres</strong> (<code>strlen</code> cuenta bytes: la ñ ocupa 2)</td><td><code>mb_strlen('Peña')</code> da 4</td></tr><tr><td><code>filter_var()</code></td><td>Validar formatos estándar: correo, entero, URL, IP...</td><td><code>filter_var($email, FILTER_VALIDATE_EMAIL)</code></td></tr><tr><td><code>preg_match()</code></td><td>Validar un formato propio con una expresión regular</td><td><code>preg_match('/^[6789]\d{8}$/', $tel)</code></td></tr><tr><td><code>in_array()</code>, <code>array_key_exists()</code></td><td>Comprobar que el valor está en una <strong>lista blanca</strong></td><td><code>array_key_exists($cat, CATEGORIAS)</code></td></tr><tr><td><code>checkdate()</code>, <code>createFromFormat()</code></td><td>Validar fechas</td><td>(apuntes de fecha y hora)</td></tr></tbody></table>
+<pre><code>&lt;?php
+// Del paso 3 (funciones.php): validación del correo y del teléfono
+if ($datos['email'] === '') {
+    $errores['email'] = 'Escribe un correo electrónico';
+} elseif (filter_var($datos['email'], FILTER_VALIDATE_EMAIL) === false) {
+    $errores['email'] = 'El correo no es válido';
+}
+if ($datos['telefono'] !== '' &amp;&amp; !preg_match('/^[6789]\d{8}$/', str_replace(' ', '', $datos['telefono']))) {
+    $errores['telefono'] = '9 cifras, empezando por 6, 7, 8 o 9';
+}</code></pre>
+<p>Los errores se guardan en un array <code>campo =&gt; mensaje</code>. Así, en el HTML, cada campo puede mostrar su propio error y el formulario puede <strong>conservar lo que el usuario escribió</strong> (se llama formulario <em>pegajoso</em> o <em>sticky</em>):</p>
+<pre><code>&lt;input type="email" id="email" name="email" value="&lt;?= e($datos['email']) ?&gt;"&gt;
+&lt;?php if (isset($errores['email'])): ?&gt;&lt;p class="error"&gt;&lt;?= e($errores['email']) ?&gt;&lt;/p&gt;&lt;?php endif; ?&gt;</code></pre>
+<div class="caja debes"><div class="titulo-caja">Debes conocer</div>
+<p><strong>Valida en la entrada, escapa en la salida.</strong> <code>htmlspecialchars()</code> (en el ejemplo, la función <code>e()</code>) <strong>no es una función de validación</strong>: convierte <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, <code>"</code> y <code>'</code> en entidades HTML para que el navegador los muestre como texto y no los interprete como código (evita los ataques XSS). Se aplica <strong>justo al mostrar</strong> un dato en la página, no al recibirlo: si lo aplicas al recibir y guardas el resultado, el fichero queda lleno de <code>&amp;amp;</code> y <code>&amp;lt;</code>, las longitudes cambian y, al mostrarlo otra vez, sale escapado dos veces (<code>&amp;amp;amp;</code>). Su contraria, <code>htmlspecialchars_decode()</code>, casi nunca hace falta: solo para recuperar textos que alguien guardó ya escapados por error.</p>
+</div>
+<pre><code>&lt;?php
+$nombre = 'Tom &amp; Jerry &lt;3';
+echo htmlspecialchars($nombre);                    // Tom &amp;amp; Jerry &amp;lt;3  (en la página se ve bien)
+echo htmlspecialchars(htmlspecialchars($nombre));  // Tom &amp;amp;amp; Jerry &amp;amp;lt;3  (¡escapado dos veces!)
+echo htmlspecialchars_decode('Tom &amp;amp; Jerry');   // Tom &amp; Jerry</code></pre>
+<h3>4.5.- Paso 4: procesamiento y persistencia</h3>
+<p>Con los datos ya validados se procesan (en el ejemplo, se convierten en un equipo con la fecha de inscripción y el teléfono sin espacios) y se <strong>persisten</strong>. Después, PRG:</p>
+<pre><code>&lt;?php
+// 3. Procesar y persistir los datos (paso 4, index.php)
+if ($errores === []) {
+    $equipos[] = crearEquipo($datos);
+    if (guardarEquipos($equipos)) {
+        header('Location: index.php?ok=1');      // POST/Redirect/GET: F5 no repite la inscripción
+        exit;
+    }
+    $errores['general'] = 'No se ha podido guardar la inscripción. Inténtalo más tarde.';
+}</code></pre>
+<p>Fíjate en que también se tiene en cuenta que <strong>guardar puede fallar</strong> (disco lleno, permisos...): el usuario recibe un mensaje en lugar de una página en blanco.</p>
+<h3>4.6.- Pruebas</h3>
+<p>Probar no es "abrir la página y ver que sale algo". Es comprobar, de forma sistemática, que se cumplen <strong>todos</strong> los requisitos. Los ejemplos de entradas y salidas del análisis se convierten en <strong>casos de prueba</strong>: una entrada concreta y la salida que se espera. Hay que probar:</p>
+<ul><li><strong>casos correctos</strong> (los normales),
+</li><li><strong>casos límite</strong>: justo en el borde de lo permitido y justo fuera (nombre de 2, 3, 30 y 31 caracteres; 15 y 16 equipos),
+</li><li><strong>casos incorrectos</strong>: vacíos, formatos erróneos, valores fuera de la lista,
+</li><li><strong>casos maliciosos</strong>: HTML o JavaScript en los campos, un array donde se espera un texto, peticiones enviadas sin pasar por el formulario.
+</li></ul>
+<table><thead><tr><th>Caso</th><th>Entrada</th><th>Salida esperada</th><th>¿Pasa?</th></tr></thead><tbody><tr><td>1</td><td>Datos correctos</td><td>Redirección a <code>?ok=1</code>, mensaje de confirmación, 15 plazas libres</td><td>Sí</td></tr><tr><td>2</td><td>Todo vacío</td><td>5 errores (el teléfono es opcional)</td><td>Sí</td></tr><tr><td>3</td><td><code>LP</code>, jugadores <code>Ana</code> y <code>ana</code>, correo <code>ana@</code>...</td><td>Un error por campo y se conservan los datos</td><td>Sí</td></tr><tr><td>4</td><td><code>los pulpos</code> (ya existe <code>Los Pulpos</code>)</td><td>"Ya hay un equipo con ese nombre"</td><td>Sí</td></tr><tr><td>5</td><td><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></td><td>Error de formato; el texto se ve, no se ejecuta</td><td>Sí</td></tr><tr><td>6</td><td>16 equipos inscritos</td><td>Sin formulario; un POST da "El torneo está completo"</td><td>Sí</td></tr><tr><td>7</td><td>F5 después de inscribirse</td><td>No se inscribe dos veces</td><td>Sí</td></tr></tbody></table>
+<div class="caja recomendacion"><div class="titulo-caja">Recomendación</div>
+<p>Cada vez que cambies algo, <strong>vuelve a pasar todas las pruebas</strong>, no solo la de lo que has cambiado: arreglar una cosa a menudo estropea otra. Los programadores profesionales automatizan las pruebas (en PHP, con PHPUnit) para que se ejecuten con un solo comando.</p>
+</div>
+<h3>4.7.- Depuración</h3>
+<p>Cuando una prueba falla, hay que <strong>depurar</strong>: encontrar por qué el programa no hace lo que debe. La regla de oro: <strong>no cambies cosas al azar</strong> "a ver si así va". Hay que <strong>observar</strong> qué hace realmente el programa, paso a paso, y compararlo con lo que <strong>debería</strong> hacer.</p>
+<h4>Primero: lee el mensaje de error</h4>
+<p>En el entorno de desarrollo, PHP debe mostrar todos los errores (<code>error_reporting = E_ALL</code> y <code>display_errors = On</code> en <code>php.ini</code>; en un servidor real, <code>display_errors = Off</code> y los errores al fichero de log). El mensaje dice <strong>qué</strong> pasa, en <strong>qué fichero</strong> y en <strong>qué línea</strong>:</p>
+<table><thead><tr><th>Mensaje</th><th>Causa habitual</th></tr></thead><tbody><tr><td><code>Parse error: syntax error, unexpected ...</code></td><td>Falta un <code>;</code>, una llave o unas comillas (a menudo en la línea <strong>anterior</strong>)</td></tr><tr><td><code>Warning: Undefined variable $x</code> / <code>Undefined array key "x"</code></td><td>Variable sin inicializar o campo del formulario que no ha llegado (usa <code>?? ''</code>)</td></tr><tr><td><code>Fatal error: Uncaught Error: Call to undefined function</code></td><td>Nombre mal escrito o falta el <code>require_once</code></td></tr><tr><td><code>Fatal error: Uncaught TypeError</code></td><td>Se pasa a una función un tipo que no espera (un array en lugar de un string...)</td></tr><tr><td><code>Warning: Cannot modify header information - headers already sent</code></td><td>Se ha enviado algo (HTML, un espacio, un <code>echo</code>) antes de <code>header()</code></td></tr><tr><td>Página en blanco</td><td>Error con <code>display_errors = Off</code>: míralo en el log de Apache/PHP</td></tr></tbody></table>
+<h4>Depuración "a mano"</h4>
+<p><code>var_dump($variable)</code>, <code>print_r($array)</code> o <code>error_log(...)</code> en mitad del código permiten ver un valor, pero obligan a modificar el código (y a acordarse de quitarlo) y solo muestran lo que pensaste mirar. Para algo más que un vistazo rápido, usa el depurador.</p>
+<h4>Xdebug y Visual Studio Code</h4>
+<p>Con <strong>Xdebug</strong> (la extensión de PHP) y la extensión <strong>PHP Debug</strong> de VS Code puedes <strong>ejecutar el código paso a paso</strong> y ver el valor de todas las variables en cada momento. En el XAMPP del aula ya está configurado en <code>php.ini</code>:</p>
+<pre><code>zend_extension=xdebug
+xdebug.mode=develop,debug
+xdebug.start_with_request=yes</code></pre>
+<table><thead><tr><th>Acción</th><th>Tecla</th><th>Para qué</th></tr></thead><tbody><tr><td>Punto de ruptura (<em>breakpoint</em>)</td><td>F9 (o clic a la izquierda del número de línea)</td><td>La ejecución se detiene en esa línea</td></tr><tr><td>Iniciar / continuar</td><td>F5</td><td>Hasta el siguiente punto de ruptura ("Listen for Xdebug" para páginas web; "Launch currently open script" para la consola)</td></tr><tr><td>Paso a paso por encima (<em>Step Over</em>)</td><td>F10</td><td>Ejecuta la línea entera (sin entrar en las funciones)</td></tr><tr><td>Paso a paso por dentro (<em>Step Into</em>)</td><td>F11</td><td>Entra en la función que se llama en esa línea</td></tr><tr><td>Salir (<em>Step Out</em>)</td><td>Mayús + F11</td><td>Termina la función actual y vuelve a quien la llamó</td></tr></tbody></table>
+<p>Mientras está detenido, el panel <strong>VARIABLES</strong> muestra todas las variables (también <code>$_POST</code>, <code>$_GET</code>, <code>$_SERVER</code>), <strong>INSPECCIÓN</strong> (<em>WATCH</em>) permite escribir expresiones (<code>mb_strlen($nombre)</code>, <code>count($equipos) &gt;= MAX_EQUIPOS</code>) y <strong>PILA DE LLAMADAS</strong> (<em>CALL STACK</em>) dice por qué funciones se ha llegado ahí. Con clic derecho en un punto de ruptura se puede poner una <strong>condición</strong> (por ejemplo, que solo se detenga cuando <code>$i === 15</code>).</p>
+<div class="caja resuelto"><div class="titulo-caja">Ejercicio resuelto: buscar los errores</div>
+<p>En <code>Ejemplo guiado - Torneo/depuracion/buscar-los-errores.php</code> hay tres funciones del torneo con un error de lógica cada una (no hay mensajes de PHP: simplemente, el resultado no es el esperado). El script ejecuta unas pruebas y dice cuáles fallan:</p>
+<pre><code>FALLA 16 equipos: no quedan plazas: obtenido true, esperado false
+FALLA teléfono "600 123 456": obtenido '', esperado '600123456'
+FALLA nombre "Los Ñandús" (10 letras): obtenido false, esperado true</code></pre>
+<p>Con un punto de ruptura en cada función y F10 se encuentran enseguida:</p>
+<ul><li><code>return count($equipos) &lt;= MAX_EQUIPOS;</code> con 16 equipos da <code>true</code>: debe ser <code>&lt;</code>. Es un error <strong>por uno</strong> (<em>off-by-one</em>), típico de los límites: por eso hay que probar los casos límite.
+</li><li><code>str_replace(' ', '', $telefono);</code> no cambia <code>$telefono</code>: <strong>devuelve</strong> el texto nuevo, y se estaba perdiendo. En el panel VARIABLES se ve que <code>$telefono</code> sigue con espacios. Debe ser <code>$telefono = str_replace(...)</code>.
+</li><li><code>strlen('Los Ñandús')</code> vale 12 (cuenta bytes; la Ñ y la ú ocupan 2 en UTF-8). Se ve añadiendo <code>strlen($nombre)</code> en INSPECCIÓN. Debe ser <code>mb_strlen</code>.
+</li></ul>
+<p>La solución comentada está en <code>buscar-los-errores_solucion.php</code>.</p>
+</div>
+<h4>En el cliente web: las herramientas de desarrollo (DevTools)</h4>
+<p>Con <strong>F12</strong> en el navegador se abren las herramientas de desarrollo. Para un programador de PHP las más útiles son:</p>
+<ul><li><strong>Elementos</strong> (<em>Elements</em>): el HTML que <strong>realmente</strong> ha generado tu PHP (¿se ha cerrado bien esa etiqueta?, ¿qué <code>value</code> tiene el campo?). Se puede editar en vivo: quita el <code>maxlength</code> o cambia una opción del <code>&lt;select&gt;</code> y envía el formulario para comprobar que el servidor valida.
+</li><li><strong>Red</strong> (<em>Network</em>): cada petición que hace el navegador, con su <strong>método</strong> (GET o POST), su <strong>código de estado</strong> (200, 302, 404, 500...), las <strong>cabeceras</strong> (por ejemplo, la redirección <code>Location</code>), los <strong>datos enviados</strong> (pestaña <em>Payload</em>: lo que llega a <code>$_POST</code>) y la respuesta. Activa "Preservar registro" (<em>Preserve log</em>) para no perder la petición POST tras la redirección.
+</li><li><strong>Consola</strong> (<em>Console</em>): errores de JavaScript y de carga de ficheros (un CSS que no se encuentra).
+</li><li><strong>Aplicación</strong> (<em>Application</em>): cookies y almacenamiento (útil cuando trabajes con sesiones).
+</li></ul>
+<h4>Comprobar el tráfico de red</h4>
+<p>A veces el problema no está en el código, sino en la comunicación: ¿la petición llega?, ¿al servidor correcto?, ¿está escuchando Apache?</p>
+<ul><li><strong>curl</strong> (en la terminal) o clientes como <strong>Postman</strong> o <strong>Thunder Client</strong> (extensión de VS Code) permiten enviar peticiones a mano, sin navegador: <code>curl -X POST -d "equipo=Los Pulpos" http://localhost/torneo/index.php</code>. Muy útiles para probar que el servidor valida.
+</li><li><strong>nmap</strong> muestra qué puertos están abiertos en un equipo (¿Apache escucha en el 80?, ¿MySQL en el 3306?): <code>nmap localhost</code>.
+</li><li><strong>Wireshark</strong> captura y muestra los paquetes que pasan por la red: se ve la petición HTTP completa y su respuesta (con HTTPS, cifradas). Para capturar el tráfico de <code>localhost</code> en Windows hace falta el adaptador <em>Npcap Loopback</em>.
+</li></ul>
+<div class="caja debes"><div class="titulo-caja">Debes conocer</div>
+<p>Analizar el tráfico o los puertos de <strong>equipos o redes que no son tuyos, o sin permiso</strong>, puede ser un delito. Usa nmap y Wireshark solo en tu propio equipo, en las máquinas del aula o en redes en las que tengas autorización expresa.</p>
+</div>
+<h4>Usar la IA para que nos dé pistas</h4>
+<p>Los asistentes de IA pueden ayudar mucho... o impedir que aprendas. Algunas pautas:</p>
+<ul><li><strong>Pide pistas y explicaciones, no la solución completa</strong>: "¿por qué este código da <em>Undefined array key</em>?", "¿qué estoy haciendo mal en esta expresión regular?".
+</li><li><strong>Da contexto</strong>: el mensaje de error completo, el trozo de código mínimo donde ocurre, lo que esperabas y lo que obtienes, y la versión de PHP.
+</li><li><strong>Comprueba siempre lo que te dice</strong>: puede inventarse funciones u opciones, o darte código de versiones antiguas (por ejemplo, <code>strftime</code> o <code>mysql_query</code>, que ya no existen). Ejecútalo, depúralo y consulta la documentación oficial.
+</li><li><strong>Entiende cada línea antes de usarla.</strong> Si no sabrías explicarla, no la uses.
+</li><li><strong>No pegues contraseñas, claves ni datos personales</strong> reales.
+</li><li>Respeta las <strong>normas del módulo</strong> sobre el uso de la IA en las tareas evaluables.
+</li></ul>
+<pre><code>MAL:  "hazme un formulario de inscripción de un torneo en php"
+
+BIEN: "Estoy aprendiendo PHP 8.2. En este código (lo pego abajo) el campo teléfono siempre da
+       error aunque escriba '600 123 456'. Espero que acepte los espacios. No me des la
+       solución: dime qué debería mirar en el depurador para encontrar el fallo."</code></pre>
+<h4>Otras técnicas que funcionan</h4>
+<ul><li><strong>Explica el código en voz alta</strong>, línea a línea, a un compañero o a un objeto (la técnica del <strong>patito de goma</strong>): muchas veces el error aparece al explicarlo.
+</li><li><strong>Reduce el problema</strong>: copia el trozo que falla a un fichero aparte con datos fijos, sin formulario ni ficheros. Si ahí funciona, el problema está en otro sitio.
+</li><li><strong>Divide y vencerás también al depurar</strong>: comenta la mitad del código sospechoso; si el error desaparece, está en esa mitad.
+</li><li><strong>Descansa</strong>: después de una hora atascado, cinco minutos lejos de la pantalla ayudan más que otra hora mirándola.
+</li></ul>
+<h3>4.8.- Refactorizar</h3>
+<p><strong>Refactorizar</strong> es cambiar la <strong>estructura</strong> del código <strong>sin cambiar lo que hace</strong>, para que sea más fácil de leer, de mantener y de ampliar. Se hace cuando ya funciona (y las pruebas pasan), en cambios pequeños, y después de cada cambio <strong>se vuelven a pasar las pruebas</strong>: deben seguir dando lo mismo.</p>
+<p>Señales de que el código necesita una refactorización (los programadores las llaman <em>code smells</em>, "malos olores"):</p>
+<table><thead><tr><th>Señal</th><th>Refactorización</th></tr></thead><tbody><tr><td>Código <strong>repetido</strong> (copiar y pegar)</td><td>Sacarlo a una función con parámetros</td></tr><tr><td><strong>Números mágicos</strong> (<code>16</code>, <code>30</code>, <code>40</code> sueltos por el código)</td><td>Constantes con nombre (<code>MAX_EQUIPOS</code>)</td></tr><tr><td>Funciones <strong>largas</strong> que hacen muchas cosas</td><td>Dividirlas en funciones pequeñas</td></tr><tr><td><strong>Nombres</strong> poco claros (<code>$a</code>, <code>$x2</code>, <code>procesar()</code>)</td><td>Renombrar con nombres que expliquen qué es</td></tr><tr><td>Comentarios que explican un código confuso</td><td>Reescribir el código para que se entienda solo</td></tr><tr><td>Lógica mezclada con HTML</td><td>Preparar las variables antes y dejar el HTML solo para mostrar</td></tr></tbody></table>
+<p>En el ejemplo guiado, el paso 4 ya cumple todos los requisitos, pero la validación de los dos jugadores está repetida y el HTML de los cinco campos de texto, también. En el paso 5 se refactoriza:</p>
+<pre><code>&lt;?php
+// ANTES (paso 4): el mismo bloque, dos veces (una por jugador)
+if ($datos['jugador1'] === '') {
+    $errores['jugador1'] = 'Escribe el nombre del jugador';
+} elseif (!preg_match("/^[\\p{L} '-]{2,40}$/u", $datos['jugador1'])) {
+    $errores['jugador1'] = 'De 2 a 40 letras (se admiten espacios, apóstrofos y guiones)';
+}
+// ... y otra vez igual para 'jugador2'
+
+// DESPUÉS (paso 5): una función pequeña que se usa dos veces, y el patrón en una constante
+function validarJugador(string $nombre): ?string
+{
+    return match (true) {
+        $nombre === ''                       =&gt; 'Escribe el nombre del jugador',
+        !preg_match(PATRON_JUGADOR, $nombre) =&gt; 'De 2 a 40 letras (se admiten espacios, apóstrofos y guiones)',
+        default                              =&gt; null,
+    };
+}
+$errores = [
+    'jugador1' =&gt; validarJugador($datos['jugador1']),
+    'jugador2' =&gt; validarJugador($datos['jugador2']),
+    // ...
+];</code></pre>
+<p>Los cinco bloques de HTML de los campos de texto se sustituyen por una función <code>htmlCampoTexto()</code> y un <code>foreach</code> sobre una constante que describe los campos. Después de refactorizar, los <strong>siete casos de prueba dan exactamente el mismo resultado</strong> que en el paso 4.</p>
+<h3>4.9.- Repetir</h3>
+<p>Terminada una vuelta, se vuelve a empezar con la siguiente funcionalidad o con los cambios que pida el cliente. Por ejemplo, si el dueño del bar pide ahora que un equipo pueda <strong>anular su inscripción</strong>:</p>
+<ul><li><strong>Análisis</strong>: nuevo requisito RF7 (¿quién puede anularla?, ¿con qué dato se identifica?, ¿se pide confirmación?), nuevos ejemplos de entradas y salidas, cambio en la maqueta (un botón en cada fila).
+</li><li><strong>Diseño</strong>: nueva función <code>anularInscripcion()</code>, nuevo estado y nuevas flechas en el diagrama de estado-transición.
+</li><li><strong>Codificación y pruebas</strong>: TODOs, código, nuevos casos de prueba... y <strong>volver a pasar los antiguos</strong>.
+</li></ul>
+<h2>5.- Lista de comprobación</h2>
+<table><thead><tr><th>Fase</th><th>Antes de pasar a la siguiente, comprueba que...</th></tr></thead><tbody><tr><td>Análisis</td><td>Tienes los RF y RNF numerados y comprobables; has escrito ejemplos de entradas y salidas (incluidos los casos raros); tienes una maqueta; sabes qué datos hay, de qué tipo son y dónde se guarda cada uno</td></tr><tr><td>Diseño</td><td>Has dividido el problema en partes y funciones con nombre, parámetros y resultado; sabes qué estados tiene la página y qué provoca cada cambio</td></tr><tr><td>Codificación</td><td>Vas parte a parte, cada parte probada antes de seguir; no quedan TODOs; validas toda la entrada en el servidor y escapas toda la salida</td></tr><tr><td>Pruebas</td><td>Pasan todos los casos de prueba, también los límite y los maliciosos; no hay avisos de PHP</td></tr><tr><td>Refactorización</td><td>No hay código repetido ni números mágicos; las funciones son cortas y con buenos nombres; las pruebas siguen pasando</td></tr></tbody></table>
+<h2>6.- Errores típicos al empezar y cómo evitarlos</h2>
+<table><thead><tr><th>Error</th><th>Cómo evitarlo</th></tr></thead><tbody><tr><td>Ponerse a programar sin entender el problema</td><td>Escribe primero los requisitos y ejemplos de entradas y salidas</td></tr><tr><td>Escribirlo todo y probar al final</td><td>Desarrollo incremental: pequeño, probar, siguiente</td></tr><tr><td>Cambiar cosas al azar cuando algo falla</td><td>Lee el mensaje de error y usa el depurador</td></tr><tr><td>Probar solo el caso "bueno"</td><td>Prueba los límites, los vacíos y los datos maliciosos</td></tr><tr><td>Confiar en la validación del navegador</td><td>Valida siempre en el servidor</td></tr><tr><td>Escapar al recibir los datos, o no escapar nunca</td><td>Valida en la entrada, escapa (<code>htmlspecialchars</code>) en la salida</td></tr><tr><td>Usar <code>strlen</code> con textos en español</td><td><code>mb_strlen</code> cuenta caracteres</td></tr><tr><td>Olvidar que HTTP no tiene estado</td><td>Decide en el análisis dónde se guarda cada dato entre peticiones</td></tr><tr><td>Copiar y pegar código (de Internet, de la IA o de otra parte del programa)</td><td>Entiéndelo; si se repite, conviértelo en una función</td></tr><tr><td>No guardar versiones</td><td>git: un <em>commit</em> por cada parte que funciona</td></tr></tbody></table>
+<h2>7.- El ejemplo guiado</h2>
+<p>Todos los ficheros del ejemplo están en la carpeta <strong>Ejemplo guiado - Torneo</strong>. Para probarlo, abre una terminal en esa carpeta, ejecuta <code>php -S localhost:8000</code> y visita <code>http://localhost:8000/paso4-persistencia/</code> (o cualquier otro paso); o cópiala en <code>htdocs</code> de XAMPP.</p>
+<table><thead><tr><th>Carpeta o fichero</th><th>Contenido</th></tr></thead><tbody><tr><td><code>00-analisis/requisitos.md</code></td><td>Enunciado, requisitos funcionales y no funcionales, datos</td></tr><tr><td><code>00-analisis/entradas-salidas.txt</code></td><td>Ejemplos de entradas y salidas: los casos de prueba</td></tr><tr><td><code>paso1-maqueta</code> ... <code>paso5-refactorizado</code></td><td>La aplicación al terminar cada paso (el paso 5 es la solución completa)</td></tr><tr><td><code>depuracion/buscar-los-errores.php</code></td><td>Ejercicio de depuración con Xdebug (y su solución)</td></tr></tbody></table>
+<div class="caja autoeval"><div class="titulo-caja">Autoevaluación</div>
+<ul><li>"La página debe validar el correo" ¿es un requisito funcional o no funcional? ¿Y "el código debe usar constantes para los límites"? <strong>El primero es funcional (qué hace); el segundo, no funcional (cómo está hecho).</strong>
+</li><li>¿Para qué sirve escribir ejemplos de entradas y salidas antes de programar? <strong>Para descubrir casos que el enunciado no aclara y para tener desde el principio los casos de prueba.</strong>
+</li><li>¿Por qué hay que guardar los equipos en un fichero y no en un array? <strong>Porque HTTP no tiene estado: las variables desaparecen al terminar cada petición.</strong>
+</li><li>¿Qué es un comentario TODO y para qué sirve? <strong>Una marca de "por hacer" que describe una parte pendiente; permite planificar el trabajo y no olvidar nada.</strong>
+</li><li>¿Dónde se aplica <code>htmlspecialchars</code>: al recibir o al mostrar? <strong>Al mostrar.</strong>
+</li><li>Si quieres ver qué datos ha enviado el formulario, ¿dónde miras? <strong>En la pestaña Red (Network) del navegador, o en <code>$_POST</code> en el panel VARIABLES del depurador.</strong>
+</li><li>Después de refactorizar, ¿cómo sabes que no has estropeado nada? <strong>Volviendo a pasar todos los casos de prueba: deben dar el mismo resultado.</strong>
+</li><li>¿Qué técnica evita que al pulsar F5 se repita una inscripción? <strong>POST/Redirect/GET: redirigir con <code>header('Location: ...')</code> después de guardar.</strong>
+</li></ul>
+</div>
+<div class="pie">Material elaborado a partir de las notas de clase sobre el proceso de desarrollo. Ejemplo guiado probado con PHP 8.2.</div>
+</body></html>

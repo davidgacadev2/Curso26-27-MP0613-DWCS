@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata del Boletín 02, ejercicio 1: impuestos de las ventas</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata del Boletín 02, ejercicio 1: impuestos de las ventas</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>Un comercial tiene que remitir cada mes un informe con el total de ventas y los impuestos que debe pagar: 5 %
+            estatal y 4 % autonómico. <strong>Carlos</strong> tiene que hacer la página. Es el primer ejercicio con
+            autómata, así que <strong>María</strong> le propone empezar por uno sencillo: dos campos, dos botones y tres
+            páginas distintas.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Desarrolla un script que introduzca la recaudación total mensual y el nombre del mes, y calcule los impuestos
+        sobre la recaudación (5 % estatal y 4 % autonómico). Utilizar un formulario HTML para recoger los datos y
+        mostrar los resultados (botón: calcular, botón: borrar). Ejemplo del boletín:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>En la página</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Introduzca el importe mensual total de ventas</td>
+                <td>45678</td>
+            </tr>
+            <tr>
+                <td>Introduzca el nombre del mes</td>
+                <td>Junio</td>
+            </tr>
+            <tr>
+                <td>Total recaudado</td>
+                <td>45678</td>
+            </tr>
+            <tr>
+                <td>Total líquido</td>
+                <td>41906</td>
+            </tr>
+            <tr>
+                <td>Impuestos (5 %)</td>
+                <td>2095,32</td>
+            </tr>
+            <tr>
+                <td>Impuestos (4 %)</td>
+                <td>1676,26</td>
+            </tr>
+            <tr>
+                <td>Impuestos totales</td>
+                <td>3771,58</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>El ejemplo del boletín considera que la recaudación <strong>incluye</strong> los impuestos: el líquido es
+            <code>45678 / 1,09 = 41906,42</code> y los impuestos se calculan sobre el líquido
+            (<code>41906,42 · 5 % = 2095,32</code>). Así lo hace también la solución de los ejemplos del repositorio
+            (<code>$liquido = $total / (1 + 0,04 + 0,05)</code>). Ojo: en el ejemplo del boletín las etiquetas están
+            <strong>cambiadas</strong>: 2095,32 es el impuesto <strong>estatal</strong> (5 %) y 1676,26 el
+            <strong>autonómico</strong> (4 %).</p>
+    </div>
+    <h2>2.- Análisis</h2>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>Carlos dibuja en un papel las páginas que puede ver el usuario. Le salen tres: el formulario vacío, el
+            formulario con un aviso en rojo y el formulario con la tabla de resultados.</p>
+    </div>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Los dos botones son <code>submit</code> y llegan al servidor:
+            <em>Calcular</em> y <em>Borrar</em>. La primera carga de la página (sin parámetros) hace lo mismo que
+            <em>Borrar</em>: mostrar el formulario vacío.
+        </li>
+        <li><strong>Eventos salientes.</strong> Tres variantes de la página: vacía, con avisos y con resultados.
+        </li>
+        <li><strong>Estados.</strong> Solo dos: ST0 (la página aún no se ha mostrado) y ST1 (el formulario está a la
+            vista, esperando datos). Al calcular, la página <strong>vuelve a esperar datos</strong>: no hace falta un
+            estado "resultados" porque desde ahí el usuario puede hacer lo mismo que desde el formulario vacío.
+        </li>
+        <li><strong>Predicados.</strong> Dos condiciones atómicas: el importe es un número mayor que 0 y el mes es uno
+            de los doce (aunque llegue de un <code>&lt;select&gt;</code>, se puede manipular).
+        </li>
+        <li><strong>Acciones previas.</strong> Para evaluar los predicados primero hay que <strong>limpiar y
+                validar</strong> las entradas (AC0, AC1).
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 400" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="m1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="70" cy="70" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="70" y="75"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="70" y="115"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="70" cy="240" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="70" y="245"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text><text x="70" y="285"
+                text-anchor="middle" font-size="11" fill="#333">Carga de página</text>
+            <circle cx="330" cy="240" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="330" y="245"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text><text x="366" y="214"
+                text-anchor="start" font-size="11" fill="#333">Esperando</text><text x="366" y="227" text-anchor="start"
+                font-size="11" fill="#333">datos</text>
+            <path d="M70.0,101.0 Q70.0,155.0 70.0,207.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m1)" /><text x="85" y="148" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#c0392b" font-weight="bold">Borrar</text><text x="85" y="162" text-anchor="start"
+                font-family="Arial, sans-serif" font-size="10.5" fill="#555555" font-style="italic">(o la primera
+                carga)</text>
+            <path d="M101.0,240.0 Q200.0,240.0 297.0,240.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m1)" /><text x="200" y="217" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T1</text><text x="200" y="231" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES0</text>
+            <path d="M317.0,213.0 C260.3,142.3 399.7,142.3 344.4,210.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m1)" /><text x="378" y="88" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="378" y="102" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b"
+                font-weight="bold">Calcular</text><text x="378" y="116" text-anchor="start"
+                font-family="Consolas, monospace" font-size="10.5" fill="#777777" font-style="italic">antes: AC0,
+                AC1</text><text x="378" y="130" text-anchor="start" font-family="Consolas, monospace" font-size="11.5"
+                fill="#111111">!PL0 || !PL1</text><text x="378" y="144" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC6</text><text x="378" y="158"
+                text-anchor="start" font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad"
+                font-weight="bold">ES1</text>
+            <path d="M343.0,267.0 C399.7,337.7 260.3,337.7 315.6,269.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m1)" /><text x="390" y="318" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="390" y="332" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b"
+                font-weight="bold">Calcular</text><text x="390" y="346" text-anchor="start"
+                font-family="Consolas, monospace" font-size="10.5" fill="#777777" font-style="italic">antes: AC0,
+                AC1</text><text x="390" y="360" text-anchor="start" font-family="Consolas, monospace" font-size="11.5"
+                fill="#111111">PL0 &amp;&amp; PL1</text><text x="390" y="374" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC2, AC3, AC4, AC5</text><text x="390"
+                y="388" text-anchor="start" font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad"
+                font-weight="bold">ES2</text><text x="520" y="236" text-anchor="start" font-size="10.5" fill="#555"
+                font-style="italic">Borrar desde ST1: la flecha</text><text x="520" y="250" text-anchor="start"
+                font-size="10.5" fill="#555" font-style="italic">de STx a ST0 (es T1)</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del Boletín 02, ejercicio 1</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Calcular</td>
+                <td>el usuario pulsa el botón "Calcular"</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Borrar</td>
+                <td>el usuario pulsa "Borrar" (o carga la página sin parámetros)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>formularioVacio</td>
+                <td>formulario con el importe vacío y el mes Enero</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>formularioErrores</td>
+                <td>formulario con lo escrito y un aviso en rojo junto a cada campo no válido</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>formularioResultados</td>
+                <td>formulario y tabla con el total, el líquido y los impuestos</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST0</td>
+                <td>CargaPagina</td>
+                <td>la página aún no se ha mostrado</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST1</td>
+                <td>EsperandoDatos</td>
+                <td>el formulario está a la vista</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td>estado actual (campo oculto)</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE1</td>
+                <td><code>$importe</code></td>
+                <td>importe mensual total de ventas</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE2</td>
+                <td><code>$mes</code></td>
+                <td>nombre del mes</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE3</td>
+                <td><code>$liquido</code></td>
+                <td>importe sin impuestos</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE4</td>
+                <td><code>$estatal</code></td>
+                <td>impuesto estatal</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE5</td>
+                <td><code>$autonomico</code></td>
+                <td>impuesto autonómico</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE6</td>
+                <td><code>$impuestos</code></td>
+                <td>impuestos totales</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE7</td>
+                <td><code>$errores</code></td>
+                <td>avisos de los campos no válidos</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>importe válido</td>
+                <td><code>$importe</code> es un número mayor que 0</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>mes válido</td>
+                <td><code>$mes</code> es uno de los 12 meses</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>validar importe</td>
+                <td>quitar espacios, cambiar la coma por punto, <code>FILTER_VALIDATE_FLOAT</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>validar mes</td>
+                <td>comprobar con <code>in_array</code> que está en la lista de meses</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td><code>$liquido = $importe / 1.09</code></td>
+                <td>importe sin impuestos</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td><code>$estatal = $liquido * 0.05</code></td>
+                <td>impuesto estatal</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td><code>$autonomico = $liquido * 0.04</code></td>
+                <td>impuesto autonómico</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td><code>$impuestos = $estatal + $autonomico</code></td>
+                <td>impuestos totales</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>avisos</td>
+                <td>añadir a <code>$errores</code> el aviso de cada campo no válido</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Solo VE0 viaja en un campo oculto: el importe y el mes viajan en los propios campos del formulario, y el resto se
+        calcula en cada petición.</p>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Calcular (EE0)</th>
+                <th>Borrar (EE1)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T2</td>
+                <td>T1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><em>Calcular</em> en ST0 solo puede llegar si alguien envía la petición sin el campo <code>estado</code> (página
+        manipulada): se trata como la primera carga.</p>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes de los PLs</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0, AC1</td>
+                <td><code>!PL0 || !PL1</code></td>
+                <td>ST1</td>
+                <td>AC6</td>
+                <td>ES1</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC0, AC1</td>
+                <td><code>PL0 &amp;&amp; PL1</code></td>
+                <td>ST1</td>
+                <td>AC2, AC3, AC4, AC5</td>
+                <td>ES2</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados (T2)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th><code>!PL0 || !PL1</code></th>
+                <th><code>PL0 &amp;&amp; PL1</code></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>En cada fila hay exactamente un 1: los dos caminos son <strong>completos</strong> (siempre se cumple uno) y
+        <strong>excluyentes</strong> (nunca los dos).</p>
+    <h2>5.- Del autómata al código</h2>
+    <p>La solución completa está en <code>solucion/index.php</code>. La tabla de eventos-estados es un array y cada
+        transición, un <code>case</code>; los predicados son variables con su nombre:</p>
+    <pre><code>$automata = [
+    ST0 =&gt; [EE0 =&gt; 1, EE1 =&gt; 1],
+    ST1 =&gt; [EE0 =&gt; 2, EE1 =&gt; 1],
+];
+$evento = ($_GET['evento'] ?? '') === 'calcular' ? EE0 : EE1;   // cualquier otra cosa cuenta como Borrar
+
+switch ($automata[$estado][$evento]) {
+    case 1:                                                // ---- T1
+        $estado = ST1;
+        es0();
+        break;
+    case 2:                                                // ---- T2
+        $importeEscrito = trim((string) ($_GET['importe'] ?? ''));                 // AC0
+        $importe = filter_var(str_replace(',', '.', $importeEscrito), FILTER_VALIDATE_FLOAT);
+        $mes = (string) ($_GET['mes'] ?? '');                                      // AC1
+        $pl0 = $importe !== false &amp;&amp; $importe &gt; 0;
+        $pl1 = in_array($mes, MESES, true);
+        if (!$pl0 || !$pl1) {                              // !PL0 || !PL1
+            $estado = ST1;
+            // AC6: $errores['importe'] / $errores['mes']
+            es1($importeEscrito, $pl1 ? $mes : MESES[0], $errores);
+        } else {                                           // PL0 &amp;&amp; PL1
+            $estado = ST1;
+            $liquido = $importe / (1 + IMPUESTO_ESTATAL + IMPUESTO_AUTONOMICO);    // AC2
+            $estatal = $liquido * IMPUESTO_ESTATAL;                                  // AC3
+            $autonomico = $liquido * IMPUESTO_AUTONOMICO;                            // AC4
+            $impuestos = $estatal + $autonomico;                                     // AC5
+            es2($importeEscrito, $mes, $importe, $liquido, $estatal, $autonomico, $impuestos);
+        }
+        break;
+}</code></pre>
+    <h2>6.- Pruebas: un camino por cada fila</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Estado y evento</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Primera carga</td>
+                <td>ST0, Borrar</td>
+                <td>T1</td>
+                <td>formulario vacío; <code>estado</code> = 1</td>
+            </tr>
+            <tr>
+                <td>45678 y Junio</td>
+                <td>ST1, Calcular</td>
+                <td>T2: <code>PL0 &amp;&amp; PL1</code></td>
+                <td>líquido 41.906,42; estatal 2.095,32; autonómico 1.676,26; total 3.771,58</td>
+            </tr>
+            <tr>
+                <td>importe vacío</td>
+                <td>ST1, Calcular</td>
+                <td>T2: <code>!PL0</code></td>
+                <td>aviso "Introduzca un importe mayor que 0"; el mes elegido se conserva</td>
+            </tr>
+            <tr>
+                <td>importe 0 y mes "Brumario"</td>
+                <td>ST1, Calcular</td>
+                <td>T2: <code>!PL0 &amp;&amp; !PL1</code></td>
+                <td>los dos avisos</td>
+            </tr>
+            <tr>
+                <td>importe "100,50"</td>
+                <td>ST1, Calcular</td>
+                <td>T2: <code>PL0 &amp;&amp; PL1</code></td>
+                <td>acepta la coma decimal</td>
+            </tr>
+            <tr>
+                <td>Borrar con datos</td>
+                <td>ST1, Borrar</td>
+                <td>T1</td>
+                <td>formulario vacío</td>
+            </tr>
+            <tr>
+                <td><code>estado</code> = 7 (manipulado)</td>
+                <td>ST0, Calcular</td>
+                <td>T1</td>
+                <td>formulario vacío</td>
+            </tr>
+            <tr>
+                <td>importe <code>&lt;script&gt;</code></td>
+                <td>ST1, Calcular</td>
+                <td>T2: <code>!PL0</code></td>
+                <td>se muestra escapado (<code>&amp;lt;script&amp;gt;</code>)</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="caja recomendacion">
+        <div class="titulo-caja">Recomendación</div>
+        <p>Compara esta solución con la de los ejemplos del repositorio para el Boletín 02-E01 (no incluida en este material):
+            allí el "estado" es una variable <code>primeraVez</code> en un campo oculto y la decisión se reparte entre
+            varios <code>if</code> a lo largo de la página. El autómata obliga a separar <strong>qué se
+                comprueba</strong> (PL0, PL1) de <strong>qué se hace</strong> (AC2–AC5) y de <strong>qué se
+                muestra</strong> (ES0–ES2).</p>
+    </div>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade un tercer botón, <em>Ejemplo</em>, que rellene el formulario con 45678 y Junio. ¿Es un evento nuevo?
+            ¿Necesita un estado nuevo? Añade la columna a la tabla de eventos-estados y su transición.
+        </li>
+        <li>El boletín pide que el importe sea un número. Añade el predicado "el importe tiene como mucho 2 decimales" y
+            rehaz la comprobación de predicados de T2 (ahora con 3 predicados: 8 filas).
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

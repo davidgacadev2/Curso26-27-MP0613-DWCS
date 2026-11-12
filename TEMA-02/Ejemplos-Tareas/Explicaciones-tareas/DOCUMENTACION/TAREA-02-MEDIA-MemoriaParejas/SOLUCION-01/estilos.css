@@ -1,0 +1,18 @@
+/* TAREA-02 MEDIA: Memoria de parejas — estilos */
+body { font-family: Arial, Helvetica, sans-serif; background: #f4f1ea; color: #222; margin: 2em; }
+h1 { color: #2e5d8a; }
+.errores { background: #fde2e2; border: 1px solid #c62828; color: #8e1b1b; padding: 0.8em 2em; }
+.configuracion label { display: block; margin: 0.4em 0; }
+.configuracion button { margin-top: 0.6em; }
+.mensaje { font-weight: bold; }
+.mensaje.ganada { color: #2e7d32; font-size: 1.2em; }
+.mensaje.perdida { color: #c62828; font-size: 1.2em; }
+.marcador { background: #fff; border: 1px solid #ccc; display: inline-block; padding: 0.4em 1em; }
+.tablero { border-collapse: separate; border-spacing: 6px; }
+.carta { display: inline-block; width: 3em; height: 3.6em; line-height: 3.6em; text-align: center;
+         font-size: 1.3em; font-weight: bold; border-radius: 6px; border: 2px solid #2e5d8a; }
+button.carta { background: #2e5d8a; color: #fff; cursor: pointer; padding: 0; }
+button.carta:hover { background: #3f7bb3; }
+button.carta:disabled { background: #999; border-color: #999; cursor: default; }
+span.carta.girada { background: #fff6c4; border-color: #d9b200; }
+span.carta.encontrada { background: #c6efa0; border-color: #7cb342; }

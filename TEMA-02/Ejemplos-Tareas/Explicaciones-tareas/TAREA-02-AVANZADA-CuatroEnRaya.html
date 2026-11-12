@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuatro en raya (TAREA-02, nivel avanzado): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="cuatro-en-raya-tarea-02-nivel-avanzado-como-se-llega-a-la-solucion-paso-a-paso">Cuatro en raya (TAREA-02,
+    nivel avanzado): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-configuracion-partida-nueva-y-turno">3.2.- Paso 2: configuración, partida nueva y
+              turno</a></li>
+          <li><a href="#33-paso-3-el-tablero-reconstruido-a-partir-de-las-jugadas">3.3.- Paso 3: el tablero reconstruido
+              a partir de las jugadas</a></li>
+          <li><a href="#34-paso-4-cuatro-en-raya-empate-y-nueva-partida">3.4.- Paso 4: cuatro en raya, empate y nueva
+              partida</a></li>
+          <li><a href="#35-paso-5-la-maquina">3.5.- Paso 5: la máquina</a></li>
+          <li><a href="#36-paso-6-solucion-completa-deshacer-historial-y-no-fiarse-del-navegador">3.6.- Paso 6 (solución
+              completa): deshacer, historial y no fiarse del navegador</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-CuatroEnRaya/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-CuatroEnRaya/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-CuatroEnRaya/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-CuatroEnRaya/SOLUCION-01/PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p>La asociación juvenil del barrio quiere un cuatro en raya para practicar antes de su torneo, y
+      <strong>Juan</strong> se lo
+      encarga a <strong>Carlos</strong>. Su primera idea es guardar las 42 casillas del tablero en campos ocultos.
+      <strong>María</strong> le
+      propone otra cosa: "Guarda solo las <strong>jugadas</strong>, la columna de cada ficha en orden. Con eso puedes
+      volver a
+      poner las fichas una a una y saber cómo está el tablero. Si alguien cambia la lista por una imposible, lo
+      notarás al repetirla. Y deshacer será quitar la última". Carlos tarda un poco en verlo, pero cuando lo ve se da
+      cuenta de que esa decisión le ahorra la mitad del trabajo.</p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso2&quot; &quot;PASO A PASO/paso3&quot;
+</code></pre>
+  <p>(desde la carpeta <code>SOLUCION-01</code>; en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 9 requisitos (R1…R9) que <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-CuatroEnRaya/Requisitos.md">Requisitos.md</a>
+    convierte en 9 requisitos funcionales comprobables. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Configurar</td>
+          <td>R1, R2 · RF-01, RF-02</td>
+          <td>Modo, nombres, nivel y quién empieza; todos los errores a la vez; nombres contados con
+            <code>mb_strlen</code>.</td>
+        </tr>
+        <tr>
+          <td>Tablero y jugadas</td>
+          <td>R3, R4, R5 · RF-03, RF-04</td>
+          <td>La ficha <strong>cae</strong>; los turnos alternan; solo se guardan las jugadas; columnas inexistentes o
+            llenas.</td>
+        </tr>
+        <tr>
+          <td>Terminar</td>
+          <td>R6 · RF-05, RF-06</td>
+          <td>Cuatro en raya en <strong>cuatro</strong> direcciones, empate, línea resaltada y <em>Nueva partida</em>.
+          </td>
+        </tr>
+        <tr>
+          <td>La máquina</td>
+          <td>R7 · RF-07</td>
+          <td>Contesta en la misma petición; dos niveles; <strong>reproducible</strong> con una semilla.</td>
+        </tr>
+        <tr>
+          <td>Deshacer e historial</td>
+          <td>R8 · RF-08</td>
+          <td>Quitar la última jugada (y la de la máquina); listar las jugadas numeradas.</td>
+        </tr>
+        <tr>
+          <td>No fiarse del cliente</td>
+          <td>R9 · RF-09</td>
+          <td>Nombres, máquina, nivel, semilla y jugadas posibles; nada sin escapar.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son tres: <strong>sin <code>$_SESSION</code></strong>
+    ni cookies (RNF-03),
+    <strong>estado mínimo</strong>: solo las jugadas (RNF-04), y <strong>constantes</strong> para las dimensiones, los
+    colores, los niveles y
+    las direcciones (RNF-05).
+  </p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Cómo se numeran las columnas?</td>
+          <td>En las jugadas, de 0 a 6 (un carácter por jugada); en pantalla y en el historial, de 1 a 7
+            (<code>+ 1</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Qué color lleva cada jugador?</td>
+          <td>Quien empieza lleva las rojas, y las rojas son siempre las jugadas de posición <strong>par</strong>.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo se sabe quién es la máquina?</td>
+          <td>Un campo <code>maquina</code> con su color (<code>R</code>, <code>A</code>) o <code>''</code> si juegan
+            dos personas; se llama siempre <em>Máquina</em>.</td>
+        </tr>
+        <tr>
+          <td>¿Qué nivel se guarda si juegan dos personas?</td>
+          <td><code>facil</code>: no se usa, pero así el nivel siempre es válido.</td>
+        </tr>
+        <tr>
+          <td>¿Se puede deshacer una partida terminada?</td>
+          <td>Sí: el botón <em>Deshacer</em> solo se deshabilita cuando no hay jugadas.</td>
+        </tr>
+        <tr>
+          <td>¿Y si hay cinco en raya?</td>
+          <td><code>lineaGanadora()</code> devuelve todas las casillas de la línea (<code>&gt;= 4</code>), y se resaltan
+            todas.</td>
+        </tr>
+        <tr>
+          <td>¿Si todas las columnas "regalan" la victoria al rival?</td>
+          <td>La máquina elige entre todas las libres.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo se repite la misma jugada de la máquina tras deshacer?</td>
+          <td>La semilla de cada decisión es <code>semilla + número de jugadas</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). En esta
+      tarea hay varias que el enunciado deja abiertas (deshacer tras terminar, el nivel en el modo de dos personas);
+      si no las escribes, cambiarás de criterio a mitad del código sin darte cuenta.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son ejemplos concretos de entrada y salida. Escríbelos en
+    una tabla
+    antes de programar: serán las pruebas de cada paso. Las jugadas se escriben como se guardan (columnas de 0 a 6).</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Abrir la página</td>
+          <td><code>value="maquina" checked</code> y el nivel "normal: gana, tapa y prefiere el centro"</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Modo <code>x</code> y sin nombre</td>
+          <td>"Elige si juegan dos personas…" y "(tiene 0)"</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Dos personas: <code>Ana</code> y <code>ana</code> (con espacios a los lados)</td>
+          <td>"Los dos jugadores no pueden llamarse igual."</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Contra la máquina, nombre <code>máquina</code> y nivel <code>experto</code></td>
+          <td>"Elige el nivel de la máquina." y "«Máquina» es el nombre de la máquina"</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Nombre <code>ÑandúÑandúÑandúX</code></td>
+          <td>"(tiene 16)" y el campo conserva lo escrito</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><code>modo[]</code>, <code>jugador1[]</code>, <code>empieza[]</code></td>
+          <td>Errores, sin avisos de PHP</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Dos personas, empieza Ana, columna 4</td>
+          <td><code>name="jugadas" value="3"</code>, la casilla <code>ficha R ultima</code> y "Turno de Brais
+            (amarillas)"</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><code>columna=7</code> o <code>columna[]=1</code></td>
+          <td>"Esa columna no existe."</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Seis fichas en la columna 1 y pulsarla otra vez</td>
+          <td>"La columna 1 está llena.", las jugadas siguen siendo <code>000000</code> y el botón está deshabilitado
+          </td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Jugadas <code>3434343</code></td>
+          <td>"¡Cuatro en raya! Gana Ana con las rojas en 7 jugadas." y casillas <code>ganadora</code>; otra jugada: "La
+            partida ha terminado"</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Jugadas <code>01026364</code></td>
+          <td>"Gana Brais con las amarillas en 8 jugadas." (horizontal)</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>Jugadas <code>01122323363</code></td>
+          <td>"Gana Ana con las rojas en 11 jugadas." (diagonal)</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td>Las 42 jugadas de <code>Requisitos.md</code></td>
+          <td>"El tablero está lleno: empate."</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td>Máquina normal, semilla 7: Ana juega 0; después 0 otra vez</td>
+          <td>"La máquina ha jugado en la columna 4." (<code>03</code>); después tapa en la columna 1
+            (<code>030300</code>)</td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td>Empieza la máquina</td>
+          <td>"La máquina ha empezado en la columna 4." y <code>name="maquina" value="R"</code></td>
+        </tr>
+        <tr>
+          <td>16</td>
+          <td>Dos personas, jugadas <code>34</code>, <em>Deshacer</em></td>
+          <td>"Jugada deshecha.", jugadas <code>3</code>; en el historial "Ana (rojas): columna 4"</td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td>La máquina ha empezado (<code>3</code>), <em>Deshacer</em></td>
+          <td>"No hay ninguna jugada tuya que deshacer."</td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td>Jugadas <code>7</code>, <code>0000000</code> o <code>34343430</code>; <code>nombreA=ana</code>;
+            <code>maquina=X</code>; <code>nivel=dios</code>; <code>semilla=0</code></td>
+          <td>"La partida recibida no es válida", sin avisos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 6, 8 y 18 son <strong>maliciosos</strong>: no se pueden provocar con la página normal, hay que editar el
+    HTML con F12
+    o enviar la petición con <code>curl</code>. Los casos 10 a 13 son la forma de probar el cuatro en raya <strong>sin
+      jugar</strong>: basta
+    con escribir las jugadas en el campo oculto.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada clic en una columna es una petición nueva: el script empieza desde
+    cero y
+    tiene que <strong>reconstruir la partida</strong> a partir de lo que envíe el formulario.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Nombres de las rojas y las amarillas</td>
+          <td>strings</td>
+          <td>campos ocultos <code>nombreR</code>, <code>nombreA</code></td>
+          <td>Para el turno, el historial y el mensaje final</td>
+        </tr>
+        <tr>
+          <td>Color de la máquina</td>
+          <td><code>R</code>, <code>A</code> o <code>''</code></td>
+          <td>campo oculto</td>
+          <td>Decide si contesta la máquina y qué se deshace</td>
+        </tr>
+        <tr>
+          <td>Nivel</td>
+          <td><code>facil</code> / <code>normal</code></td>
+          <td>campo oculto</td>
+          <td>Lo usa la máquina</td>
+        </tr>
+        <tr>
+          <td>Semilla</td>
+          <td>int</td>
+          <td>campo oculto</td>
+          <td>Para que la máquina sea reproducible</td>
+        </tr>
+        <tr>
+          <td><strong>Jugadas</strong></td>
+          <td><strong>un solo</strong> string (<code>"3324"</code>)</td>
+          <td>campo oculto</td>
+          <td>El estado mínimo (R4)</td>
+        </tr>
+        <tr>
+          <td>Tablero, última ficha, ganador, línea ganadora</td>
+          <td>—</td>
+          <td><strong>se calculan</strong> (<code>reconstruir()</code>)</td>
+          <td>Salen de repetir las jugadas</td>
+        </tr>
+        <tr>
+          <td>Turno</td>
+          <td>—</td>
+          <td><strong>se calcula</strong> (<code>turno()</code>)</td>
+          <td>Paridad de la longitud de las jugadas</td>
+        </tr>
+        <tr>
+          <td>Historial</td>
+          <td>—</td>
+          <td><strong>se calcula</strong> (<code>historial()</code>)</td>
+          <td>Una línea por carácter de las jugadas</td>
+        </tr>
+        <tr>
+          <td>Errores, mensaje de la máquina, mensaje final</td>
+          <td>array / string</td>
+          <td>variables</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Guardar las jugadas en lugar del tablero</strong> cambia toda la tarea. El tablero tiene 42 casillas que
+      habría que
+      validar una a una, y aun así podría ser imposible (fichas flotando, cinco rojas más que amarillas). Las jugadas
+      son un texto corto y, al <strong>repetirlas</strong>, cualquier lista imposible se descubre sola: una columna
+      llena, un
+      carácter raro o una ficha después de ganar. Y de regalo: el turno es la paridad de <code>strlen()</code>, deshacer
+      es
+      quitar el último carácter y el historial es recorrer el texto.</p>
+  </div>
+
+  <p>La partida queda como un array asociativo (comentario de cabecera de <code>funciones.php</code>):</p>
+  <pre><code class="language-php">['nombres' =&gt; ['R' =&gt; 'Ana', 'A' =&gt; 'Máquina'], 'maquina' =&gt; 'A', 'nivel' =&gt; 'normal',
+ 'semilla' =&gt; 1234, 'jugadas' =&gt; '3324']
+</code></pre>
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Dos ficheros PHP con una responsabilidad cada uno: <code>funciones.php</code> (lógica, sin HTML) e
+    <code>index.php</code> (decide qué
+    hacer y muestra la página), más <code>estilos.css</code>. <code>index.php</code> sigue la estructura de siempre, con
+    un detalle: la
+    recuperación y validación de la partida es <strong>común</strong> a la columna y a <em>Deshacer</em>, así que va en
+    un bloque propio
+    antes de los dos:</p>
+  <pre><code class="language-text">1. Inicializar          -&gt; cargar funciones, valores por defecto (contra la máquina, nivel normal)
+2. Recibir y validar    -&gt; Empezar | columna o Deshacer: leer el estado y validarlo
+3. Procesar             -&gt; soltar la ficha (y contesta la máquina) | deshacer | Nueva partida
+4. Preparar mensajes    -&gt; reconstruir el tablero, estado de la partida y mensaje final
+5. Mostrar la página    -&gt; formulario de configuración O jugadores, tablero, campos ocultos e historial
+</code></pre>
+  <p>Cada tarea del paso 3 es una función pequeña con tipos (RNF-06):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>e()</code> / <code>texto()</code></td>
+          <td>Escapar para el HTML / leer un campo de texto sin avisos y sin espacios a los lados</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarConfiguracion()</code></td>
+          <td>El formulario → <code>[configuración, errores]</code></td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>nuevaPartida()</code> / <code>turno()</code></td>
+          <td>La partida recién creada (quien empieza lleva las rojas) / de quién es el turno</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>leerEstado()</code></td>
+          <td>La partida de los campos ocultos, sin comprobar aún</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>tableroVacio()</code> / <code>soltarFicha()</code> / <code>columnasLibres()</code></td>
+          <td>El tablero, la gravedad y las columnas en las que cabe una ficha</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>reconstruir()</code></td>
+          <td>Repetir las jugadas → tablero, última ficha, ganador y línea, o <code>null</code></td>
+          <td>3, 4</td>
+        </tr>
+        <tr>
+          <td><code>lineaGanadora()</code> / <code>estadoPartida()</code></td>
+          <td>El cuatro en raya que pasa por una ficha / <code>ganada</code>, <code>empate</code> o <code>jugando</code>
+          </td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>ganaria()</code> / <code>regala()</code></td>
+          <td>¿Gana esa ficha en esa columna? / ¿Gana el rival justo encima?</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td><code>jugadaMaquina()</code> / <code>moverMaquina()</code></td>
+          <td>La columna que elige la máquina / jugar si le toca</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td><code>deshacer()</code> / <code>historial()</code> / <code>estadoValido()</code></td>
+          <td>Quitar jugadas / listarlas / ¿es una partida posible?</td>
+          <td>6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Mira qué funciones reciben el array <strong>por referencia</strong>:
+      <code>soltarFicha(array &amp;$tablero, …)</code>,
+      <code>moverMaquina(array &amp;$partida)</code> y <code>deshacer(array &amp;$partida)</code>. Son las únicas que
+      cambian lo que reciben; el
+      resto calcula y devuelve. RNF-06 lo pide así ("por referencia solo donde se modifica"), y la máquina depende de
+      ello, como se verá en el paso 5.
+    </p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>La página tiene cuatro estados y el botón pulsado decide la transición (<em>evento [condición] / acción</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración válida]</td>
+          <td>crear la partida; si empieza la máquina, juega</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración no válida]</td>
+          <td>mostrar todos los errores</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Con partida</td>
+          <td>columna o <em>Deshacer</em> [estado recibido no válido]</td>
+          <td>error</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>columna [no existe, le toca a la máquina o está llena]</td>
+          <td>error; nada cambia</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>columna [válida]</td>
+          <td>añadir la jugada; contesta la máquina, si la hay y no ha terminado</td>
+          <td>Jugando, Ganada o Empate</td>
+        </tr>
+        <tr>
+          <td>Ganada / Empate</td>
+          <td>columna (petición forzada)</td>
+          <td>"La partida ha terminado: empieza otra."</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>Con partida</td>
+          <td><em>Deshacer</em> [hay una jugada de la persona]</td>
+          <td>quitar la última (y la de la máquina)</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td><em>Deshacer</em> [solo está la primera de la máquina]</td>
+          <td>"No hay ninguna jugada tuya que deshacer."</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Con partida</td>
+          <td><em>Nueva partida</em></td>
+          <td>formulario con los jugadores, el modo y el nivel</td>
+          <td>Sin partida</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dos flechas no son evidentes y salen de dibujar el diagrama. La primera: la jugada de la persona puede
+    <strong>terminar</strong>
+    la partida, y entonces la máquina no debe contestar; por eso <code>moverMaquina()</code> mira el estado antes de
+    jugar. La
+    segunda: <em>Deshacer</em> puede salir de <em>Ganada</em> y volver a <em>Jugando</em>, y si contra la máquina solo
+    quitara una jugada,
+    la partida se quedaría atascada: le tocaría a la máquina, que solo juega cuando juega la persona, y cualquier
+    columna daría "Ahora le toca a la máquina.".</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden:
+    primero la
+    configuración, después el tablero con <strong>dos personas</strong> (que es más fácil de probar), luego el final de
+    la partida y
+    solo entonces la máquina, que necesita todo lo anterior.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs y esqueleto HTML</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Formulario, validación, partida nueva en campos ocultos y turno</td>
+          <td>R1, R2, R4</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Tablero reconstruido a partir de las jugadas: gravedad, turnos, columnas llenas</td>
+          <td>R3, R4, R5</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Cuatro en raya en las cuatro direcciones, empate, línea resaltada y <em>Nueva partida</em></td>
+          <td>R6</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>La máquina: fácil y normal, reproducible</td>
+          <td>R7</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td><strong>Solución completa:</strong> deshacer, historial y validar el estado recibido</td>
+          <td>R8, R9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> Es una tarea larga (casi veinte funciones) con muchas condiciones que se
+    cruzan: quién
+    juega, si la partida ha terminado, si hay máquina. Los TODO son el <strong>plan</strong> dentro del propio código:
+    en
+    <code>index.php</code>, uno por cada botón, en el orden en que se ejecutará; en <code>funciones.php</code>, la
+    <strong>firma</strong> de cada
+    función con lo que recibe y lo que devuelve:
+  </p>
+  <pre><code class="language-php">// TODO: función reconstruir(string $jugadas): ?array -&gt; repetir las jugadas: tablero, última ficha y ganador (null si las jugadas no son posibles)
+        // TODO: después de un cuatro en raya no puede haber más jugadas
+        // TODO: ¿ha hecho cuatro en raya con esta ficha?
+</code></pre>
+  <p><strong>Decisión clave.</strong> El comentario de cabecera de <code>funciones.php</code> ya contiene la estructura
+    de la partida y la
+    frase que guía toda la tarea: solo se guardan las jugadas; el tablero, el turno y el ganador se calculan cada vez
+    con <code>reconstruir()</code>. En <code>index.php</code>, dentro del bloque de la columna, hay dos TODO que se
+    resolverán en pasos
+    distintos: "una partida terminada no admite más fichas" (paso 4) y "nadie puede jugar por la máquina" (paso 5).</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título y nada más, pero <strong>no hay errores de PHP</strong>. Con la extensión <em>Todo
+        Tree</em> de VS Code
+      verás la lista de lo que queda por hacer. A partir de ahora, cada TODO que se programa pierde la palabra
+      <code>TODO</code>.</p>
+  </div>
+
+  <h3 id="32-paso-2-configuracion-partida-nueva-y-turno">3.2.- Paso 2: configuración, partida nueva y turno</h3>
+  <p><strong>Objetivo.</strong> El formulario pegajoso con su validación (R1, R2), crear la partida y dejarla en campos
+    ocultos
+    (R4), y saber de quién es el turno.</p>
+  <p><strong>Por qué ahora.</strong> Sin una partida no hay nada que jugar. Y es el momento de fijar los datos del
+    estado: si los
+    campos ocultos están bien desde el principio, los pasos siguientes solo <strong>leen</strong> de ellos.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Las constantes (<code>FILAS</code>, <code>COLUMNAS</code>, <code>ROJA</code>, <code>AMARILLA</code>,
+      <code>COLORES</code>, <code>NIVELES</code>, <code>MAX_NOMBRE</code>, <code>NOMBRE_MAQUINA</code>).
+      <code>NIVELES</code> es un array <code>clave =&gt; descripción</code>: con él se valida
+      (<code>array_key_exists</code>) y se genera el <code>&lt;select&gt;</code>.
+    </li>
+    <li><code>texto()</code> es la función auxiliar que evita casi todos los avisos: devuelve el campo sin espacios a
+      los lados, o
+      <code>''</code> si no es un texto (por ejemplo, <code>modo[]</code>).
+    </li>
+    <li><code>validarConfiguracion()</code> cuenta los caracteres con <code>mb_strlen()</code> y compara sin mayúsculas
+      con
+      <code>mb_strtolower()</code>. Las comprobaciones dependen del modo: el jugador 2 solo con dos personas; el nivel y
+      el
+      nombre reservado <em>Máquina</em>, solo contra la máquina.
+    </li>
+    <li><code>nuevaPartida()</code> traduce la configuración (jugador 1, jugador 2, quién empieza) al estado (rojas,
+      amarillas,
+      color de la máquina): es el único sitio donde se decide quién lleva cada color.</li>
+    <li><code>turno()</code> es una línea (código debajo de esta lista).</li>
+    <li>En el HTML, los nombres, "Turno de … (rojas)" y los seis campos ocultos, todos con <code>e()</code>.</li>
+  </ul>
+  <pre><code class="language-php">// turno() (paso 2, funciones.php)
+return strlen($jugadas) % 2 === 0 ? ROJA : AMARILLA;
+</code></pre>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Usar <code>strlen()</code> y <code>strtolower()</code> con los nombres. En UTF-8 la Ñ y las vocales con tilde
+      ocupan <strong>2 bytes</strong>:
+      <code>ÑandúÑandúÑandú</code> tiene 15 letras pero <code>strlen()</code> dice 21, y daría un error que no es
+      verdad. Y
+      <code>strtolower('MÁQUINA')</code> no convierte la Á, así que un jugador podría llamarse así. Con
+      <code>mb_strlen()</code> y
+      <code>mb_strtolower()</code> las dos comprobaciones son correctas.
+    </p>
+  </div>
+
+  <p><strong>Un truco provisional.</strong> <code>index.php</code> deja
+    <code>$estado = $partida === null ? 'sin partida' : 'jugando';</code>: todavía no
+    se sabe detectar el final, pero la vista ya puede usar <code>$estado</code> para enseñar el turno. El paso 4 lo
+    sustituye por
+    <code>estadoPartida()</code>.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 a 6. Después, dos personas, Ana y Brais, empieza Ana: deben salir los dos nombres, "Turno de Ana
+      (rojas)" y, con Ctrl+U, <code>name="jugadas" value=""</code>. Repite con "empieza el jugador 2": ahora Brais lleva
+      las
+      rojas. Contra la máquina y empezando ella sale "Turno de Máquina (rojas)": la máquina todavía no sabe jugar.</p>
+  </div>
+
+  <h3 id="33-paso-3-el-tablero-reconstruido-a-partir-de-las-jugadas">3.3.- Paso 3: el tablero reconstruido a partir de
+    las jugadas</h3>
+  <p><strong>Objetivo.</strong> Dibujar el tablero con un botón por columna, soltar fichas con gravedad y turnos
+    alternos, y
+    rechazar columnas inexistentes o llenas (R3, R4, R5).</p>
+  <p><strong>Por qué ahora.</strong> Es el corazón de la decisión de María: comprobar que de un texto como
+    <code>"3324"</code> sale el tablero
+    correcto. Se hace con <strong>dos personas</strong>, sin máquina y sin ganador, para que lo único que pueda fallar
+    sea la
+    reconstrucción.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>tableroVacio()</code> con <code>array_fill(0, FILAS, array_fill(0, COLUMNAS, VACIA))</code>; la fila 0 es
+      la de arriba.</li>
+    <li><code>soltarFicha()</code> recorre la columna desde abajo (<code>FILAS - 1</code>) hasta encontrar una casilla
+      vacía. Recibe el
+      tablero <strong>por referencia</strong> porque lo cambia, y devuelve la fila, o <code>null</code> si la columna
+      está llena.</li>
+    <li><code>columnasLibres()</code>: una columna admite ficha si su casilla de arriba está vacía.</li>
+    <li><code>reconstruir()</code> repite las jugadas (código debajo de esta lista). Si algo es imposible, devuelve
+      <code>null</code>.</li>
+    <li><code>leerEstado()</code> usa <code>texto()</code> para todo y <code>filter_var()</code> para la semilla. En
+      <code>index.php</code>, la columna pasa por
+      <code>filter_var(..., FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 0, 'max_range' =&gt; COLUMNAS - 1]])</code>:
+      un 7,
+      un texto o un array dan <code>false</code> y "Esa columna no existe.".
+    </li>
+    <li>Si la jugada vale, se <strong>añade un carácter</strong> a las jugadas
+      (<code>$partida['jugadas'] .= $columna;</code>) y el tablero se
+      vuelve a reconstruir al final de la lógica. No se actualiza el tablero a mano: hay una sola fuente de verdad.</li>
+  </ul>
+  <pre><code class="language-php">// reconstruir() (paso 3, funciones.php)
+foreach (str_split($jugadas) as $numero =&gt; $caracter) {
+    $columna = (int) $caracter;
+    $ficha = $numero % 2 === 0 ? ROJA : AMARILLA;
+    $fila = soltarFicha($tablero, $columna, $ficha);
+    if ($fila === null) {
+        return null;                                    // la columna ya estaba llena
+    }
+    $ultima = &quot;$fila-$columna&quot;;
+</code></pre>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>Antes del bucle, <code>reconstruir()</code> comprueba el texto con
+      <code>preg_match('/^[0-6]*$/D', $jugadas)</code> y que no pase de
+      42 caracteres. Sin la <code>D</code>, el <code>$</code> aceptaría un salto de línea al final y <code>"33\n"</code>
+      pasaría el filtro. En esta
+      solución <code>texto()</code> ya quita ese salto con <code>trim()</code>, así que la <code>D</code> es una
+      <strong>segunda barrera</strong>: si mañana alguien
+      llama a <code>reconstruir()</code> con un texto sin recortar, seguirá siendo correcta.</p>
+  </div>
+
+  <p><strong>Una validación a medias, a propósito.</strong> Al recuperar la partida, este paso ya rechaza las jugadas
+    imposibles,
+    aunque todavía no comprueba los nombres ni la máquina. Fíjate en que el TODO se queda encima:</p>
+  <pre><code class="language-php">// TODO: no fiarse del navegador: comprobar toda la partida (nombres, máquina, nivel, semilla y jugadas)
+$valida = reconstruir($partida['jugadas']) !== null;
+</code></pre>
+  <p>Es la primera recompensa de guardar las jugadas: la validación más difícil (¿es posible este tablero?) sale
+    <strong>gratis</strong> de la función que hacía falta de todas formas para dibujarlo. El paso 6 cambiará esa línea
+    por
+    <code>estadoValido()</code>.
+  </p>
+  <p>La vista del tablero se escribe ya completa, con las clases <code>ultima</code> y <code>ganadora</code>, aunque
+    <code>linea</code> todavía es
+    siempre un array vacío.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 7, 8 y 9. Con el depurador, pon un punto de ruptura en <code>reconstruir()</code> y mira cómo se llena
+      <code>$tablero</code>
+      ficha a ficha. Con F12 cambia <code>jugadas</code> por <code>7</code> o por <code>0000000</code>: "La partida
+      recibida no es válida". Haz cuatro
+      en raya vertical: el juego <strong>no</strong> se entera todavía, y eso es lo que añade el paso siguiente.</p>
+  </div>
+
+  <h3 id="34-paso-4-cuatro-en-raya-empate-y-nueva-partida">3.4.- Paso 4: cuatro en raya, empate y nueva partida</h3>
+  <p><strong>Objetivo.</strong> Detectar el cuatro en raya en las cuatro direcciones y el empate, resaltar la línea,
+    cerrar la
+    partida y volver al formulario (R6).</p>
+  <p><strong>Por qué ahora.</strong> Con la reconstrucción funcionando, detectar el ganador es "solo" mirar cada ficha
+    que se pone.
+    Y la máquina (paso 5) lo necesita: para ganar o tapar tiene que saber qué jugada hace cuatro en raya.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>La constante <code>DIRECCIONES = [[0, 1], [1, 0], [1, 1], [1, -1]]</code>: horizontal, vertical y las dos
+      diagonales.</li>
+    <li><code>lineaGanadora()</code> recorre las cuatro direcciones con <strong>un solo bucle</strong>: para cada una,
+      cuenta desde la ficha
+      hacia los dos sentidos (código debajo de esta lista) y, si junta 4 o más casillas, las devuelve.</li>
+    <li><code>reconstruir()</code> resuelve sus dos TODO: después de cada ficha llama a <code>lineaGanadora()</code> y,
+      si ya había ganador
+      antes de una jugada, devuelve <code>null</code> (una ficha después de ganar es imposible).</li>
+    <li><code>estadoPartida()</code>: <code>ganada</code> si hay ganador; <code>empate</code> si hay 42 jugadas; si no,
+      <code>jugando</code>.</li>
+    <li>En <code>index.php</code>, el TODO "una partida terminada no admite más fichas", el <code>$estado</code> real,
+      el mensaje final y
+      <em>Nueva partida</em>, que con <code>leerEstado()</code> rellena el formulario. Contra la máquina, el jugador 1
+      es quien no es la
+      máquina, y "empieza" se deduce de su color.
+    </li>
+  </ul>
+  <pre><code class="language-php">// lineaGanadora() (paso 4, funciones.php)
+foreach (DIRECCIONES as [$df, $dc]) {
+    $casillas = [&quot;$fila-$columna&quot;];
+    foreach ([1, -1] as $sentido) {                     // hacia un lado y hacia el otro
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Basta con mirar la última ficha.</strong> Un cuatro en raya solo puede aparecer en la jugada que lo
+      completa, y esa
+      ficha forma parte de la línea. Por eso <code>lineaGanadora()</code> recibe una posición y no recorre el tablero
+      entero.
+      Pero la ficha puede estar <strong>en medio</strong> de la línea (rellenar el hueco de <code>R R _ R</code>): por
+      eso se cuenta hacia los
+      dos sentidos y se suman, en lugar de mirar solo hacia la derecha o hacia abajo.</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 10 a 13, escribiendo las jugadas con F12 en el campo oculto y pulsando una columna libre (o la que
+      completa la línea). Comprueba las cuatro direcciones, las casillas <code>ganadora</code> y que una jugada más da
+      "La partida ha terminado: empieza otra.". Con <code>34343430</code> (una ficha después de ganar) debe salir
+      "La partida recibida no es válida". Por último, <em>Nueva partida</em>: el formulario debe traer
+      <code>value="dos" checked</code>
+      y <code>name="jugador2" value="Brais"</code>.</p>
+  </div>
+
+  <h3 id="35-paso-5-la-maquina">3.5.- Paso 5: la máquina</h3>
+  <p><strong>Objetivo.</strong> Que la máquina juegue en la misma petición que la persona, en sus dos niveles, y siempre
+    igual con
+    la misma semilla (R7).</p>
+  <p><strong>Por qué ahora.</strong> La máquina se construye con piezas que ya existen: <code>columnasLibres()</code>
+    (paso 3) para saber
+    dónde puede jugar, <code>soltarFicha()</code> y <code>lineaGanadora()</code> (pasos 3 y 4) para probar jugadas, y
+    <code>estadoPartida()</code>
+    (paso 4) para no jugar después de que la persona gane.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>ganaria()</code>: suelta la ficha en el tablero y mira si hace cuatro en raya. El tablero que recibe es
+      una <strong>copia</strong>
+      (código debajo de esta lista).</li>
+    <li><code>regala()</code>: suelta la ficha propia y pregunta a <code>ganaria()</code> si el rival ganaría en la
+      misma columna, es decir,
+      <strong>justo encima</strong>.
+    </li>
+    <li><code>jugadaMaquina()</code>: en fácil, una columna libre al azar; en normal, las cuatro reglas en orden: ganar,
+      tapar,
+      evitar las que regalan y, de las que quedan, la más cercana al centro (al azar entre dos igual de cercanas).</li>
+    <li><code>moverMaquina()</code>: si hay máquina, le toca y la partida no ha terminado, elige columna y la
+      <strong>añade</strong> a las
+      jugadas (por eso recibe la partida por referencia).</li>
+    <li>En <code>index.php</code>, la máquina juega al pulsar <em>Empezar</em> (si empieza ella) y después de cada
+      jugada de la persona; y
+      se resuelve el TODO "nadie puede jugar por la máquina" ("Ahora le toca a la máquina.").</li>
+  </ul>
+  <pre><code class="language-php">// ganaria() (paso 5, funciones.php)
+// $tablero es una copia (los arrays se pasan por valor): se puede probar sin estropear el de verdad
+$fila = soltarFicha($tablero, $columna, $ficha);
+return $fila !== null &amp;&amp; lineaGanadora($tablero, $fila, $columna) !== [];
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Probar en una copia.</strong> En PHP los arrays se pasan <strong>por valor</strong>:
+      <code>ganaria(array $tablero, …)</code> recibe su propia
+      copia y <code>soltarFicha()</code> cambia esa copia, no el tablero de verdad. Así la máquina puede "imaginar"
+      siete jugadas
+      (y, en <code>regala()</code>, la respuesta del rival a cada una) sin deshacer nada. Si <code>ganaria()</code>
+      recibiera el tablero con
+      <code>&amp;</code>, después de probar la primera columna el tablero tendría una ficha de más.
+    </p>
+  </div>
+
+  <p><strong>La semilla, una por decisión.</strong> <code>moverMaquina()</code> llama a <code>jugadaMaquina()</code> con
+    <code>$partida['semilla'] + strlen($partida['jugadas'])</code>, y <code>jugadaMaquina()</code> hace
+    <code>mt_srand($azar)</code> antes de elegir.
+    Cada turno tiene su propia semilla, pero siempre la misma para el mismo número de jugadas: si se deshace y se
+    repite la jugada, la máquina contesta igual. Es lo que hace la partida <strong>reproducible</strong> para probarla y
+    depurarla.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 14 y 15: con F12 pon 7 en el campo <code>semilla</code> y juega contra la máquina en nivel normal. Si Ana
+      juega en
+      las columnas 1, 2, 3 y 7, debe ganar la máquina ("Gana Máquina con las amarillas en 8 jugadas."). Con el
+      depurador, sigue <code>jugadaMaquina()</code> cuando tengas tres en raya y mira por qué tapa esa columna. Con F12,
+      pon
+      <code>jugadas</code> a <code>33</code> en una partida en la que la máquina lleva las rojas: "Ahora le toca a la
+      máquina.".
+    </p>
+  </div>
+
+  <h3 id="36-paso-6-solucion-completa-deshacer-historial-y-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa):
+    deshacer, historial y no fiarse del navegador</h3>
+  <p><strong>Objetivo.</strong> El botón <em>Deshacer</em> y el historial (R8), y comprobar que todo el estado recibido
+    es una partida
+    posible (R9).</p>
+  <p><strong>Por qué al final.</strong> <em>Deshacer</em> depende de la máquina: contra ella hay que quitar también su
+    jugada, y para eso
+    hace falta saber de qué color es y de quién es el turno. La validación completa, como siempre, se escribe cuando
+    se conocen todas las piezas del estado; pero aquí es corta, porque lo más difícil (las jugadas) ya se validaba
+    desde el paso 3.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>deshacer()</code> quita caracteres <strong>hasta que vuelva a tocarle a la persona</strong> (código debajo
+      de esta lista). Con dos
+      personas, <code>maquina</code> es <code>''</code>, que nunca es igual al turno, y se quita exactamente una jugada.
+      Si al final le
+      tocaría a la máquina (solo estaba su primera jugada), no cambia nada y devuelve <code>false</code>.</li>
+    <li><code>historial()</code> recorre las jugadas: la posición da el color (par: rojas) y el carácter, la columna
+      (<code>+ 1</code>).</li>
+    <li><code>estadoValido()</code> añade lo que faltaba: nombres de 1 a 15 caracteres y distintos sin mirar mayúsculas,
+      <code>maquina</code>
+      en <code>['', ROJA, AMARILLA]</code>, el nivel en <code>NIVELES</code>, que el color de la máquina se llame
+      <em>Máquina</em> y la semilla
+      <code>&gt;= 1</code>. Termina con la comprobación de siempre:
+      <code>reconstruir($partida['jugadas']) !== null</code>.
+    </li>
+    <li>En <code>index.php</code>, la línea provisional del paso 3 se cambia por
+      <code>$valida = estadoValido($partida);</code>, y el botón
+      <em>Deshacer</em> se deshabilita si no hay jugadas.
+    </li>
+  </ul>
+  <pre><code class="language-php">// deshacer() (paso 6, funciones.php)
+do {
+    $jugadas = substr($jugadas, 0, -1);
+} while ($jugadas !== '' &amp;&amp; turno($jugadas) === $partida['maquina']);
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Cada decisión del análisis simplifica un paso posterior.</strong> Como el estado son las jugadas,
+      deshacer es
+      <code>substr($jugadas, 0, -1)</code> y el historial es un <code>foreach</code> sobre <code>str_split()</code>:
+      ninguna de las dos funciones
+      necesita un dato nuevo. Si se hubiera guardado el tablero, deshacer exigiría saber <strong>dónde</strong> cayó la
+      última
+      ficha, y habría que guardarlo aparte.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 16, 17 y 18. Contra la máquina, juega una vez y pulsa <em>Deshacer</em>: desaparecen tu ficha
+      <strong>y</strong> la de la
+      máquina. Con F12 o con <code>curl -d "columna=0&amp;nombreR=Ana&amp;nombreA=ana&amp;maquina=&amp;nivel=facil&amp;semilla=5&amp;jugadas="
+http://localhost:8000/</code> prueba nombres iguales, <code>maquina=X</code>, <code>maquina=A</code> sin que las
+      amarillas se llamen
+      <em>Máquina</em>, <code>nivel=dios</code> y <code>semilla=0</code>: todas deben dar "La partida recibida no es
+      válida", sin avisos.
+    </p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 6 cambia la condición de validación y podría rechazar partidas que antes se aceptaban con razón (por
+    ejemplo, las de dos personas, en las que el nivel no se usa). Una lista de comprobación para esta tarea:</p>
+  <ul>
+    <li>☐ Casos correctos: ganar con cada color en las cuatro direcciones, empate, contra la máquina en los dos niveles
+      y empezando cada uno.</li>
+    <li>☐ Casos límite: cuatro en raya con la última ficha en medio de la línea; cinco en raya; ganar con la ficha 42;
+      la máquina con una sola columna libre.</li>
+    <li>☐ Deshacer: con dos personas, contra la máquina, tras terminar y cuando solo está la primera de la máquina.</li>
+    <li>☐ Reproducibilidad: la misma semilla y las mismas jugadas dan siempre las mismas respuestas de la máquina.</li>
+    <li>☐ Maliciosos: arrays donde se espera un texto, jugadas imposibles, nombres con HTML, máquina y nivel
+      inventados.</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code> y todos los textos que se escriben en el HTML
+      pasan por
+      <code>e()</code>.
+    </li>
+  </ul>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución no tiene <code>FIXME</code> pendientes, pero hay detalles que se podrían mejorar, buenos para
+    practicar:</p>
+  <ul>
+    <li><strong>Trampas posibles.</strong> Cambiando el campo <code>jugadas</code> se puede "hacer jugar" a la máquina
+      donde uno quiera,
+      siempre que la partida sea posible. La ampliación del enunciado lo arregla: con la semilla, repetir la partida
+      y comprobar que cada jugada de la máquina es la que ella habría hecho.</li>
+    <li><strong><code>reconstruir()</code> varias veces por petición.</strong> Se llama en <code>estadoValido()</code>,
+      en el bloque de la columna, en
+      <code>moverMaquina()</code> y al final. Con 42 jugadas como mucho no importa, y tener una sola fuente de verdad lo
+      hace
+      más simple; pero es un buen ejercicio pensar cuándo compensaría calcularlo una vez y pasarlo como parámetro.
+    </li>
+    <li><strong>El tamaño del tablero.</strong> RNF-05 dice que cambiar el tamaño solo exige cambiar <code>FILAS</code>
+      y <code>COLUMNAS</code>, pero la
+      expresión regular de <code>reconstruir()</code> tiene la columna máxima escrita a mano (<code>[0-6]</code>), y
+      guardar cada jugada en
+      <strong>un</strong> carácter limita el tablero a 10 columnas. Para el "cinco en raya" de las ampliaciones también
+      habría que
+      convertir en constante el 4 de <code>count($casillas) &gt;= 4</code>.
+    </li>
+    <li><strong>La semilla sin máximo.</strong> <code>filter_var()</code> exige <code>min_range =&gt; 1</code> pero no
+      un máximo, y <code>estadoValido()</code> solo
+      comprueba <code>&gt;= 1</code>. Con una semilla cercana a <code>PHP_INT_MAX</code>, la suma
+      <code>semilla + strlen(jugadas)</code> deja de ser un
+      <code>int</code> y no se puede pasar al parámetro <code>int $azar</code>. Bastaría con un <code>max_range</code>
+      (por ejemplo, 999999, el mismo
+      límite que usa el formulario).
+    </li>
+    <li><strong><code>jugadas[]</code>.</strong> <code>texto()</code> convierte un array en <code>''</code>, que es una
+      lista de jugadas válida (la partida vacía). Si
+      se quiere que un array sea siempre "estado no válido", como dice RF-09, hay que distinguir el campo ausente o
+      con un array del campo vacío.</li>
+    <li>Las otras ampliaciones (nivel difícil con <em>minimax</em>, marcador entre partidas) son la siguiente
+      <strong>vuelta</strong> del
+      proceso: cada una empieza otra vez por el análisis. El marcador, por ejemplo, es un dato que <strong>no</strong>
+      se puede
+      calcular a partir de las jugadas y tendría que viajar en sus propios campos ocultos.</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Guardar el tablero entero</td>
+          <td>42 campos que validar y un tablero que puede ser imposible</td>
+          <td>Guardar las jugadas y reconstruir (R4)</td>
+        </tr>
+        <tr>
+          <td>Contar el cuatro en raya solo hacia un lado</td>
+          <td>No se detecta al rellenar un hueco en medio de la línea</td>
+          <td>Contar hacia los dos sentidos y sumar</td>
+        </tr>
+        <tr>
+          <td>Olvidar comprobar los bordes en las diagonales</td>
+          <td><em>Undefined array key</em> con <code>-1</code> o <code>7</code></td>
+          <td>Comprobar <code>$f</code> y <code>$c</code> antes de leer la casilla</td>
+        </tr>
+        <tr>
+          <td>Pasar el tablero con <code>&amp;</code> a <code>ganaria()</code></td>
+          <td>La máquina deja fichas de prueba en el tablero</td>
+          <td>Por valor: trabaja sobre una copia</td>
+        </tr>
+        <tr>
+          <td>Dejar que la máquina conteste a una jugada ganadora</td>
+          <td>Pone una ficha después del cuatro en raya</td>
+          <td><code>moverMaquina()</code> mira <code>estadoPartida()</code> antes</td>
+        </tr>
+        <tr>
+          <td>Deshacer solo una jugada contra la máquina</td>
+          <td>Le toca a la máquina y cualquier columna da "Ahora le toca a la máquina."</td>
+          <td>Quitar jugadas hasta que vuelva a tocar a la persona</td>
+        </tr>
+        <tr>
+          <td><code>strlen()</code> / <code>strtolower()</code> con los nombres</td>
+          <td>Ñandú cuenta mal y <code>MÁQUINA</code> pasa como nombre</td>
+          <td><code>mb_strlen()</code> y <code>mb_strtolower()</code></td>
+        </tr>
+        <tr>
+          <td><code>mt_rand()</code> sin semilla</td>
+          <td>La máquina no repite sus jugadas y no se puede probar</td>
+          <td><code>mt_srand(semilla + número de jugadas)</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué se guardan las jugadas y no el tablero? <strong>Porque es el estado mínimo: el tablero, el turno y el
+          ganador se calculan repitiéndolas, y al repetirlas se descubre cualquier lista imposible.</strong></li>
+      <li>¿Cómo se sabe de quién es el turno? <strong>Por la paridad de <code>strlen($jugadas)</code>: con un número
+          par, les toca a las
+          rojas.</strong></li>
+      <li>¿Por qué <code>lineaGanadora()</code> solo mira la última ficha? <strong>Porque un cuatro en raya solo aparece
+          en la jugada que
+          lo completa, y esa ficha está en la línea.</strong></li>
+      <li>¿Por qué <code>ganaria()</code> puede soltar fichas sin estropear el tablero? <strong>Porque recibe el array
+          por valor: trabaja
+          sobre una copia.</strong></li>
+      <li>¿Para qué se suma el número de jugadas a la semilla? <strong>Para que cada decisión de la máquina tenga su
+          propia
+          semilla, pero siempre la misma con las mismas jugadas: la partida es reproducible.</strong></li>
+      <li>¿Por qué la validación del paso 6 es tan corta? <strong>Porque las jugadas, lo más difícil, ya las valida
+          <code>reconstruir()</code> desde el paso 3; solo faltan los nombres, la máquina, el nivel y la
+          semilla.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

@@ -1,0 +1,16 @@
+/* TAREA-02 AVANZADA: Código secreto — estilos */
+body { font-family: Arial, Helvetica, sans-serif; background: #f1f0f7; color: #222; margin: 2em; max-width: 50em; }
+h1 { color: #4a3b8f; }
+h2 { font-size: 1.15em; color: #4a3b8f; }
+h2.ganada { color: #2e7d32; }
+h2.perdida { color: #c62828; }
+.errores { background: #fde2e2; border: 1px solid #c62828; color: #8e1b1b; padding: 0.6em 2em; }
+.aviso { background: #fff4ce; border: 1px solid #d9b200; padding: 0.4em 1em; display: inline-block; }
+.marcador { background: #fff; border: 1px solid #cbc6e3; display: inline-block; padding: 0.3em 1em; }
+.ficha { display: inline-block; width: 1.5em; height: 1.5em; border-radius: 50%; border: 1px solid #555; margin: 0 0.15em; vertical-align: middle; }
+.ficha.pequena { width: 1em; height: 1em; }
+.historial { border-collapse: collapse; background: #fff; }
+.historial th, .historial td { border: 1px solid #cbc6e3; padding: 0.25em 0.6em; }
+.negras, .blancas { font-size: 1.1em; white-space: nowrap; }
+.pista { color: #4a3b8f; font-weight: bold; }
+.intento select { font-size: 1em; }

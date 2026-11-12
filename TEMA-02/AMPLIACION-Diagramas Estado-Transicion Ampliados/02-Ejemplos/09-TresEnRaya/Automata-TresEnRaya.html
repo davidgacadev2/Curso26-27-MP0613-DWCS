@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata del tres en raya contra el servidor</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata del tres en raya contra el servidor</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p><strong>Carlos</strong> quiere un tres en raya en el que el contrincante sea el servidor. Al dibujar el
+            autómata se atasca: después de que el jugador pulse una casilla, ¿qué evento hace jugar a la máquina? El
+            navegador no envía nada más. <strong>María</strong> le enseña un truco de los autómatas de protocolos: un
+            <strong>evento interno</strong>, que no viene de fuera sino que lo produce el propio programa, y que se
+            atiende en la misma petición.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Programa en PHP un <strong>tres en raya</strong> contra el servidor:</p>
+    <ul>
+        <li>Antes de empezar se elige la <strong>ficha</strong> (X u O) y <strong>quién empieza</strong> (el jugador o
+            la máquina).
+        </li>
+        <li>Cada casilla libre es un botón. Tras la jugada del jugador, si no ha ganado ni se ha llenado el tablero,
+            <strong>juega la máquina</strong> en la misma respuesta.
+        </li>
+        <li>La máquina juega así, en este orden: si puede <strong>ganar</strong>, gana; si no, <strong>tapa</strong> la
+            jugada ganadora del jugador; si no, el <strong>centro</strong>; si no, una <strong>esquina</strong> (0, 2,
+            6, 8); si no, un <strong>lado</strong>.
+        </li>
+        <li>La partida termina con <strong>victoria</strong>, <strong>derrota</strong> o <strong>empate</strong>, y se
+            muestra un <strong>marcador</strong> (ganadas, perdidas y empates) que se conserva entre partidas.
+            <em>Abandonar</em> cuenta como derrota.
+        </li>
+        <li>Al terminar: <em>Revancha</em> (misma configuración) o <em>Cambiar de ficha</em> (volver a la configuración
+            conservando el marcador).
+        </li>
+        <li>La partida viaja en JSON en un campo oculto y se comprueba que es coherente (fichas válidas y que el número
+            de fichas de cada uno cuadra con quién empezó).
+        </li>
+    </ul>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Seis que vienen del navegador (Carga, Empezar, Casilla, Revancha,
+            Abandonar, Cambiar de ficha) y <strong>uno interno</strong>: <em>turno de la máquina</em>.
+        </li>
+        <li><strong>Estados.</strong> Siete: configuración, turno del jugador, <strong>turno de la máquina</strong>,
+            ganada, perdida y empate (más ST0). ST3, el turno de la máquina, es un estado <strong>transitorio</strong>:
+            nunca se envía al navegador. Cuando una transición termina en ST3, el programa atiende enseguida el evento
+            interno (T4), que deja el autómata en ST2, ST5 o ST6.
+        </li>
+        <li><strong>Predicados de la jugada.</strong> PL5 (la jugada del jugador gana) y PL6 (llena el tablero) se
+            calculan <strong>antes</strong> de poner la ficha, sobre el tablero con la ficha "imaginada". Igual PL7 y
+            PL8 para la máquina.
+        </li>
+        <li><strong>El orden importa.</strong> Si una jugada gana y a la vez llena el tablero (la novena ficha), es
+            victoria: PL5 se comprueba antes que PL6.
+        </li>
+        <li><strong>Coherencia (PL3).</strong> Un tablero <code>XXX------</code> con el jugador X que empezaba es
+            imposible (tres X y ninguna O): la partida se ha manipulado.
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 565" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="n9" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="60" cy="70" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="60" y="75"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="60" y="115"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="60" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text>
+            <circle cx="200" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="200" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text>
+            <circle cx="420" cy="150" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="420" y="155"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text>
+            <circle cx="420" cy="380" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="420" y="385"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text>
+            <circle cx="640" cy="60" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="65"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text>
+            <circle cx="640" cy="250" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="255"
+                text-anchor="middle" font-weight="bold" font-size="14">ST6</text>
+            <circle cx="640" cy="450" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="455"
+                text-anchor="middle" font-weight="bold" font-size="14">ST5</text>
+            <path d="M60.0,101.0 Q60.0,165.0 60.0,227.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="70" y="165" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Carga</tspan>
+            </text>
+            <path d="M91.0,260.0 Q130.0,260.0 167.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="130" y="248" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T1</tspan>
+                <tspan fill="#2e7d32">AC0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M213.0,287.0 C269.7,357.7 130.3,357.7 185.6,289.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="150" y="365" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Empezar</tspan>
+            </text><text x="150" y="378" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL0 || !PL1</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M227.7,246.1 Q310.0,205.0 390.5,164.8" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="250" y="175" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Empezar</tspan>
+            </text><text x="250" y="188" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; PL1 &amp;&amp; !PL2</tspan>
+            </text><text x="250" y="201" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M227.2,274.8 Q310.0,320.0 391.0,364.2" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="285" y="348" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#111111">... &amp;&amp; PL2</tspan>
+                <tspan fill="#2e7d32">AC3</tspan>
+            </text>
+            <path d="M393.0,163.0 C322.3,219.7 322.3,80.3 390.3,135.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="300" y="100" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Casilla</tspan>
+            </text><text x="300" y="113" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL3 &amp;&amp; !PL4</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M409.5,179.2 Q378.6,265.0 408.8,349.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="392" y="262" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Casilla</tspan>
+            </text><text x="392" y="275" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL4 &amp;&amp; !PL5 &amp;&amp; !PL6</tspan>
+            </text><text x="392" y="288" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6</tspan>
+            </text>
+            <path d="M430.5,350.8 Q461.4,265.0 431.2,181.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="470" y="270" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">interno</tspan>
+            </text><text x="470" y="283" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL7 &amp;&amp; !PL8</tspan>
+            </text><text x="470" y="296" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC10</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M448.7,138.3 Q530.0,105.0 609.5,72.5" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="530" y="75" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">PL4 &amp;&amp; PL5</tspan>
+            </text><text x="530" y="88" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6, AC7</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text>
+            <path d="M448.2,162.8 Q530.0,200.0 610.0,236.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="535" y="160" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">!PL5 &amp;&amp; PL6</tspan>
+            </text><text x="535" y="173" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6, AC8</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M446.7,364.2 Q530.0,315.0 611.6,266.8" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="560" y="345" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#111111">!PL7 &amp;&amp; PL8</tspan>
+            </text><text x="560" y="358" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC10, AC8</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M449.5,389.4 Q530.0,415.0 608.6,440.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n9)" /><text x="520" y="445" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#111111">PL7</tspan>
+            </text><text x="520" y="458" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC10, AC11</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M442.9,170.9 Q560.0,278.0 626.1,420.1" fill="none" stroke="#3a5f9f" stroke-width="2"
+                stroke-dasharray="6 4" marker-end="url(#n9)" /><text x="600" y="380" text-anchor="end"
+                font-family="Consolas, monospace" font-size="10.5" stroke="#ffffff" stroke-width="3"
+                paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Abandonar</tspan>
+            </text>
+            <rect x="560" y="505" width="130" height="34" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="625.0" y="526.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST4, ST5, ST6</text>
+            <path d="M560,520 Q330,520 228,278" fill="none" stroke="#3a5f9f" stroke-width="2" marker-end="url(#n9)" />
+            <text x="300" y="460" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cambiar ficha</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text><text x="300" y="473" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Revancha</tspan>
+                <tspan fill="#111111">→ ST2 o ST3 (PL2)</tspan>
+            </text><text x="20" y="520" text-anchor="start" font-size="10.5" fill="#555" font-style="italic">ST3 no se
+                envía al navegador: el evento interno</text><text x="20" y="534" text-anchor="start" font-size="10.5"
+                fill="#555" font-style="italic">se atiende en la misma petición.</text><text x="20" y="555"
+                text-anchor="start" font-size="10.5" fill="#222" font-style="italic">ST0 Carga · ST1 Configuración · ST2
+                Turno del jugador · ST3 Turno de la máquina · ST4 Ganada · ST5 Perdida · ST6 Empate</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del tres en raya (ST3 es transitorio: el evento interno se atiende en la misma
+            petición)</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>página sin parámetros</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Empezar</td>
+                <td>enviar la configuración</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Casilla</td>
+                <td><code>casilla:0</code> ... <code>casilla:8</code></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE3</td>
+                <td>Revancha</td>
+                <td>otra partida con la misma configuración</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE4</td>
+                <td>Abandonar</td>
+                <td></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE5</td>
+                <td>Interno</td>
+                <td>turno de la máquina (lo genera el programa, no el navegador)</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE6</td>
+                <td>Configurar</td>
+                <td>"Cambiar de ficha"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0 / ES1</td>
+                <td>configuracion</td>
+                <td>ficha, quién empieza y marcador; ES1 con aviso</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>tablero</td>
+                <td>le toca al jugador (con aviso si la casilla estaba ocupada)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3, ES4, ES5</td>
+                <td>ganada, perdida, empate</td>
+                <td>tablero sin botones, marcador, Revancha y Cambiar de ficha</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estados</td>
+                <td>ST0–ST6</td>
+                <td>—</td>
+                <td>Carga, Configuracion, TurnoJugador, TurnoMaquina, Ganada, Perdida, Empate</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td>(nunca vale ST3 en la página)</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE1</td>
+                <td><code>$p</code></td>
+                <td>JSON: tablero (9 caracteres X, O o -), ficha, empieza, marcador</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0, PL1</td>
+                <td>configuración válida</td>
+                <td>ficha X u O; empieza "jugador" o "maquina"</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>empieza la máquina</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>partida coherente</td>
+                <td>forma del JSON y número de fichas</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>casilla libre</td>
+                <td>entre 0 y 8 y con "-"</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>gana el jugador</td>
+                <td>la jugada hace tres en raya</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>se llena (jugador)</td>
+                <td>quedaba una sola casilla libre</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL7</td>
+                <td>gana la máquina</td>
+                <td>su jugada hace tres en raya</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL8</td>
+                <td>se llena (máquina)</td>
+                <td>quedaba una sola casilla libre</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>marcador a cero</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>recuperar</td>
+                <td>el marcador (T2, T7) o la partida (T5)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>leer la configuración</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td>tablero vacío</td>
+                <td><code>---------</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td>recuperar la partida</td>
+                <td>y comprobarla (PL3)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>leer la casilla</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>poner la ficha del jugador</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC7, AC8, AC11</td>
+                <td>ganadas++, empates++, perdidas++</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC9</td>
+                <td>elegir la jugada de la máquina</td>
+                <td>ganar, tapar, centro, esquinas, lados</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC10</td>
+                <td>poner la ficha de la máquina</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC12</td>
+                <td>guardar</td>
+                <td>la partida en el campo oculto</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga</th>
+                <th>Empezar</th>
+                <th>Casilla</th>
+                <th>Revancha</th>
+                <th>Abandonar</th>
+                <th>Interno</th>
+                <th>Configurar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>T3</td>
+                <td>---</td>
+                <td>T6</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T4</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T7</td>
+            </tr>
+            <tr>
+                <td>ST5</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T7</td>
+            </tr>
+            <tr>
+                <td>ST6</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T7</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>La fila de ST3 es la clave: en ese estado <strong>solo</strong> puede ocurrir el evento interno, y la columna
+        "Interno" solo tiene una celda.</p>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>AC0</td>
+                <td>ES0 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>!PL0 || !PL1</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES1 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; !PL2</code></td>
+                <td>ST2</td>
+                <td>AC3</td>
+                <td>ES2 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></td>
+                <td>ST3</td>
+                <td>AC3</td>
+                <td>(evento interno)</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC4, AC5</td>
+                <td><code>!PL3</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES1 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC4, AC5</td>
+                <td><code>PL3 &amp;&amp; !PL4</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "no está libre" [AC12]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC4, AC5</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; PL5</code></td>
+                <td>ST4</td>
+                <td>AC6, AC7</td>
+                <td>ES3 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC4, AC5</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; !PL5 &amp;&amp; PL6</code></td>
+                <td>ST6</td>
+                <td>AC6, AC8</td>
+                <td>ES5 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC4, AC5</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; !PL5 &amp;&amp; !PL6</code></td>
+                <td>ST3</td>
+                <td>AC6</td>
+                <td>(evento interno)</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC9</td>
+                <td><code>PL7</code></td>
+                <td>ST5</td>
+                <td>AC10, AC11</td>
+                <td>ES4 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC9</td>
+                <td><code>!PL7 &amp;&amp; PL8</code></td>
+                <td>ST6</td>
+                <td>AC10, AC8</td>
+                <td>ES5 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC9</td>
+                <td><code>!PL7 &amp;&amp; !PL8</code></td>
+                <td>ST2</td>
+                <td>AC10</td>
+                <td>ES2 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>!PL3</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES1 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>PL3 &amp;&amp; !PL2</code></td>
+                <td>ST2</td>
+                <td>AC3</td>
+                <td>ES2 [AC12]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>PL3 &amp;&amp; PL2</code></td>
+                <td>ST3</td>
+                <td>AC3</td>
+                <td>(evento interno)</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC4</td>
+                <td><code>!PL3</code> / <code>PL3</code></td>
+                <td>ST1 / ST5</td>
+                <td>--- / AC11</td>
+                <td>ES1 / ES4 "ha abandonado" [AC12]</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0 (con el marcador) [AC12]</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados</h3>
+    <p>T3:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL3</th>
+                <th>PL4</th>
+                <th>PL5</th>
+                <th>PL6</th>
+                <th><code>!PL3</code></th>
+                <th>ocupada</th>
+                <th>gana</th>
+                <th>empate</th>
+                <th>juega la máquina</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>x</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>T4:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL7</th>
+                <th>PL8</th>
+                <th>pierde</th>
+                <th>empate</th>
+                <th>sigue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>5.- Del autómata al código</h2>
+    <p>El <code>switch</code> va dentro de un bucle <code>do ... while</code>. Si una transición termina en ST3, el
+        bucle vuelve a entrar con la transición del evento interno (T4). Así el programa sigue la tabla de
+        eventos-estados también para los eventos que no vienen del navegador:</p>
+    <pre><code>do {
+    $interno = false;
+    switch ($transicion) {
+        // ... T1, T2, T3 (pueden terminar en ST3)
+        case 4:                                            // ---- T4 (ST3, Interno: turno de la máquina)
+            $maquina = contraria($p['ficha']);
+            $jugada = jugadaMaquina($p['tablero'], $maquina);   // AEs PRE: AC9
+            $pl7 = haceTresEnRaya($p['tablero'], $jugada, $maquina);
+            $pl8 = seLlena($p['tablero']);
+            $p['tablero'][$jugada] = $maquina;             // AC10: poner la ficha de la máquina
+            if ($pl7) {                                    // PL7
+                $estado = ST5;
+                $p['marcador']['perdidas']++;              // AC11
+                fin($p, 'Ha ganado la máquina');
+            } elseif ($pl8) {                              // !PL7 &amp;&amp; PL8
+                $estado = ST6;
+                $p['marcador']['empates']++;               // AC8
+                fin($p, 'Empate');
+            } else {                                       // !PL7 &amp;&amp; !PL8
+                $estado = ST2;
+                es2($p);
+            }
+            break;
+        // ... T5, T6, T7
+    }
+    // Evento interno: si la máquina tiene el turno, se atiende ya, en esta misma petición
+    if ($estado === ST3) {
+        $transicion = $automata[ST3][EE_INTERNO];
+        $interno = true;
+    }
+} while ($interno);</code></pre>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>Al leer el estado de la página, el programa <strong>rechaza</strong> ST3 (lo trata como ST0): ese estado no
+            puede venir del navegador, porque nunca se le envía. Es la misma idea que las celdas <code>---</code> de la
+            tabla, pero para un estado entero.</p>
+    </div>
+    <h2>6.- Pruebas</h2>
+    <p>Como la máquina juega siempre igual, se pueden preparar partidas completas y comprobar cada tablero (31
+        peticiones):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Partida</th>
+                <th>Jugadas (jugador → máquina)</th>
+                <th>Caminos</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>X, empieza el jugador</td>
+                <td>0→4, 8→2, (4 ocupada), 6→3, 7</td>
+                <td>T3 → T4 (sigue) ×3, T3 <code>!PL4</code>, T3 <code>PL5</code></td>
+                <td>gana el jugador (la máquina no puede tapar la doble amenaza)</td>
+            </tr>
+            <tr>
+                <td>revancha</td>
+                <td>4→0, 1→7, 2→6, 3→8</td>
+                <td>T5, T3 → T4 ×3, T4 <code>PL7</code></td>
+                <td>gana la máquina</td>
+            </tr>
+            <tr>
+                <td>revancha</td>
+                <td>4→0, 2→6, 3→5, 8→1, 7</td>
+                <td>T3 → T4 ×4, T3 <code>!PL5 &amp;&amp; PL6</code></td>
+                <td>empate (el jugador llena el tablero)</td>
+            </tr>
+            <tr>
+                <td>O, empieza la máquina</td>
+                <td>(máquina 4), 0→2, 6→3, 5→8, 1→7</td>
+                <td>T2 <code>PL2</code> → T4, ..., T4 <code>!PL7 &amp;&amp; PL8</code></td>
+                <td>empate (la máquina llena el tablero)</td>
+            </tr>
+            <tr>
+                <td>revancha y Abandonar</td>
+                <td>(máquina 4)</td>
+                <td>T5 <code>PL2</code> → T4, T6</td>
+                <td>perdida; marcador 1 / 2 / 2</td>
+            </tr>
+            <tr>
+                <td>tablero <code>XXX------</code> en el campo oculto</td>
+                <td>—</td>
+                <td>T3 <code>!PL3</code></td>
+                <td>"La partida no era válida"</td>
+            </tr>
+            <tr>
+                <td><code>estado=3</code> en la URL</td>
+                <td>—</td>
+                <td>ST0 → T1</td>
+                <td>configuración</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade un <strong>nivel fácil</strong> en el que la máquina juegue en una casilla libre al azar. ¿Cambia el
+            autómata o solo la acción AC9? ¿Siguen valiendo las pruebas?
+        </li>
+        <li>Haz que la máquina "piense" en <strong>dos pasos internos</strong>: primero decidir y mostrar "La máquina
+            está pensando..." y luego jugar. ¿Cuántos estados transitorios harían falta? ¿Tiene sentido si todo ocurre
+            en la misma petición?
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

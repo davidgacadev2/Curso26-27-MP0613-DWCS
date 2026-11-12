@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata de un cajero automático</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata de un cajero automático</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>Una cooperativa de crédito gallega quiere enseñar a sus clientes mayores a usar el cajero, y le pide a
+            <strong>BK Programación</strong> un simulador web. <strong>Carlos</strong> cuenta las pantallas: pedir el
+            PIN, el menú, sacar dinero, ingresar, el comprobante, la despedida... y una tarjeta retenida si se equivoca
+            tres veces. —Son ocho situaciones distintas —dice <strong>María</strong>—, y nueve botones. Sin autómata te
+            vas a perder.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Programa en PHP un <strong>simulador de cajero automático</strong> de una sola cuenta, sin sesiones ni base de
+        datos (todo lo que hay que recordar viaja en campos ocultos):</p>
+    <ul>
+        <li>Al introducir la tarjeta (cargar la página) se pide el <strong>PIN</strong> (<code>1234</code>). Con el PIN
+            correcto se muestra el <strong>menú</strong>; con un PIN incorrecto se avisa de los intentos que quedan y,
+            al <strong>tercer fallo</strong>, la tarjeta queda <strong>retenida</strong>.
+        </li>
+        <li>El menú permite <strong>sacar dinero</strong>, <strong>ingresar dinero</strong>, <strong>consultar el
+                saldo</strong> y <strong>salir</strong>.
+        </li>
+        <li>Sacar dinero: un importe <strong>múltiplo de 10 €</strong> entre 10 y 300 €, que no supere el
+            <strong>saldo</strong> ni el <strong>límite diario</strong> de 300 € (sumando lo ya sacado hoy). Ingresar:
+            entre 0,01 y 3.000 €, con dos decimales como mucho. Cada pantalla de importe tiene <em>Confirmar</em> y
+            <em>Cancelar</em> (vuelve al menú).
+        </li>
+        <li>Tras cada operación, un <strong>comprobante</strong> con el saldo y los últimos 5 movimientos, con <em>Otra
+                operación</em> y <em>Salir</em>. <em>Cancelar</em> en el PIN o <em>Salir</em> muestran la
+            <strong>despedida</strong>.
+        </li>
+        <li>La cuenta empieza con <strong>250 €</strong>. Como el saldo viaja en un campo oculto, va
+            <strong>firmado</strong>: si alguien lo cambia en el navegador, el cajero lo detecta y <strong>retiene la
+                tarjeta</strong>.
+        </li>
+    </ul>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Nueve: la carga de la página ("Introducir la tarjeta") y los ocho
+            botones (<code>name="accion"</code>): Aceptar, Retirar, Ingresar, Saldo, Confirmar, Cancelar, Otra operación
+            y Salir.
+        </li>
+        <li><strong>Estados.</strong> Ocho. Cada pantalla que espera algo distinto es un estado: el PIN, el menú, el
+            importe a retirar, el importe a ingresar, el comprobante, la tarjeta retenida y la despedida (más ST0).
+            Retirar e ingresar son estados <strong>distintos</strong> aunque se parezcan: con el mismo botón
+            <em>Confirmar</em> hacen cosas diferentes.
+        </li>
+        <li><strong>Variables de estado.</strong> La cuenta (saldo, intentos de PIN, lo retirado hoy y los movimientos)
+            en JSON en un campo oculto, más su <strong>firma</strong>.
+        </li>
+        <li><strong>Predicados.</strong> PL0 (la firma es válida) se comprueba en casi todas las transiciones; los demás
+            son del PIN (PL1, PL2) y de los importes (PL3–PL6). Importante: PL4 (saldo) y PL5 (límite) son
+            <strong>distintos</strong> porque dan avisos distintos.
+        </li>
+        <li><strong>La firma.</strong> <code>hash_hmac('sha256', estado . '|' . cuenta, SECRETO)</code> con una clave
+            que solo conoce el servidor. Quien cambia el saldo no puede calcular la firma nueva. Se firma también el
+            <strong>estado</strong>, para que no se pueda saltar, por ejemplo, del PIN al menú.
+        </li>
+    </ul>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>En una aplicación real <strong>nunca</strong> se guardaría el saldo en la página: estaría en el servidor
+            (sesión o base de datos, temas 4 y 5). Aquí sirve para practicar la idea de que todo lo que vuelve del
+            navegador puede venir cambiado, y para ver una técnica que sí se usa en la práctica cuando hay que confiar
+            datos al cliente: <strong>firmarlos</strong>.</p>
+    </div>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <p>Las <strong>cajas discontinuas</strong> representan varios estados a la vez (como STx, pero solo los que
+        nombran): la flecha que sale de ellas vale para todos.</p>
+    <figure><svg viewBox="0 0 700 640" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="n6" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="60" cy="70" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="60" y="75"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="60" y="115"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="60" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="60" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text><text x="60" y="305"
+                text-anchor="middle" font-size="11" fill="#333">Carga</text>
+            <circle cx="210" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="210" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text><text x="176" y="298" text-anchor="end"
+                font-size="11" fill="#333">Pidiendo el PIN</text>
+            <circle cx="420" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="420" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text><text x="454" y="298"
+                text-anchor="start" font-size="11" fill="#333">Menú</text>
+            <circle cx="420" cy="80" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="420" y="85"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text><text x="456" y="54"
+                text-anchor="start" font-size="11" fill="#333">Importe a</text><text x="456" y="67" text-anchor="start"
+                font-size="11" fill="#333">retirar</text>
+            <circle cx="420" cy="460" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="420" y="465"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text><text x="454" y="498"
+                text-anchor="start" font-size="11" fill="#333">Importe a</text><text x="454" y="511" text-anchor="start"
+                font-size="11" fill="#333">ingresar</text>
+            <circle cx="640" cy="260" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="265"
+                text-anchor="middle" font-weight="bold" font-size="14">ST5</text><text x="640" y="305"
+                text-anchor="middle" font-size="11" fill="#333">Comprobante</text>
+            <circle cx="210" cy="460" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="210" y="465"
+                text-anchor="middle" font-weight="bold" font-size="14">ST6</text><text x="210" y="505"
+                text-anchor="middle" font-size="11" fill="#333">Tarjeta</text><text x="210" y="518" text-anchor="middle"
+                font-size="11" fill="#333">retenida</text>
+            <circle cx="640" cy="560" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="640" y="565"
+                text-anchor="middle" font-weight="bold" font-size="14">ST7</text><text x="640" y="605"
+                text-anchor="middle" font-size="11" fill="#333">Despedida</text>
+            <path d="M60.0,101.0 Q60.0,165.0 60.0,227.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="70" y="160" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Carga</tspan>
+            </text><text x="70" y="173" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#555555" font-style="italic">("Introducir</tspan>
+            </text><text x="70" y="186" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#555555" font-style="italic">la tarjeta")</tspan>
+            </text>
+            <path d="M91.0,260.0 Q135.0,260.0 177.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="135" y="248" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T1</tspan>
+                <tspan fill="#2e7d32">AC0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M197.0,233.0 C140.3,162.3 279.7,162.3 224.4,230.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="245" y="140" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Aceptar</tspan>
+            </text><text x="245" y="153" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; !PL1 &amp;&amp; !PL2</tspan>
+            </text><text x="245" y="166" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC4</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M241.0,260.0 Q315.0,260.0 387.0,260.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="315" y="236" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Aceptar</tspan>
+            </text><text x="315" y="249" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; PL1</tspan>
+                <tspan fill="#2e7d32">AC3</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M210.0,291.0 Q210.0,360.0 210.0,427.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="198" y="350" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Aceptar</tspan>
+            </text><text x="198" y="363" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; !PL1 &amp;&amp; PL2</tspan>
+            </text><text x="198" y="376" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC4</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES6</tspan>
+            </text>
+            <path d="M430.5,230.8 Q452.4,170.0 431.2,111.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="330" y="178" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Retirar</tspan>
+            </text><text x="330" y="191" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text>
+            <path d="M409.5,109.2 Q387.6,170.0 408.8,229.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="462" y="160" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T10</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cancelar</tspan>
+            </text><text x="462" y="173" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M430.5,289.2 Q456.0,360.0 431.2,429.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="462" y="365" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Ingresar</tspan>
+            </text><text x="462" y="378" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M409.5,430.8 Q384.0,360.0 408.8,291.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="375" y="365" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T10</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cancelar</tspan>
+            </text><text x="375" y="378" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M450.1,267.2 Q530.0,286.4 607.9,267.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="530" y="296" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Saldo</tspan>
+            </text><text x="530" y="309" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M609.9,252.8 Q530.0,233.6 452.1,252.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="530" y="222" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T11</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Otra operación</tspan>
+            </text><text x="530" y="235" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M393.0,93.0 C322.3,149.7 322.3,10.3 390.3,65.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="300" y="40" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Confirmar</tspan>
+            </text><text x="300" y="53" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; (!PL3 ||</tspan>
+            </text><text x="300" y="66" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL4 || !PL5)</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text>
+            <path d="M444.0,99.6 Q530.0,170.0 614.5,239.1" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="545" y="110" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Confirmar</tspan>
+            </text><text x="545" y="123" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; PL3 &amp;&amp;</tspan>
+            </text><text x="545" y="136" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL4 &amp;&amp; PL5</tspan>
+            </text><text x="545" y="149" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC5</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <path d="M393.0,473.0 C322.3,529.7 322.3,390.3 390.3,445.6" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="385" y="525" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Confirmar</tspan>
+            </text><text x="385" y="538" text-anchor="end" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; !PL6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M442.9,439.1 Q530.0,360.0 615.6,282.2" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="560" y="395" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Confirmar</tspan>
+            </text><text x="560" y="408" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">PL0 &amp;&amp; PL6</tspan>
+            </text><text x="560" y="421" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#2e7d32">AC6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <rect x="15" y="545" width="120" height="34" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="75.0" y="566.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST1 … ST5</text>
+            <path d="M135,552 Q159.0,515.0 183,478" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="20" y="600" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">cualquier evento</tspan>
+                <tspan fill="#111111">!PL0</tspan>
+            </text><text x="20" y="613" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#555555" font-style="italic">(firma no válida)</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES6</tspan>
+            </text>
+            <rect x="450" y="590" width="120" height="34" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="510.0" y="611.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST1, ST2, ST5</text>
+            <path d="M570,600 Q590.0,586.0 610,572" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n6)" /><text x="445" y="540" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cancelar</tspan>
+                <tspan fill="#555555" font-style="italic">(ST1)</tspan>
+            </text><text x="445" y="553" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T9</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Salir</tspan>
+                <tspan fill="#555555" font-style="italic">(ST2, ST5)</tspan>
+            </text><text x="445" y="566" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#8e44ad" font-weight="bold">ES7</tspan>
+            </text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del cajero automático</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>página sin parámetros ("Introducir la tarjeta")</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Aceptar</td>
+                <td>enviar el PIN</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2, EE3, EE4</td>
+                <td>Retirar, Ingresar, Saldo</td>
+                <td>opciones del menú</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE5</td>
+                <td>Confirmar</td>
+                <td>confirmar el importe</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE6</td>
+                <td>Cancelar</td>
+                <td>en el PIN: salir; en un importe: volver al menú</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE7</td>
+                <td>Otra operación</td>
+                <td>del comprobante al menú</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE8</td>
+                <td>Salir</td>
+                <td>terminar</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>pantallaPin</td>
+                <td>"Introduzca su PIN"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>menu</td>
+                <td>las cuatro operaciones</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>pinIncorrecto</td>
+                <td>ES0 con "PIN incorrecto. Le quedan N intentos"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>importeRetirar</td>
+                <td>importe a sacar, con el máximo de hoy y un aviso si lo hay</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>importeIngresar</td>
+                <td>importe a ingresar, con un aviso si lo hay</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES5</td>
+                <td>comprobante</td>
+                <td>operación, saldo y últimos 5 movimientos</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES6</td>
+                <td>tarjetaRetenida</td>
+                <td>con el motivo (3 fallos o datos manipulados)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES7</td>
+                <td>despedida</td>
+                <td>"Retire su tarjeta"</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST0</td>
+                <td>Carga</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST1</td>
+                <td>PidiendoPin</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST2</td>
+                <td>Menu</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST3</td>
+                <td>ImporteRetirar</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST4</td>
+                <td>ImporteIngresar</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST5</td>
+                <td>Comprobante</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST6</td>
+                <td>TarjetaRetenida</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST7</td>
+                <td>Despedida</td>
+                <td></td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td>campo oculto (firmado)</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE1</td>
+                <td><code>$cuenta</code></td>
+                <td>JSON: saldo (céntimos), intentos, retirado hoy, movimientos</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE2</td>
+                <td><code>firma</code></td>
+                <td><code>hash_hmac</code> del estado y la cuenta</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE3, VE4</td>
+                <td><code>$pin</code>, <code>$importe</code></td>
+                <td>lo escrito en la pantalla</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>firma válida</td>
+                <td><code>hash_equals(firma(estado, cuenta), firma recibida)</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>PIN correcto</td>
+                <td><code>hash_equals(PIN, $pin)</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>último intento</td>
+                <td>ya llevaba 2 fallos (este es el tercero)</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>importe a retirar válido</td>
+                <td>entero, múltiplo de 10, entre 10 y 300</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>saldo suficiente</td>
+                <td>importe ≤ saldo</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>dentro del límite</td>
+                <td>retirado hoy + importe ≤ 300 €</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>importe a ingresar válido</td>
+                <td>de 0,01 a 3.000 €, 2 decimales como mucho</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>cuenta nueva</td>
+                <td>saldo 250 €, 0 intentos, 0 retirado, sin movimientos</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>recuperar la cuenta</td>
+                <td>comprobar la firma y decodificar el JSON</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>leer el PIN</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td><code>intentos = 0</code></td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td><code>intentos++</code></td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>retirar</td>
+                <td>saldo −= importe; retirado += importe; anotar el movimiento</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>ingresar</td>
+                <td>saldo += importe; anotar el movimiento</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC7</td>
+                <td>leer el importe</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC8</td>
+                <td>firmar y guardar</td>
+                <td>escribir la cuenta y su firma en campos ocultos (en ST1–ST5)</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga</th>
+                <th>Aceptar</th>
+                <th>Retirar</th>
+                <th>Ingresar</th>
+                <th>Saldo</th>
+                <th>Confirmar</th>
+                <th>Cancelar</th>
+                <th>Otra</th>
+                <th>Salir</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T8</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>T3</td>
+                <td>T4</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T9</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T6</td>
+                <td>T10</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T7</td>
+                <td>T10</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST5</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T11</td>
+                <td>T9</td>
+            </tr>
+            <tr>
+                <td>ST6</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST7</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Las celdas <code>---</code> son eventos que no pueden darse (no hay ese botón en esa pantalla). Si llegan, se
+        trata como una carga (T1): se vuelve a pedir la tarjeta.</p>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>AC0</td>
+                <td>ES0 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>!PL0</code></td>
+                <td>ST6</td>
+                <td>---</td>
+                <td>ES6</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1</code></td>
+                <td>ST2</td>
+                <td>AC3</td>
+                <td>ES1 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; !PL1 &amp;&amp; !PL2</code></td>
+                <td>ST1</td>
+                <td>AC4</td>
+                <td>ES2 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td>AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; !PL1 &amp;&amp; PL2</code></td>
+                <td>ST6</td>
+                <td>AC4</td>
+                <td>ES6</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td>AC1</td>
+                <td><code>!PL0</code> / <code>PL0</code></td>
+                <td>ST6 / ST3</td>
+                <td>---</td>
+                <td>ES6 / ES3 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td>AC1</td>
+                <td><code>!PL0</code> / <code>PL0</code></td>
+                <td>ST6 / ST4</td>
+                <td>---</td>
+                <td>ES6 / ES4 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>AC1</td>
+                <td><code>!PL0</code> / <code>PL0</code></td>
+                <td>ST6 / ST5</td>
+                <td>---</td>
+                <td>ES6 / ES5 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1, AC7</td>
+                <td><code>!PL0</code></td>
+                <td>ST6</td>
+                <td>---</td>
+                <td>ES6</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1, AC7</td>
+                <td><code>PL0 &amp;&amp; !PL3</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3 (aviso: múltiplo de 10) [AC8]</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1, AC7</td>
+                <td><code>PL0 &amp;&amp; PL3 &amp;&amp; !PL4</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3 (aviso: saldo) [AC8]</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1, AC7</td>
+                <td><code>PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; !PL5</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3 (aviso: límite) [AC8]</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>AC1, AC7</td>
+                <td><code>PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; PL5</code></td>
+                <td>ST5</td>
+                <td>AC5</td>
+                <td>ES5 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1, AC7</td>
+                <td><code>!PL0</code></td>
+                <td>ST6</td>
+                <td>---</td>
+                <td>ES6</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1, AC7</td>
+                <td><code>PL0 &amp;&amp; !PL6</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES4 (aviso) [AC8]</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>AC1, AC7</td>
+                <td><code>PL0 &amp;&amp; PL6</code></td>
+                <td>ST5</td>
+                <td>AC6</td>
+                <td>ES5 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST7</td>
+                <td>---</td>
+                <td>ES7</td>
+            </tr>
+            <tr>
+                <td>T9</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST7</td>
+                <td>---</td>
+                <td>ES7</td>
+            </tr>
+            <tr>
+                <td>T10</td>
+                <td>AC1</td>
+                <td><code>!PL0</code> / <code>PL0</code></td>
+                <td>ST6 / ST2</td>
+                <td>---</td>
+                <td>ES6 / ES1 [AC8]</td>
+            </tr>
+            <tr>
+                <td>T11</td>
+                <td>AC1</td>
+                <td><code>!PL0</code> / <code>PL0</code></td>
+                <td>ST6 / ST2</td>
+                <td>---</td>
+                <td>ES6 / ES1 [AC8]</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados</h3>
+    <p>T2 (el PIN):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th>PL2</th>
+                <th><code>!PL0</code></th>
+                <th><code>PL0 &amp;&amp; PL1</code></th>
+                <th><code>PL0 &amp;&amp; !PL1 &amp;&amp; !PL2</code></th>
+                <th><code>PL0 &amp;&amp; !PL1 &amp;&amp; PL2</code></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>T6 (sacar dinero): los predicados se comprueban <strong>en cascada</strong>. PL4 y PL5 solo tienen sentido con un
+        importe válido (PL3):</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL3</th>
+                <th>PL4</th>
+                <th>PL5</th>
+                <th><code>!PL0</code></th>
+                <th><code>!PL3</code></th>
+                <th><code>!PL4</code></th>
+                <th><code>!PL5</code></th>
+                <th>retirar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>El orden de la cascada decide qué aviso ve el usuario cuando falla más de una cosa: con 200 € de saldo, 150 €
+            ya retirados y una petición de 300 €, fallan PL4 y PL5, pero se avisa del <strong>saldo</strong> porque PL4
+            va antes. Es una decisión de diseño: escríbela en la tabla para que el código y la documentación digan lo
+            mismo.</p>
+        <p>Y un detalle de diseño que salió al probar: con un saldo inicial de 500 € y un límite de 300 €, <strong>PL4
+                nunca podría ser falso</strong> (no se puede pedir más de 300). Un camino que no puede darse es una
+            pista de que algo no cuadra; por eso la cuenta empieza con 250 €.</p>
+    </div>
+    <h2>5.- Del autómata al código</h2>
+    <p>Fragmento de <code>solucion/index.php</code>. Cada <code>elseif</code> es una fila de la tabla de T6, en el mismo
+        orden:</p>
+    <pre><code>case 6:                                                // ---- T6 (ST3, Confirmar)
+    $cuenta = recuperarCuenta($estado, $_GET);         // AC1
+    $escrito = trim((string) ($_GET['importe'] ?? '')); // AC7: leer el importe
+    $euros = filter_var($escrito, FILTER_VALIDATE_INT);
+    $importe = $euros === false ? 0 : $euros * 100;
+    if ($cuenta === null) {                            // !PL0
+        $estado = ST6;
+        es6($retenida);
+    } elseif ($euros === false || $euros &lt; 10 || $euros &gt; LIMITE_DIARIO / 100 || $euros % 10 !== 0) {   // PL0 &amp;&amp; !PL3
+        $estado = ST3;
+        es3($cuenta, $escrito, 'El importe debe ser un múltiplo de 10 € entre 10 y 300 €.');
+    } elseif ($importe &gt; $cuenta['saldo']) {           // PL0 &amp;&amp; PL3 &amp;&amp; !PL4
+        $estado = ST3;
+        es3($cuenta, $escrito, 'No tiene saldo suficiente.');
+    } elseif ($cuenta['retirado'] + $importe &gt; LIMITE_DIARIO) {   // PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; !PL5
+        $estado = ST3;
+        es3($cuenta, $escrito, 'Supera el límite diario: hoy puede sacar ' . euros(LIMITE_DIARIO - $cuenta['retirado']) . '.');
+    } else {                                           // PL0 &amp;&amp; PL3 &amp;&amp; PL4 &amp;&amp; PL5
+        $estado = ST5;
+        $cuenta['saldo'] -= $importe;                  // AC5: retirar
+        $cuenta['retirado'] += $importe;
+        $cuenta = anotar($cuenta, 'Reintegro', -$importe);
+        es5($cuenta, 'Retire su dinero: ' . euros($importe));
+    }
+    break;</code></pre>
+    <p>La firma (AC1 y AC8):</p>
+    <pre><code>function firma(int $estado, string $cuentaJson): string
+{
+    return hash_hmac('sha256', $estado . '|' . $cuentaJson, SECRETO);
+}
+
+function recuperarCuenta(int $estado, array $datos): ?array      // AC1: null si PL0 es falso
+{
+    $json = (string) ($datos['cuenta'] ?? '');
+    $recibida = (string) ($datos['firma'] ?? '');
+    if (!hash_equals(firma($estado, $json), $recibida)) {
+        return null;
+    }
+    $cuenta = json_decode($json, true);
+    return is_array($cuenta) ? $cuenta : null;
+}</code></pre>
+    <h2>6.- Pruebas</h2>
+    <p>Se hicieron 31 peticiones reenviando cada vez el formulario completo, como el navegador. Algunos caminos:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>PIN 0000, 9999 y 1111</td>
+                <td>T2: <code>!PL1 &amp;&amp; !PL2</code> dos veces y <code>!PL1 &amp;&amp; PL2</code></td>
+                <td>"Le quedan 2 intentos", "Le queda 1 intento", tarjeta retenida</td>
+            </tr>
+            <tr>
+                <td>PIN 1234 y Saldo</td>
+                <td>T2 <code>PL1</code>, T5</td>
+                <td>menú; comprobante con 250,00 €</td>
+            </tr>
+            <tr>
+                <td>Retirar 25 €</td>
+                <td>T6 <code>!PL3</code></td>
+                <td>"múltiplo de 10 € entre 10 y 300 €"</td>
+            </tr>
+            <tr>
+                <td>Retirar 300 €</td>
+                <td>T6 <code>!PL4</code></td>
+                <td>"No tiene saldo suficiente"</td>
+            </tr>
+            <tr>
+                <td>Retirar 200 €</td>
+                <td>T6 retirar</td>
+                <td>saldo 50,00 € y movimiento "Reintegro"</td>
+            </tr>
+            <tr>
+                <td>Ingresar "abc" y "500,5"</td>
+                <td>T7 <code>!PL6</code>, T7 <code>PL6</code></td>
+                <td>aviso; ingreso de 500,50 € (saldo 550,50 €)</td>
+            </tr>
+            <tr>
+                <td>Retirar 150 €</td>
+                <td>T6 <code>!PL5</code></td>
+                <td>"Supera el límite diario: hoy puede sacar 100,00 €"</td>
+            </tr>
+            <tr>
+                <td>Cancelar en el importe</td>
+                <td>T10</td>
+                <td>menú</td>
+            </tr>
+            <tr>
+                <td>saldo cambiado a 999999,99 € en el campo oculto</td>
+                <td><code>!PL0</code></td>
+                <td>tarjeta retenida "página manipulada"</td>
+            </tr>
+            <tr>
+                <td>estado 2 en la URL sin firma válida</td>
+                <td>T5 <code>!PL0</code></td>
+                <td>tarjeta retenida</td>
+            </tr>
+            <tr>
+                <td>Cancelar en el PIN; Salir del menú</td>
+                <td>T8, T9</td>
+                <td>"Retire su tarjeta"</td>
+            </tr>
+            <tr>
+                <td>Aceptar en ST6</td>
+                <td><code>---</code> → T1</td>
+                <td>se vuelve a pedir el PIN</td>
+            </tr>
+            <tr>
+                <td>importe <code>&lt;script&gt;</code></td>
+                <td>T7 <code>!PL6</code></td>
+                <td>escapado</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade la opción <strong>Cambiar el PIN</strong> (pedir el actual y dos veces el nuevo). ¿Cuántos estados
+            nuevos? ¿Qué predicados? Rellena su fila y su columna en la tabla de eventos-estados.
+        </li>
+        <li>Haz que tras 20 segundos sin hacer nada se expulse la tarjeta. ¿Es un evento entrante? ¿Quién lo genera
+            (pista: JavaScript con <code>setTimeout</code> enviando el formulario)?
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

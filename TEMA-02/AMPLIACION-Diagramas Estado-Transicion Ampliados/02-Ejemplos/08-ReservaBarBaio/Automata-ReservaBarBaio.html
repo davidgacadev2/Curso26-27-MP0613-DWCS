@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata del asistente de reservas del Bar Baio</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata del asistente de reservas del Bar Baio</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>El <strong>Bar Baio</strong> quiere que sus clientes reserven mesa desde la web, paso a paso: primero los
+            datos, luego la fecha y la hora y por último cuántos son. Al final, un resumen para comprobarlo todo.
+            <strong>Uxía</strong>, la dueña, insiste: —Si en el resumen alguien ve que se ha equivocado de día, que
+            pueda cambiarlo sin volver a escribir todo. <strong>Carlos</strong> se da cuenta de que el botón
+            <em>Siguiente</em> ya no siempre lleva al paso siguiente.</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Programa en PHP un <strong>asistente de reservas</strong> en tres pasos y un resumen, sin sesiones (lo que no se
+        pide en un paso viaja en campos ocultos):</p>
+    <ul>
+        <li><strong>Datos</strong>: nombre (de 2 a 60 letras) y teléfono (9 cifras que empiezan por 6, 7, 8 o 9).
+        </li>
+        <li><strong>Fecha y hora</strong>: desde <strong>mañana</strong> hasta dentro de <strong>30 días</strong>; el
+            bar <strong>cierra los lunes</strong> y los <strong>domingos no hay cenas</strong>. Horas: 13:30, 14:30
+            (comidas), 20:30 y 21:30 (cenas).
+        </li>
+        <li><strong>Comensales y zona</strong>: de 1 a 12, en interior o terraza; en la <strong>terraza, 6 como
+                mucho</strong> por reserva; y tiene que haber <strong>plazas libres</strong> en esa franja (cada franja
+            tiene 20 plazas; las ya ocupadas se simulan con una fórmula que depende del día y de la hora).
+        </li>
+        <li><strong>Resumen</strong>, con un botón <strong>Editar</strong> en cada bloque. Al editar un paso,
+            <em>Siguiente</em> <strong>vuelve directamente al resumen</strong>. Si se cambia la fecha a una franja sin
+            plazas para los comensales que ya había, se pasa al paso 3 con un aviso.
+        </li>
+    </ul>
+    <p>Cada paso tiene <em>Atrás</em> (sin perder lo escrito) y <em>Cancelar</em>. Al confirmar se vuelven a comprobar
+        <strong>todos</strong> los datos (los ocultos se pueden haber cambiado) y se muestra un <strong>código de
+            reserva</strong>.</p>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> Seis: Carga, Siguiente, Atrás, Editar (con el número de paso:
+            <code>editar:2</code>), Confirmar y Cancelar.
+        </li>
+        <li><strong>Estados.</strong> Siete: un estado por paso (ST1–ST3), el resumen (ST4), confirmada (ST5) y
+            cancelada (ST6), más ST0.
+        </li>
+        <li><strong>Una variable de estado que cambia el camino.</strong> <code>$editando</code> (PL2): se pone a cierto
+            al pulsar <em>Editar</em> (AC5) y vuelve a falso al llegar al resumen (AC4). Con el mismo evento
+            <em>Siguiente</em> en el mismo estado ST1, el nuevo estado es <strong>ST2</strong> o <strong>ST4</strong>
+            según PL2.
+        </li>
+        <li><strong>Predicados en cascada.</strong> El paso 2 tiene cuatro (la fecha existe, está en plazo, ese día
+            abre, la franja es válida ese día) y cada uno solo tiene sentido si se cumplen los anteriores: no se puede
+            saber si es lunes si la fecha no existe.
+        </li>
+        <li><strong>Un predicado que depende de otro paso.</strong> PL10 (hay plazas) necesita la fecha y la franja
+            (paso 2) y los comensales (paso 3). Por eso aparece en T4 y también en T3 cuando se edita la fecha.
+        </li>
+        <li><strong>Fechas.</strong> Todo se calcula a partir de "hoy" con <code>DateTimeImmutable</code> y la zona
+            horaria <code>Europe/Madrid</code>; la fecha llega del <code>&lt;input type="date"&gt;</code> como
+            <code>AAAA-MM-DD</code> y se comprueba que existe (el 31 de febrero no vale).
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <p>Este diagrama tiene muchas flechas, así que las etiquetas son cortas (la transición, el evento y el predicado
+        clave); el detalle completo está en la tabla de transiciones. Las flechas discontinuas son <em>Editar</em>.</p>
+    <figure><svg viewBox="0 0 700 600" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="n8" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="55" cy="50" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="55" y="55"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="55" y="95"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="55" cy="210" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="55" y="215"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text>
+            <circle cx="190" cy="210" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="190" y="215"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text>
+            <circle cx="390" cy="210" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="390" y="215"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text>
+            <circle cx="590" cy="210" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="590" y="215"
+                text-anchor="middle" font-weight="bold" font-size="14">ST3</text>
+            <circle cx="390" cy="450" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="390" y="455"
+                text-anchor="middle" font-weight="bold" font-size="14">ST4</text>
+            <circle cx="630" cy="450" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="630" y="455"
+                text-anchor="middle" font-weight="bold" font-size="14">ST5</text>
+            <circle cx="160" cy="522" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="160" y="527"
+                text-anchor="middle" font-weight="bold" font-size="14">ST6</text>
+            <path d="M55.0,81.0 Q55.0,130.0 55.0,177.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="65" y="135" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#c0392b" font-weight="bold">Carga</tspan>
+            </text>
+            <path d="M86.0,210.0 Q122.5,210.0 157.0,210.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="122" y="198" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T1</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES0</tspan>
+            </text>
+            <path d="M177.0,183.0 C120.3,112.3 259.7,112.3 204.4,180.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="190" y="68" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Siguiente</tspan>
+            </text><text x="190" y="81" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL0 || !PL1</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES1</tspan>
+            </text>
+            <path d="M377.0,183.0 C320.3,112.3 459.7,112.3 404.4,180.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="390" y="68" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Siguiente</tspan>
+            </text><text x="390" y="81" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL3 ... !PL6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M577.0,183.0 C520.3,112.3 659.7,112.3 604.4,180.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="590" y="68" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Siguiente</tspan>
+            </text><text x="590" y="81" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">!PL7 ... !PL10</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text>
+            <path d="M221.0,210.0 Q290.0,210.0 357.0,210.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="290" y="198" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#111111">!PL2</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES2</tspan>
+            </text>
+            <path d="M421.0,210.0 Q490.0,210.0 557.0,210.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="490" y="186" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">!PL2</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES3</tspan>
+            </text><text x="490" y="199" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">o PL2 &amp;&amp; !PL10</tspan>
+            </text>
+            <path d="M361.6,222.5 Q290.0,254.0 220.2,223.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="312" y="262" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T5</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Atrás</tspan>
+            </text>
+            <path d="M561.6,222.5 Q490.0,254.0 420.2,223.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="490" y="262" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T6</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Atrás</tspan>
+            </text>
+            <path d="M198.6,239.8 Q237.2,374.0 360.5,435.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="222" y="365" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T2</tspan>
+                <tspan fill="#111111">PL2</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M381.4,420.2 Q342.8,286.0 219.5,224.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                stroke-dasharray="6 4" marker-end="url(#n8)" /><text x="300" y="300" text-anchor="start"
+                font-family="Consolas, monospace" font-size="10.5" stroke="#ffffff" stroke-width="3"
+                paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Editar:1</tspan>
+            </text>
+            <path d="M382.8,240.1 Q361.2,330.0 382.3,417.9" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="372" y="398" text-anchor="end" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T3</tspan>
+                <tspan fill="#111111">PL2 &amp;&amp; PL10</tspan>
+            </text>
+            <path d="M397.2,419.9 Q418.8,330.0 397.7,242.1" fill="none" stroke="#3a5f9f" stroke-width="2"
+                stroke-dasharray="6 4" marker-end="url(#n8)" /><text x="404" y="348" text-anchor="start"
+                font-family="Consolas, monospace" font-size="10.5" stroke="#ffffff" stroke-width="3"
+                paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Editar:2</tspan>
+            </text>
+            <path d="M576.3,237.8 Q518.8,354.0 416.5,430.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="560" y="360" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T4</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Siguiente</tspan>
+            </text><text x="560" y="373" text-anchor="start" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#111111">ok</tspan>
+                <tspan fill="#2e7d32">AC4</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES4</tspan>
+            </text>
+            <path d="M403.7,422.2 Q461.2,306.0 563.5,229.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                stroke-dasharray="6 4" marker-end="url(#n8)" /><text x="478" y="296" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="10.5" stroke="#ffffff" stroke-width="3"
+                paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T8</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Editar:3</tspan>
+            </text><text x="478" y="309" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5"
+                stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T7</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Atrás</tspan>
+            </text>
+            <path d="M421.0,450.0 Q510.0,450.0 597.0,450.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="510" y="438" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T10</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Confirmar</tspan>
+                <tspan fill="#111111">válida</tspan>
+                <tspan fill="#2e7d32">AC6</tspan>
+                <tspan fill="#8e44ad" font-weight="bold">ES5</tspan>
+            </text>
+            <rect x="10" y="470" width="110" height="32" rx="10" fill="#f6f9fe" stroke="#2a4fa0" stroke-width="1.5"
+                stroke-dasharray="5 3" /><text x="65.0" y="490.0" text-anchor="middle" font-weight="bold"
+                font-size="12">ST1 … ST4</text>
+            <path d="M100,502 Q115.5,507.0 131,512" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#n8)" /><text x="20" y="525" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+                <tspan fill="#5b8fd6">T9</tspan>
+                <tspan fill="#c0392b" font-weight="bold">Cancelar</tspan>
+            </text><text x="200" y="520" text-anchor="start" font-size="10.5" fill="#555" font-style="italic">Editar
+                (discontinuas) pone PL2 (editando): al terminar ese paso se vuelve al resumen.</text><text x="200"
+                y="534" text-anchor="start" font-size="10.5" fill="#555" font-style="italic">T10 con datos no válidos
+                vuelve a ST1; Editar con un paso que no existe (!PL11) se queda en ST4.</text><text x="20" y="575"
+                text-anchor="start" font-size="11" fill="#222" font-style="italic">ST0 Carga · ST1 Paso 1: datos · ST2
+                Paso 2: fecha y hora · ST3 Paso 3: comensales y zona</text><text x="20" y="590" text-anchor="start"
+                font-size="11" fill="#222" font-style="italic">ST4 Resumen · ST5 Confirmada · ST6 Cancelada</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del asistente de reservas</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>página sin parámetros</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Siguiente</td>
+                <td></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Atrás</td>
+                <td></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE3</td>
+                <td>Editar</td>
+                <td><code>editar:1</code>, <code>editar:2</code> o <code>editar:3</code> (desde el resumen)</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE4</td>
+                <td>Confirmar</td>
+                <td></td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE5</td>
+                <td>Cancelar</td>
+                <td></td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0 / ES1</td>
+                <td>paso1</td>
+                <td>datos, vacío (ES0) o con lo escrito y avisos (ES1)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>paso2</td>
+                <td>fecha y hora, con avisos si los hay</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>paso3</td>
+                <td>comensales y zona, con avisos si los hay</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES4</td>
+                <td>resumen</td>
+                <td>los tres bloques con su botón Editar</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES5</td>
+                <td>confirmada</td>
+                <td>código de reserva</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES6</td>
+                <td>cancelada</td>
+                <td></td>
+            </tr>
+            <tr class="d-st">
+                <td>Estados</td>
+                <td>ST0–ST6</td>
+                <td>—</td>
+                <td>Carga, Paso1, Paso2, Paso3, Resumen, Confirmada, Cancelada</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td></td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variables de estado</td>
+                <td>VE1–VE6</td>
+                <td>nombre, teléfono, fecha, franja, comensales, zona</td>
+                <td>en el formulario del paso o en campos ocultos</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE7</td>
+                <td><code>$editando</code></td>
+                <td>se está editando un paso desde el resumen</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0, PL1</td>
+                <td>nombre válido, teléfono válido</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>editando</td>
+                <td><code>$editando</code></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>la fecha existe</td>
+                <td><code>createFromFormat('!Y-m-d')</code> y vuelve a dar el mismo texto</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL4</td>
+                <td>fecha en plazo</td>
+                <td>de mañana a hoy + 30 días</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL5</td>
+                <td>ese día abre</td>
+                <td>no es lunes</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL6</td>
+                <td>franja válida</td>
+                <td>es una de las 4, y no es de cena si es domingo</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL7, PL8</td>
+                <td>comensales (1–12), zona válida</td>
+                <td></td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL9</td>
+                <td>cabe en la zona</td>
+                <td>interior, o terraza con 6 o menos</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL10</td>
+                <td>hay plazas</td>
+                <td>plazas libres de la franja ≥ comensales</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL11</td>
+                <td>paso a editar válido</td>
+                <td>1, 2 o 3</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0</td>
+                <td>reserva vacía</td>
+                <td></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC1</td>
+                <td>leer los datos</td>
+                <td>de <code>$_GET</code> (campos del paso y ocultos), con <code>trim</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC2</td>
+                <td>ocultar</td>
+                <td>los datos que no se piden en el paso, en campos ocultos (en cada ES)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td>avisos</td>
+                <td>uno por campo no válido</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td><code>$editando = false</code></td>
+                <td>fin de la edición</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td><code>$editando = true</code></td>
+                <td>empieza la edición</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td>código</td>
+                <td><code>'BB-' . strtoupper(substr(sha1(...), 0, 6))</code></td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga</th>
+                <th>Siguiente</th>
+                <th>Atrás</th>
+                <th>Editar</th>
+                <th>Confirmar</th>
+                <th>Cancelar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>T1</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T9</td>
+            </tr>
+            <tr>
+                <td>ST2</td>
+                <td>T1</td>
+                <td>T3</td>
+                <td>T5</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T9</td>
+            </tr>
+            <tr>
+                <td>ST3</td>
+                <td>T1</td>
+                <td>T4</td>
+                <td>T6</td>
+                <td>---</td>
+                <td>---</td>
+                <td>T9</td>
+            </tr>
+            <tr>
+                <td>ST4</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>T7</td>
+                <td>T8</td>
+                <td>T10</td>
+                <td>T9</td>
+            </tr>
+            <tr>
+                <td>ST5</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST6</td>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+                <td>---</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <p>Todas las transiciones (menos T1) empiezan con AC1 (leer los datos); todas las ES llevan AC2.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>AC0</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td><code>!PL0 || !PL1</code></td>
+                <td>ST1</td>
+                <td>AC3</td>
+                <td>ES1</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; !PL2</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2</code></td>
+                <td>ST4</td>
+                <td>AC4</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>!PL3</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "elija una fecha"</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>PL3 &amp;&amp; !PL4</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "entre mañana y 30 días"</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; !PL5</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "los lunes cierra"</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>PL3 &amp;&amp; PL4 &amp;&amp; PL5 &amp;&amp; !PL6</code></td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2 "elija una hora (de comida)"</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>PL3..PL6 &amp;&amp; !PL2</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>PL3..PL6 &amp;&amp; PL2 &amp;&amp; PL10</code></td>
+                <td>ST4</td>
+                <td>AC4</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T3</td>
+                <td><code>PL3..PL6 &amp;&amp; PL2 &amp;&amp; !PL10</code></td>
+                <td>ST3</td>
+                <td>AC4</td>
+                <td>ES3 "solo quedan N plazas"</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td><code>!PL7 || !PL8</code></td>
+                <td>ST3</td>
+                <td>AC3</td>
+                <td>ES3</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td><code>PL7 &amp;&amp; PL8 &amp;&amp; !PL9</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3 "terraza: 6 como mucho"</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td><code>PL7 &amp;&amp; PL8 &amp;&amp; PL9 &amp;&amp; !PL10</code></td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3 "solo quedan N plazas"</td>
+            </tr>
+            <tr>
+                <td>T4</td>
+                <td><code>PL7 &amp;&amp; PL8 &amp;&amp; PL9 &amp;&amp; PL10</code></td>
+                <td>ST4</td>
+                <td>AC4</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES1 (con los datos)</td>
+            </tr>
+            <tr>
+                <td>T6</td>
+                <td>---</td>
+                <td>ST2</td>
+                <td>---</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T7</td>
+                <td>---</td>
+                <td>ST3</td>
+                <td>---</td>
+                <td>ES3</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td><code>!PL11</code></td>
+                <td>ST4</td>
+                <td>---</td>
+                <td>ES4</td>
+            </tr>
+            <tr>
+                <td>T8</td>
+                <td><code>PL11</code></td>
+                <td>ST1, ST2 o ST3 (el pedido)</td>
+                <td>AC5</td>
+                <td>ES1, ES2 o ES3</td>
+            </tr>
+            <tr>
+                <td>T9</td>
+                <td>---</td>
+                <td>ST6</td>
+                <td>---</td>
+                <td>ES6</td>
+            </tr>
+            <tr>
+                <td>T10</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL3 &amp;&amp; ... &amp;&amp; PL10</code></td>
+                <td>ST5</td>
+                <td>AC6</td>
+                <td>ES5</td>
+            </tr>
+            <tr>
+                <td>T10</td>
+                <td>alguno falso</td>
+                <td>ST1</td>
+                <td>AC4</td>
+                <td>ES1 "los datos no son válidos"</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados (T3)</h3>
+    <p>Siete caminos. Los cuatro primeros forman una cascada (cada uno supone ciertos los anteriores); PL2 y PL10 solo
+        se miran con una fecha y una franja válidas:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL3</th>
+                <th>PL4</th>
+                <th>PL5</th>
+                <th>PL6</th>
+                <th>PL2</th>
+                <th>PL10</th>
+                <th>Camino</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>aviso de fecha</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>aviso de plazo</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>aviso de lunes</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>x</td>
+                <td>aviso de hora</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>paso 3 (ST3)</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>resumen (ST4)</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>paso 3 con aviso de plazas (ST3)</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>Dos caminos de T3 llevan al <strong>mismo estado</strong> (ST3) con <strong>distinta salida</strong> y
+            distintas acciones: el normal y el de "faltan plazas" tras editar. No es un error: el estado dice qué espera
+            la página (los comensales), la salida dice qué se le muestra al usuario. Y en el segundo camino AC4 apaga
+            <code>$editando</code>: el usuario tiene que pasar otra vez por el paso 3, y su <em>Siguiente</em> (T4) ya
+            lleva al resumen por su propio camino.</p>
+    </div>
+    <h2>5.- Del autómata al código</h2>
+    <p>Fragmento de T3 en <code>solucion/index.php</code>, con los siete caminos en el orden de la tabla. Cada predicado
+        es una función con nombre (<code>plFechaValida</code>, <code>plFechaEnPlazo</code>...), así el <code>if</code>
+        se lee casi como la tabla:</p>
+    <pre><code>case 3:                                                // ---- T3 (ST2, Siguiente)
+    if (!plFechaValida($r['fecha'])) {                 // !PL3
+        $estado = ST2;
+        paso2($r, ['Elija una fecha.']);
+    } elseif (!plFechaEnPlazo($r['fecha'])) {          // PL3 &amp;&amp; !PL4
+        $estado = ST2;
+        paso2($r, ['La fecha debe estar entre mañana y dentro de ' . DIAS_ANTELACION . ' días.']);
+    } elseif (!plAbre($r['fecha'])) {                  // PL3 &amp;&amp; PL4 &amp;&amp; !PL5
+        $estado = ST2;
+        paso2($r, ['Los lunes el Bar Baio está cerrado.']);
+    } elseif (!plFranja($r['fecha'], $r['franja'])) {  // PL3 &amp;&amp; PL4 &amp;&amp; PL5 &amp;&amp; !PL6
+        $estado = ST2;
+        paso2($r, ['Elija una hora' . (fecha($r['fecha'])-&gt;format('w') === '0' ? ' de comida (los domingos no hay cenas).' : '.')]);
+    } elseif (!$editando) {                            // PL3..PL6 &amp;&amp; !PL2
+        $estado = ST3;
+        paso3($r);
+    } elseif (plPlazas($r['fecha'], $r['franja'], (int) $r['comensales'])) {   // PL3..PL6 &amp;&amp; PL2 &amp;&amp; PL10
+        $estado = ST4;
+        $editando = false;                             // AC4
+        resumen($r);
+    } else {                                           // PL3..PL6 &amp;&amp; PL2 &amp;&amp; !PL10
+        $estado = ST3;
+        $editando = false;                             // AC4: hay que revisar el paso 3
+        paso3($r, ['En esa franja solo quedan ' . plazasLibres($r['fecha'], $r['franja']) . ' plazas: cambie los comensales o vuelva atrás.']);
+    }
+    break;</code></pre>
+    <h2>6.- Pruebas</h2>
+    <p>Las pruebas (34 peticiones) se generan con fechas calculadas a partir del día en que se ejecutan: el próximo
+        lunes, el próximo domingo, una fecha con pocas plazas... Algunos caminos:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>nombre vacío y teléfono 123</td>
+                <td>T2 <code>!PL0 || !PL1</code></td>
+                <td>dos avisos</td>
+            </tr>
+            <tr>
+                <td>hoy; dentro de 40 días; 31 de febrero</td>
+                <td>T3 <code>!PL4</code>, <code>!PL4</code>, <code>!PL3</code></td>
+                <td>avisos de plazo y de fecha</td>
+            </tr>
+            <tr>
+                <td>el próximo lunes; domingo a las 20:30</td>
+                <td>T3 <code>!PL5</code>, <code>!PL6</code></td>
+                <td>"cerrado"; "los domingos no hay cenas"</td>
+            </tr>
+            <tr>
+                <td>Atrás desde el paso 3 y desde el paso 2</td>
+                <td>T6, T5</td>
+                <td>se conservan la fecha, la hora y el nombre</td>
+            </tr>
+            <tr>
+                <td>0 comensales sin zona; 8 en terraza; uno más de los libres</td>
+                <td>T4</td>
+                <td>los tres avisos</td>
+            </tr>
+            <tr>
+                <td>4 en interior</td>
+                <td>T4</td>
+                <td>resumen</td>
+            </tr>
+            <tr>
+                <td>Editar el paso 1 y Siguiente</td>
+                <td>T8, T2 <code>PL2</code></td>
+                <td>vuelve al resumen con el nombre cambiado</td>
+            </tr>
+            <tr>
+                <td>Editar el paso 2 con una fecha de 2 plazas (había 4 comensales)</td>
+                <td>T3 <code>PL2 &amp;&amp; !PL10</code></td>
+                <td>paso 3 con "solo quedan 2 plazas"</td>
+            </tr>
+            <tr>
+                <td>Editar el paso 2 con una fecha con plazas</td>
+                <td>T3 <code>PL2 &amp;&amp; PL10</code></td>
+                <td>resumen</td>
+            </tr>
+            <tr>
+                <td>Editar el paso 9</td>
+                <td>T8 <code>!PL11</code></td>
+                <td>se queda en el resumen</td>
+            </tr>
+            <tr>
+                <td>Confirmar</td>
+                <td>T10</td>
+                <td>código <code>BB-...</code></td>
+            </tr>
+            <tr>
+                <td>Confirmar con 50 comensales en los ocultos</td>
+                <td>T10 falla</td>
+                <td>vuelve al paso 1 con un aviso</td>
+            </tr>
+            <tr>
+                <td>Cancelar en el paso 2</td>
+                <td>T9</td>
+                <td>cancelada</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Añade un paso opcional <strong>"Alergias"</strong> entre el 3 y el resumen. ¿Cuántas filas y columnas nuevas
+            tiene la tabla de eventos-estados? ¿Qué transiciones cambian de destino?
+        </li>
+        <li>Permite <strong>saltar el paso de la zona</strong> si son más de 6 (solo puede ser interior). ¿Es un
+            predicado nuevo o un cambio en PL9?
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

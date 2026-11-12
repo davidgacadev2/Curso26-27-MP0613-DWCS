@@ -1,0 +1,122 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f4;
+    color: #222;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 16px;
+}
+
+h1 {
+    color: #2e6b3a;
+    text-align: center;
+}
+
+fieldset {
+    margin-bottom: 16px;
+    border: 1px solid #a9c7ae;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+legend {
+    font-weight: bold;
+    color: #2e6b3a;
+}
+
+label {
+    margin-right: 4px;
+}
+
+input[type='text'] {
+    margin-right: 12px;
+}
+
+button {
+    padding: 4px 10px;
+    border: 1px solid #2e6b3a;
+    border-radius: 4px;
+    background-color: #e6f2e8;
+    color: #2e6b3a;
+    cursor: pointer;
+}
+
+button.peligro {
+    border-color: #b00020;
+    background-color: #fde2e2;
+    color: #b00020;
+}
+
+/* Fuera de la pantalla, pero sigue siendo el botón por defecto del formulario */
+.oculto {
+    position: absolute;
+    left: -9999px;
+}
+
+.ayuda {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.errores {
+    padding: 8px 16px;
+    margin-bottom: 16px;
+    border: 1px solid #c0392b;
+    background-color: #fdecea;
+    color: #c0392b;
+}
+
+.mensaje {
+    padding: 8px 16px;
+    border-left: 4px solid #2e6b3a;
+    background-color: #e6f2e8;
+}
+
+table.notas {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.notas th,
+table.notas td {
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+table.notas td.nombre {
+    text-align: left;
+}
+
+table.notas th {
+    background-color: #2e6b3a;
+    color: #fff;
+}
+
+tr.suspenso {
+    background-color: #fff3f3;
+}
+
+td.nota-suspensa {
+    color: #b00020;
+}
+
+td.acciones button {
+    font-size: 0.8em;
+}
+
+table.distribucion {
+    width: 100%;
+}
+
+table.distribucion th {
+    width: 120px;
+    text-align: left;
+    font-weight: normal;
+}
+
+.barra {
+    height: 14px;
+    min-width: 2px;
+    background-color: #5a9b67;
+}

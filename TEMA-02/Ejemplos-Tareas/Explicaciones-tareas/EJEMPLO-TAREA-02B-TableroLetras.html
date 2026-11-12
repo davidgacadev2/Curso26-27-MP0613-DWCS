@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablero de letras ocultas (EJEMPLO-TAREA-02B): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="tablero-de-letras-ocultas-ejemplo-tarea-02b-como-se-llega-a-la-solucion-paso-a-paso">Tablero de letras ocultas
+    (EJEMPLO-TAREA-02B): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-la-maqueta">3.1.- Paso 1: la maqueta</a></li>
+          <li><a href="#32-paso-2-descomponer-el-problema-en-todos">3.2.- Paso 2: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#33-paso-3-recibir-y-validar-el-lado-y-la-palabra">3.3.- Paso 3: recibir y validar el lado y la
+              palabra</a></li>
+          <li><a href="#34-paso-4-el-rombo-y-el-tablero">3.4.- Paso 4: el rombo y el tablero</a></li>
+          <li><a href="#35-paso-5-esconder-las-letras-al-azar-donde-se-separan-las-tres-soluciones">3.5.- Paso 5:
+              esconder las letras al azar (donde se separan las tres soluciones)</a></li>
+          <li><a href="#36-paso-6-las-jugadas-el-tablero-viaja-en-campos-ocultos">3.6.- Paso 6: las jugadas (el tablero
+              viaja en campos ocultos)</a></li>
+          <li><a href="#37-paso-7-solucion-completa-el-fin-del-juego">3.7.- Paso 7 (solución completa): el fin del
+              juego</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-revision-los-fixme-pendiente-y-otras-mejoras">5.- Revisión: los FIXME (pendiente) y otras
+          mejoras</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/material-referencia/TAREAS/Requisitos-TAREA-UD02B.md">requisitos</a> ·
+    <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/material-referencia/TAREAS/MP0613-DWCS-EJEMPLO-RESUELTO-TAREA-UD02B.pdf">enunciado
+      resuelto (PDF)</a> ·
+    <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/material-referencia/CODIGO%20SOLUCIONES/EJEMPLO-TAREA-02B/">soluciones
+      de referencia</a> ·
+    <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/README.md">README del paso a paso</a> ·
+    paso a paso de la <a
+      href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/PARTE-01-SOLUCION-01/PASO%20A%20PASO/">solución
+      01</a>,
+    la <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/PARTE-01-SOLUCION-02/PASO%20A%20PASO/">solución
+      02</a> y
+    la <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/PARTE-01-SOLUCION-03/PASO%20A%20PASO/">solución
+      03</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p><strong>Juan</strong> deja sobre la mesa tres soluciones del mismo juego, escritas por tres programadores de BK
+      Programación:
+      "Las tres funcionan. Quiero que me digáis cuál mantendríais vosotros". <strong>Carlos</strong> abre los tres
+      <code>index.php</code> a la
+      vez y se agobia: "Son casi iguales... ¿dónde está la diferencia?". <strong>María</strong> sonríe: "Esa es la
+      primera lección.
+      Si las tres comparten la maqueta, la validación, el dibujo del tablero y las jugadas, la diferencia está en
+      <strong>una
+        sola función</strong>: la que esconde las letras. Y para elegir no basta con que funcionen: hay que mirar qué
+      estructura
+      de datos usa cada una, si el reparto es de verdad al azar y qué pasa en los casos raros".</p>
+  </div>
+
+  <p>Este documento no repite el código de las soluciones: explica <strong>por qué</strong> se construyen en ese orden,
+    qué decisión
+    se toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y revisión. Los pasos comunes a las tres soluciones (1 a 4, 6 y 7) se
+    explican una sola vez; el paso 5, donde se separan, se explica para las tres y se comparan.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero los requisitos e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior. Desde la
+    carpeta de una solución (por ejemplo <code>PARTE-01-SOLUCION-01</code>):</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso5-letras-ocultas&quot; &quot;PASO A PASO/paso6-jugadas&quot;
+</code></pre>
+  <p>Y para comparar dos soluciones en el mismo paso, desde la carpeta <code>EJEMPLO-TAREA-02B-TableroLetras</code>:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PARTE-01-SOLUCION-01/PASO A PASO/paso5-letras-ocultas&quot; &quot;PARTE-01-SOLUCION-03/PASO A PASO/paso5-letras-ocultas&quot;
+</code></pre>
+  <p>(en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado del PDF es corto, y
+    <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/material-referencia/TAREAS/Requisitos-TAREA-UD02B.md">Requisitos-TAREA-UD02B.md</a> lo
+    convierte en
+    11 requisitos funcionales y 13 no funcionales. Agrupados por lo que significan para el programador:
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Configurar</td>
+          <td>RF-01, RF-02</td>
+          <td>Un formulario con el lado y la palabra; validar en el servidor (impar entre 5 y 29, 5 letras como mínimo)
+            y un mensaje <strong>por cada</strong> error.</td>
+        </tr>
+        <tr>
+          <td>Tablero</td>
+          <td>RF-03, RF-05, RNF-06</td>
+          <td>Una matriz lado × lado con <code>o</code> fuera y <code>*</code> en el rombo; reutilizar el algoritmo del
+            rombo de los boletines de bucles; cada <code>*</code> es un <strong>botón</strong>.</td>
+        </tr>
+        <tr>
+          <td>Esconder</td>
+          <td>RF-04</td>
+          <td>Repartir las letras de la palabra <strong>al azar</strong> bajo los asteriscos (una por asterisco).</td>
+        </tr>
+        <tr>
+          <td>Jugar</td>
+          <td>RF-06, RF-07, RF-08</td>
+          <td>Acierto: +5, se ve la letra y se quita de la caja; fallo: −2 y un fallo seguido más; el marcador aparece
+            al primer clic.</td>
+        </tr>
+        <tr>
+          <td>Terminar</td>
+          <td>RF-09</td>
+          <td>Todas las letras acertadas o <strong>más de 3</strong> fallos seguidos: FIN DEL JUEGO y tablero
+            deshabilitado.</td>
+        </tr>
+        <tr>
+          <td>Recordar</td>
+          <td>RF-10, RNF-02, RNF-03</td>
+          <td>El tablero (un <strong>array</strong>) viaja en campos <code>hidden</code>; nada de
+            <code>$_SESSION</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El requisito no funcional que da sentido a la tarea es el <strong>RNF-02</strong>: es el ejemplo del tema en el que
+    se ve cómo
+    <strong>guardar un array en campos ocultos</strong> y recuperarlo en la petición siguiente. El RNF-09 (solo letras
+    sin tilde ni ñ)
+    es una simplificación consciente: así se pueden usar <code>str_split()</code> y <code>strlen()</code>, que trabajan
+    con bytes.
+  </p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en las soluciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿"Filas y columnas" o un solo valor?</td>
+          <td>Un único <strong>lado</strong>: el tablero es cuadrado y el rombo, simétrico.</td>
+        </tr>
+        <tr>
+          <td>¿"Entre 5 y 30" incluye el 30?</td>
+          <td>Da igual: tiene que ser impar, así que en la práctica es de 5 a 29 (la etiqueta del formulario dice "impar
+            de 5-29").</td>
+        </tr>
+        <tr>
+          <td>¿"Más de 3 fallos seguidos" es el 3.º o el 4.º?</td>
+          <td>El <strong>4.º</strong> fallo consecutivo termina el juego.</td>
+        </tr>
+        <tr>
+          <td>¿Y las letras repetidas de <code>caracola</code>?</td>
+          <td>Cada aparición va bajo un asterisco distinto; al acertar se quita <strong>una</strong> aparición de la
+            caja.</td>
+        </tr>
+        <tr>
+          <td>¿Y si la palabra tiene más letras que asteriscos?</td>
+          <td>Se esconden las que caben y la palabra <strong>se recorta</strong> (lado 5 tiene 13 asteriscos).</td>
+        </tr>
+        <tr>
+          <td>¿Puede haber puntos negativos?</td>
+          <td>Sí: no se pone mínimo.</td>
+        </tr>
+        <tr>
+          <td>¿Ñ y tildes?</td>
+          <td>No se admiten (<code>/^[A-Za-z]+$/</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Cómo sabe la página que es la primera visita (y no debe sacar errores)?</td>
+          <td>Con un campo oculto <code>primeraVez</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Cuando el enunciado es ambiguo ("filas y columnas", "más de 3"), escribe la interpretación que eliges en el
+      README
+      o en un comentario. Así quien corrija sabrá que es una decisión y no un despiste.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los casos del <a href="DOCUMENTACION/EJEMPLO-TAREA-02B-TableroLetras/README.md">README</a> son las pruebas
+    de cada
+    paso. Se añaden al final los que salen de los <code>FIXME (pendiente)</code>, que hoy <strong>fallan</strong>:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+          <th>Desde</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Lado <code>6</code>, palabra <code>sol</code></td>
+          <td>Dos mensajes: lado impar y palabra de 5 caracteres como mínimo; sin tablero</td>
+          <td>paso 3</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Lado <code>31</code>, palabra <code>caracola</code></td>
+          <td>Mensaje de rango del lado; sin tablero</td>
+          <td>paso 3</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Lado <code>7</code>, palabra <code>caracola</code></td>
+          <td>Tablero 7×7 con 25 asteriscos: 1 en la fila 1, 7 en la fila 4, 1 en la fila 7</td>
+          <td>paso 4</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Pulsar un asterisco con letra</td>
+          <td>+5 puntos, se ve la letra, desaparece de la caja, fallos seguidos a 0</td>
+          <td>paso 6</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Pulsar un asterisco sin letra</td>
+          <td>−2 puntos y un fallo seguido más</td>
+          <td>paso 6</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Acertar las 8 letras de <code>caracola</code></td>
+          <td>40 puntos (menos los fallos), FIN DEL JUEGO y botones deshabilitados</td>
+          <td>paso 7</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Cuatro fallos seguidos</td>
+          <td>−8 puntos, FIN DEL JUEGO y botones deshabilitados</td>
+          <td>paso 7</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Lado <code>3</code>, palabra <code>caracola</code></td>
+          <td>Debería dar error de rango, pero <strong>se dibuja el tablero</strong></td>
+          <td>FIXME</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Añadir <code>&amp;botonJugada=9x9</code> a la URL</td>
+          <td>Debería rechazarse, pero hay avisos de PHP y la jugada se procesa</td>
+          <td>FIXME</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Solución 02: lado <code>5</code> y <code>abcdefghijklmnopqrst</code></td>
+          <td>Las letras escondidas y las de la caja deberían coincidir, pero no siempre</td>
+          <td>FIXME</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Para los casos 4 a 7, las letras ocultas se pueden consultar con F12 en los campos <code>hidden</code>. Los casos 8
+    a 10 son
+    el material del apartado 5: un buen ejercicio es encontrarlos tú <strong>antes</strong> de leer los FIXME.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada clic en un asterisco es una petición nueva: el script empieza
+    desde cero y tiene
+    que reconstruir la partida con lo que le envía el formulario. Y como el formulario usa <code>method="get"</code>,
+    todo lo que
+    envía queda además a la vista en la <strong>barra de direcciones</strong>.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>Comentario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lado</td>
+          <td>int</td>
+          <td>campo de texto <code>lado</code></td>
+          <td>Viaja en cada clic, pero en la jugada no se usa: <code>dibujarTablero()</code> lo calcula con
+            <code>count($tablero)</code></td>
+        </tr>
+        <tr>
+          <td><strong>Palabra que queda</strong></td>
+          <td>string</td>
+          <td><strong>la caja de texto</strong> <code>palabra</code></td>
+          <td>El RF-06 pide que la letra acertada desaparezca de la caja: la caja visible <strong>es</strong> el estado
+          </td>
+        </tr>
+        <tr>
+          <td>Primera vez</td>
+          <td>"false"</td>
+          <td>campo oculto <code>primeraVez</code></td>
+          <td>Para no sacar errores en la primera visita</td>
+        </tr>
+        <tr>
+          <td>Lo que se ve de cada casilla</td>
+          <td>matriz de strings (<code>*</code>, <code>o</code> o la letra)</td>
+          <td>campos ocultos <code>tablero[f][c]</code></td>
+          <td>Soluciones 01 y 02</td>
+        </tr>
+        <tr>
+          <td>La letra oculta de cada casilla</td>
+          <td>matriz (<code>"0"</code> = ninguna)</td>
+          <td>campos ocultos <code>letras[f][c]</code></td>
+          <td>Soluciones 01 y 02</td>
+        </tr>
+        <tr>
+          <td>Las dos cosas a la vez</td>
+          <td>matriz de pares <code>[0]</code> visible, <code>[1]</code> oculta</td>
+          <td>campos ocultos <code>tablero[f][c][0]</code> y <code>tablero[f][c][1]</code></td>
+          <td>Solución 03</td>
+        </tr>
+        <tr>
+          <td>Puntos, fallos seguidos, fin del juego</td>
+          <td>int</td>
+          <td>campos ocultos (<code>marcador.php</code>)</td>
+          <td>Aparecen a partir del primer clic</td>
+        </tr>
+        <tr>
+          <td>Casilla pulsada</td>
+          <td>string <code>"FILAxCOLUMNA"</code></td>
+          <td><code>value</code> del botón <code>botonJugada</code></td>
+          <td>Solo se envía el botón pulsado</td>
+        </tr>
+        <tr>
+          <td>Mensajes de error</td>
+          <td>string</td>
+          <td>variable <code>$mensaje</code></td>
+          <td>Solo dura la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Un array en campos ocultos.</strong> Si el nombre de un campo lleva corchetes, PHP reconstruye el array
+      al recibirlo:
+      con <code>name="tablero[2][3]"</code>, el valor llega en <code>$_GET['tablero'][2][3]</code>. Basta con escribir
+      un campo oculto por
+      casilla al generar la página y leer <code>$_GET['tablero']</code> en la petición siguiente: vuelve la matriz
+      entera. Las claves
+      numéricas (<code>"2"</code>) se convierten en enteros, pero los <strong>valores llegan siempre como
+        strings</strong> (el <code>0</code> de "no hay
+      letra" vuelve como <code>"0"</code>), y por eso las soluciones comparan con <code>!= "0"</code>.</p>
+  </div>
+
+  <p>Así queda en el HTML una casilla del rombo con la letra <code>r</code> escondida (soluciones 01 y 02):</p>
+  <pre><code class="language-html">&lt;td&gt;&lt;button type=&quot;submit&quot; name=&quot;botonJugada&quot; value=&quot;2x3&quot; &gt;*&lt;/button&gt;&lt;/td&gt;
+&lt;input type='hidden' name=&quot;tablero[2][3]&quot; value=&quot;*&quot;&gt;
+&lt;input type='hidden' name=&quot;letras[2][3]&quot; value=&quot;r&quot;&gt;
+</code></pre>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>Fíjate en que el estado de esta tarea <strong>no es mínimo</strong>, a diferencia del ahorcado:
+      <code>finJuego</code> se podría calcular
+      (no quedan letras en la palabra o hay más de 3 fallos seguidos) y el lado también (<code>count($tablero)</code>).
+      Cada dato
+      guardado que se puede calcular es un dato más que alguien puede manipular y que podría contradecirse con los
+      demás.
+      Lo retomamos en el apartado 5.</p>
+  </div>
+
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Las tres soluciones reparten el trabajo igual:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Fichero</th>
+          <th>Responsabilidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>index.php</code></td>
+          <td>Las dos funciones, el script que decide qué hacer y el esqueleto HTML</td>
+        </tr>
+        <tr>
+          <td><code>entrada.php</code></td>
+          <td>El formulario del lado y la palabra (un <code>echo</code> con <em>heredoc</em>), con lo escrito como
+            <code>value</code></td>
+        </tr>
+        <tr>
+          <td><code>marcador.php</code></td>
+          <td>Los puntos y los fallos seguidos, y sus tres campos ocultos (<code>puntos</code>,
+            <code>fallosSeguidos</code>, <code>finJuego</code>)</td>
+        </tr>
+        <tr>
+          <td><code>styles.css</code></td>
+          <td>El aspecto de la tabla (RNF-12)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Y dos funciones, cuya <strong>firma</strong> ya revela la estructura de datos elegida:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Soluciones 01 y 02</th>
+          <th>Solución 03</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Generar</td>
+          <td><code>generarInformacionTablero(&amp;$tablero, &amp;$letras, $lado, &amp;$palabra)</code></td>
+          <td><code>generarInformacionTablero(&amp;$tablero, $lado, &amp;$palabra)</code></td>
+        </tr>
+        <tr>
+          <td>Dibujar</td>
+          <td><code>dibujarTablero($tablero, $letras, $deshabilitar = false)</code></td>
+          <td><code>dibujarTablero($tablero, $deshabilitar = false)</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El script sigue la estructura de los apuntes. La pregunta que decide el camino es <strong>qué botón se ha
+      pulsado</strong>: si
+    no llega <code>botonJugada</code>, es el formulario de entrada (o la primera visita); si llega, es una jugada.</p>
+  <pre><code class="language-text">1. Recibir         -&gt; lado, palabra, primeraVez y, si los hay, tablero y letras
+2. ¿botonJugada?
+   NO  -&gt; validar lado y palabra
+          - errores: formulario + un mensaje por error (salvo la primera vez)
+          - correcto: generarInformacionTablero() + formulario + dibujarTablero()
+   SÍ  -&gt; recibir puntos, fallos seguidos y fin del juego
+          - acierto o fallo en la casilla pulsada
+          - ¿fin del juego?
+          - formulario + marcador + dibujarTablero() (deshabilitado si ha terminado)
+</code></pre>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p><code>generarInformacionTablero()</code> recibe <code>$palabra</code> <strong>por referencia</strong> porque
+      puede recortarla. Por eso, en el script,
+      <code>include "entrada.php"</code> va <strong>después</strong> de generar el tablero (el comentario del código lo
+      avisa): si fuera antes, la
+      caja mostraría la palabra sin recortar. Una función que modifica sus parámetros obliga a pensar en el orden de las
+      llamadas; si es posible, es más claro que <strong>devuelva</strong> el resultado.
+    </p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>La página tiene cuatro estados. El evento es el botón pulsado (<em>Enviar</em>, un asterisco o el enlace
+    <em>Borrar</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Inicio (sin <code>primeraVez</code>)</td>
+          <td><em>Enviar</em> [datos válidos]</td>
+          <td>generar el tablero y esconder las letras</td>
+          <td>Jugando (sin marcador)</td>
+        </tr>
+        <tr>
+          <td>Inicio / Errores</td>
+          <td><em>Enviar</em> [datos no válidos]</td>
+          <td>un mensaje por error</td>
+          <td>Errores</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>asterisco [hay letra]</td>
+          <td>+5, se ve la letra, se quita de la caja, fallos a 0</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>asterisco [hay letra y ya no quedan letras]</td>
+          <td>+5</td>
+          <td>Fin</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>asterisco [no hay letra y fallos seguidos &lt; 3]</td>
+          <td>−2, fallos + 1</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>asterisco [no hay letra y ya había 3 fallos seguidos]</td>
+          <td>−2, fallos + 1</td>
+          <td>Fin</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td><em>Enviar</em> [la palabra que queda es válida]</td>
+          <td>tablero nuevo con esa palabra; el marcador vuelve a empezar</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Fin</td>
+          <td>(botones deshabilitados)</td>
+          <td>—</td>
+          <td>Fin</td>
+        </tr>
+        <tr>
+          <td>Cualquiera</td>
+          <td><em>Borrar</em></td>
+          <td>enlace a la página sin parámetros</td>
+          <td>Inicio</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La flecha <em>Jugando → Enviar</em> no la pide nadie, pero existe: la caja con la palabra restante y el botón
+    <em>Enviar</em>
+    siguen en la página durante la partida. Pulsar <em>Enviar</em> (o <em>Intro</em> en la caja) no envía
+    <code>botonJugada</code>, así que el
+    script lo trata como una partida nueva con la palabra que queda, o saca el error de longitud si quedan menos de 5
+    letras. Dibujar el diagrama sirve precisamente para descubrir estas flechas antes de que las descubra el usuario.
+  </p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden va de
+    lo que se
+    <strong>ve</strong> (maqueta, formulario, tablero) a lo que se <strong>juega</strong> (letras, jugadas, fin):
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+          <th>¿Difieren las soluciones?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Maqueta: solo HTML y CSS, con todos los estados de ejemplo</td>
+          <td>RNF-12</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Ficheros y funciones (solo la firma) con TODOs</td>
+          <td>RNF-05</td>
+          <td>Solo en los TODO y las firmas</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Recepción y validación del lado y la palabra</td>
+          <td>RF-01, RF-02</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Rellenar el rombo y dibujarlo con un botón por asterisco</td>
+          <td>RF-03, RF-05, RNF-06</td>
+          <td>La 03 usa una matriz de pares</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td><strong>Esconder las letras al azar</strong></td>
+          <td>RF-04</td>
+          <td><strong>Sí: es el paso clave</strong></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Estado en campos <code>hidden</code>, acierto, fallo y marcador</td>
+          <td>RF-06, RF-07, RF-08, RF-10</td>
+          <td>La 03 accede con <code>[0]</code> y <code>[1]</code></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><strong>Solución completa:</strong> fin del juego y tablero deshabilitado</td>
+          <td>RF-09</td>
+          <td>No</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-la-maqueta">3.1.- Paso 1: la maqueta</h3>
+  <p><strong>Objetivo.</strong> Ver la página terminada antes de programar nada: el formulario, los tres mensajes de
+    error, el
+    marcador, el texto FIN DEL JUEGO y un tablero de lado 5 con una letra descubierta.</p>
+  <p><strong>Por qué empezar así.</strong> La maqueta responde preguntas de la interfaz que luego condicionan el código:
+    dónde salen
+    los errores, que el marcador va encima del tablero, que una letra descubierta es un <strong>botón
+      deshabilitado</strong> y que
+    cada asterisco es un <code>&lt;button&gt;</code> con <code>name="botonJugada"</code> y un <code>value</code> con su
+    posición:</p>
+  <pre><code class="language-html">&lt;td&gt;&lt;button type=&quot;submit&quot; name=&quot;botonJugada&quot; value=&quot;1x3&quot; &gt;*&lt;/button&gt;&lt;/td&gt;
+</code></pre>
+  <p><strong>Decisión clave.</strong> Un solo nombre (<code>botonJugada</code>) para todos los botones y la posición en
+    el <code>value</code>: como un
+    formulario solo envía el botón que se ha pulsado, el servidor recibirá un único dato que dice qué casilla es.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la maqueta y pulsa un asterisco: la página se recarga igual (aún no hay PHP), pero mira la barra de
+      direcciones: <code>?lado=5&amp;palabra=pulpo&amp;botonJugada=1x3</code>. Es exactamente lo que recibirá el
+      servidor. Pulsa la <code>p</code>
+      descubierta: no hace nada, porque un botón <code>disabled</code> no se puede pulsar ni se envía.</p>
+  </div>
+
+  <h3 id="32-paso-2-descomponer-el-problema-en-todos">3.2.- Paso 2: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Repartir la maqueta en ficheros (<code>entrada.php</code>) y funciones (solo la firma),
+    con un TODO en cada parte
+    que hay que programar y el paso en que se hará.</p>
+  <p><strong>Por qué ahora.</strong> Los TODO son el plan escrito dentro del código. Además, la página ya se ejecuta:
+    usa valores
+    provisionales (<code>$lado = 5; $palabra = "";</code>) para que el formulario salga aunque todavía no se lea nada de
+    <code>$_GET</code>.</p>
+  <p><strong>La decisión de diseño ya está aquí.</strong> Compara el paso 2 de las tres soluciones: el script es el
+    mismo, pero los TODO
+    de <code>generarInformacionTablero()</code> describen tres formas distintas de esconder las letras, y la solución 03
+    cambia
+    además las firmas (sin <code>$letras</code>). En la solución 01:</p>
+  <pre><code class="language-php">// TODO (paso 5): recorrer las casillas con asterisco, una y otra vez, decidiendo a cara o cruz
+//                (random_int) si se esconde ahí la siguiente letra, hasta colocarlas todas o
+//                quedarse sin asteriscos libres  [RF-04]
+</code></pre>
+  <p>En la 02, una lista barajada (<code>str_split</code>, <code>array_pad</code>, <code>shuffle</code>,
+    <code>array_shift</code>); en la 03, una matriz de pares y
+    una fórmula para contar los asteriscos. Decidir la estructura de datos <strong>antes</strong> de programar es lo que
+    permite que
+    el resto del código no dependa de cómo se esconden las letras.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Sale el formulario con lado 5 y la palabra vacía. Escribe <code>7</code> y <code>caracola</code> y pulsa
+      <em>Enviar</em>: la página vuelve con
+      5 y vacío otra vez. No es un error: son los valores provisionales, y el TODO del paso 3 dice cómo quitarlos. Con
+      la extensión <em>Todo Tree</em> de VS Code verás la lista de lo que queda por hacer.</p>
+  </div>
+
+  <h3 id="33-paso-3-recibir-y-validar-el-lado-y-la-palabra">3.3.- Paso 3: recibir y validar el lado y la palabra</h3>
+  <p><strong>Objetivo.</strong> Leer el lado y la palabra, validarlos y sacar un mensaje por cada error, conservando lo
+    escrito en el
+    formulario (RF-01, RF-02).</p>
+  <p><strong>Por qué ahora.</strong> Ninguna otra parte puede funcionar con un lado par o una palabra vacía: validar
+    primero permite
+    que el código del tablero <strong>suponga</strong> que los datos son correctos.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>La recepción, con un valor por defecto si no llega nada (el código va debajo de esta lista). La palabra que no
+      cumple <code>/^[A-Za-z]+$/</code> se convierte en <code>""</code>, y eso garantiza que <code>strlen()</code> y
+      <code>str_split()</code> cuenten bien.</li>
+    <li>Un campo oculto <code>primeraVez=false</code> que se escribe <strong>siempre</strong>: en la primera visita no
+      llega, <code>$primeraVez</code> vale
+      <code>true</code> y no se sacan mensajes de error aunque la palabra esté vacía.
+    </li>
+    <li>Una condición que decide si hay errores y, dentro, un <code>if</code> por cada error, acumulando los mensajes en
+      <code>$mensaje</code>.</li>
+    <li>Si todo es correcto, un texto provisional: "Datos correctos: aquí se dibujará un tablero de lado 7".</li>
+  </ul>
+  <pre><code class="language-php">$lado       = empty($_GET['lado'])       ? 5: intval($_GET['lado']);
+$palabra    = (empty($_GET['palabra']) || preg_match(&quot;/^[A-Za-z]+$/&quot;, $_GET['palabra']) !== 1)    ? &quot;&quot;: $_GET['palabra'];
+$primeraVez = empty($_GET['primeraVez']) ? true: false;
+</code></pre>
+  <p><strong>Un defecto que se queda.</strong> La condición general y los mensajes no usan los mismos números:</p>
+  <pre><code class="language-php">// FIXME (pendiente): aquí se comprueba $lado &lt; 1, pero el mensaje de más abajo dice &quot;mayor o igual
+//        a 5&quot;: los lados 1 y 3 pasan la validación y se dibuja el tablero  [RF-02]
+if ( $lado &lt; 1 || $lado % 2 != 1 || $lado &gt; 30 || strlen($palabra) &lt; 5 || $palabra == &quot;&quot;) { // validamos datos
+</code></pre>
+  <p>Como el último paso es la solución de referencia sin cambios, el defecto no se corrige: se marca como
+    <code>FIXME (pendiente)</code> y se trabaja en el apartado 5.
+  </p>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Escribir la misma regla en dos sitios (aquí, <code>$lado &lt; 1</code> en la condición y
+      <code>$lado &lt; 5</code> en el mensaje). Cuando
+      cambia una, la otra se queda atrás. Si la regla está en una constante (<code>LADO_MINIMO = 5</code>) o en una
+      función que
+      devuelva la lista de errores, la condición general es simplemente "¿la lista está vacía?".</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 y 2: con <code>6</code> y <code>sol</code>, dos mensajes; con <code>31</code> y <code>caracola</code>, el
+      de rango. En la primera visita no debe salir
+      ningún mensaje. Prueba también <code>pañuelo</code>: la caja se vacía y sale el mensaje de longitud (la palabra no
+      válida se
+      ha convertido en <code>""</code>). Y el caso 8: con lado <code>3</code> sale "Datos correctos", que es el FIXME.
+    </p>
+  </div>
+
+  <h3 id="34-paso-4-el-rombo-y-el-tablero">3.4.- Paso 4: el rombo y el tablero</h3>
+  <p><strong>Objetivo.</strong> Rellenar la matriz del tablero y dibujarla como una tabla en la que cada asterisco es un
+    botón
+    (RF-03, RF-05).</p>
+  <p><strong>Por qué ahora.</strong> Es lo que se <strong>ve</strong>, y las letras del paso 5 se esconden debajo de los
+    asteriscos: sin rombo no
+    hay dónde esconderlas.</p>
+  <p><strong>Qué se escribe.</strong> <code>generarInformacionTablero()</code> reutiliza el ejercicio del rombo de
+    asteriscos (RNF-06): en cada
+    fila, una casilla está en el rombo si su columna dista del centro como mucho <code>$siAsterisco</code>, que crece
+    hasta la fila
+    central y después decrece. Los índices van de 1 a <code>$lado</code>, como la posición del botón:</p>
+  <pre><code class="language-php">$medio = floor($lado / 2) + 1;
+// ... dentro de los dos for:
+if ( ($columna &gt;= $medio - $siAsterisco) &amp;&amp; ($columna &lt;= $medio + $siAsterisco) ) {
+    $tablero[$fila][$columna] = &quot;*&quot;;
+// ... al terminar cada fila:
+$fila &lt; $medio ? ++$siAsterisco : --$siAsterisco;
+</code></pre>
+  <p><code>dibujarTablero()</code> recorre el tablero con el <strong>mismo</strong> algoritmo y escribe una celda
+    <code>o</code>, un botón <code>*</code> con
+    <code>value="{$fila}x{$columna}"</code> o, si la casilla ya tiene una letra, un botón deshabilitado con ella.
+  </p>
+  <p><strong>Diferencias entre soluciones.</strong> Aquí aparece la primera, y es de estructura de datos:</p>
+  <ul>
+    <li><strong>Solución 01</strong>: rellena a la vez <code>$letras</code> con <code>"0"</code> ("no hay letra oculta")
+      y <strong>cuenta los asteriscos</strong>
+      (<code>$numeroAsteriscos++</code>), que necesitará el paso 5.</li>
+    <li><strong>Solución 02</strong>: solo el tablero y la cuenta; la matriz <code>$letras</code> se crea entera en el
+      paso 5.</li>
+    <li><strong>Solución 03</strong>: cada casilla es un par: <code>$tablero[$fila][$columna][0] = "*"</code> (lo
+      visible) y <code>[1]</code> (lo oculto, de
+      momento <code>"0"</code>). <strong>No</strong> cuenta los asteriscos en el bucle: en el paso 5 los necesitará
+      <em>antes</em> de recorrerlo.</li>
+  </ul>
+  <p><strong>Dos FIXME de paso.</strong> El código ya funciona, pero a medias, y lo dice:</p>
+  <ul>
+    <li><code>// FIXME (paso 5): todavía no hay ninguna letra escondida</code></li>
+    <li>
+      <code>// FIXME (paso 6): al pulsar un asterisco el tablero desaparece: su estado no viaja en la petición (HTTP no tiene estado)</code>
+    </li>
+  </ul>
+  <p>El segundo es una lección en sí mismo: el tablero existe solo mientras se ejecuta la petición que lo ha generado.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 3: lado <code>7</code> y <code>caracola</code>. Cuenta los asteriscos por fila (1, 3, 5, 7, 5, 3, 1 = 25) y,
+      con Ctrl+U, comprueba
+      que el del centro es <code>value="4x4"</code>. Prueba lados 5, 9 y 29. Después pulsa un asterisco: el tablero
+      desaparece y
+      solo queda el formulario, como anuncia el FIXME.</p>
+  </div>
+
+  <h3 id="35-paso-5-esconder-las-letras-al-azar-donde-se-separan-las-tres-soluciones">3.5.- Paso 5: esconder las letras
+    al azar (donde se separan las tres soluciones)</h3>
+  <p><strong>Objetivo.</strong> Completar <code>generarInformacionTablero()</code>: repartir las letras de la palabra
+    bajo asteriscos elegidos al
+    azar, una por asterisco, y recortar la palabra si no caben (RF-04).</p>
+  <p><strong>Por qué ahora (y por qué aislado).</strong> Necesita el rombo y el número de asteriscos del paso 4. Y está
+    <strong>encerrado en
+      una función</strong>: al resto del programa le da igual cómo se esconden las letras, solo le importa el resultado
+    (qué letra
+    hay bajo cada casilla). Por eso las soluciones 01 y 02, que usan la misma estructura de datos, son idénticas en todo
+    lo demás; la 03, que cambia la estructura, se diferencia también en los pasos 4 y 6. <strong>Cambiar de algoritmo
+      afecta a
+      una función; cambiar de estructura de datos afecta a todo el programa.</strong></p>
+  <h4 id="solucion-01-recorrer-el-tablero-echando-a-cara-o-cruz">Solución 01: recorrer el tablero echando a cara o cruz
+  </h4>
+  <p>Recorre las casillas una tras otra con un contador que, al llegar al final, vuelve a empezar; en cada asterisco
+    libre lanza una moneda (<code>random_int(0,1)</code>) y, si sale 0, coloca <strong>la siguiente letra</strong> de la
+    palabra. Para no poner
+    dos letras en la misma casilla, marca las usadas en una copia del tablero:</p>
+  <pre><code class="language-php">$tableroAux = $tablero;  // copiamos el tablero para no modificar el original
+while ( $numeroAsteriscos &gt; 0 &amp;&amp; $indiceLetra &lt; strlen($palabra) ) {
+    $fila    = floor( $contador/$lado) + 1;  // calculamos indice de fila (1, ..., $lado)
+    $columna = $contador % $lado + 1;     // calculamos indice de columna (1, ..., $lado)
+    if ( $tableroAux[$fila][$columna] == &quot;*&quot; ) {
+        if (random_int(0,1) == 0 ) {   // echamos a cara o cruz si colocamos una letra
+            $tableroAux[$fila][$columna] = &quot;0&quot;;
+            $letras[$fila][$columna]     = substr($palabra, $indiceLetra++, 1);
+            $numeroAsteriscos--;
+</code></pre>
+  <p>Al terminar, <code>$palabra = substr($palabra, 0, $indiceLetra);</code> deja en la caja exactamente las letras
+    colocadas.</p>
+  <ul>
+    <li><strong>A favor:</strong> no necesita ninguna función de arrays, solo bucles y aritmética (fila y columna a
+      partir de un único
+      contador con <code>/</code> y <code>%</code>); el recorte de la palabra es siempre correcto.</li>
+    <li><strong>En contra:</strong> el número de vueltas es aleatorio (termina, pero no se sabe cuándo), y sobre todo
+      <strong>el reparto no es
+        uniforme</strong>. Las letras se colocan en el orden de la palabra según se recorre el tablero, de arriba abajo,
+      y cada
+      asterisco tiene un 50 % de quedarse con la siguiente. Simulando el algoritmo 100 000 veces con lado 7 y
+      <code>caracola</code>:
+      el asterisco de la fila 1 esconde letra en la mitad de las partidas, y el de la fila 7 en menos del 2 % (con un
+      reparto uniforme, los dos estarían en 8/25 = 32 %); en el 60 % de las partidas las 8 letras están en las 4
+      primeras filas (uniforme: alrededor del 1 %), y en casi el 98 % aparecen en el orden de la palabra leyendo el
+      tablero. Un jugador que lo sepa empieza siempre por arriba.</li>
+  </ul>
+  <h4 id="solucion-02-barajar-una-lista-y-repartirla">Solución 02: barajar una lista y repartirla</h4>
+  <p>Convierte el problema en otro más sencillo: en lugar de elegir casillas al azar, <strong>baraja una lista</strong>
+    con tantos
+    elementos como asteriscos (las letras más ceros de relleno) y se la reparte a los asteriscos en orden:</p>
+  <pre><code class="language-php">$listaLetras = str_split($palabra);
+$listaLetras = array_pad($listaLetras, $numeroAsteriscos , 0);   // 0 = no hay letra oculta
+shuffle($listaLetras);  // las barajamos
+$letras = array_fill(1, $lado, array_fill(1, $lado, 0));  // creamos un array bidimensional todo a 0
+// ... en los dos for, si la casilla es &quot;*&quot;:
+$letras[$fila][$columna] = array_shift($listaLetras);
+</code></pre>
+  <ul>
+    <li><strong>A favor:</strong> el reparto es <strong>uniforme</strong> (<code>shuffle()</code> da cualquier orden con
+      la misma probabilidad); el número de
+      operaciones es fijo; y es el uso de la biblioteca estándar que pide el RNF-04: cada función hace una parte del
+      trabajo y su nombre dice cuál.</li>
+    <li><strong>En contra:</strong> <code>array_shift()</code> saca el primer elemento y renumera el resto en cada
+      llamada (con lado 29 son 421
+      asteriscos: no se nota, pero un índice que avanza, como en la 03, es más barato). Y tiene un defecto cuando la
+      palabra <strong>no cabe</strong>: <code>array_pad()</code> no recorta, así que se baraja la palabra entera y los
+      asteriscos se quedan con
+      letras <strong>cualesquiera</strong>, mientras que <code>$palabra = substr($palabra, 0, $numeroAsteriscos);</code>
+      conserva <strong>las primeras</strong>.
+      Es el <code>FIXME (pendiente)</code> de esta solución (caso 10).</li>
+  </ul>
+  <h4 id="solucion-03-una-sola-matriz-y-una-formula">Solución 03: una sola matriz y una fórmula</h4>
+  <p>Usa la misma idea de la lista barajada, pero en el orden correcto y en <strong>una sola pasada</strong>: primero
+    calcula cuántos
+    asteriscos tendrá el rombo, recorta la palabra, baraja y, al rellenar el rombo, cada asterisco se lleva el siguiente
+    elemento de la lista. Como el recorrido es el mismo en el que se crea el tablero, necesita el número de asteriscos
+    <strong>antes</strong> del bucle, y lo obtiene con una suma (1 + 3 + … + (lado − 2), dos veces, más la fila
+    central):
+  </p>
+  <pre><code class="language-php">$numeroAsteriscos = 0;
+for ($i=1; $i &lt;= $lado -2; $i = $i +2)
+    $numeroAsteriscos += $i;
+$numeroAsteriscos *= 2;
+$numeroAsteriscos += $lado;
+
+// Eliminar de la palabra las letras que no caben:
+$palabra = substr($palabra, 0, $numeroAsteriscos);
+</code></pre>
+  <p>Y en el bucle del rombo, en lugar del <code>"0"</code> provisional del paso 4:</p>
+  <pre><code class="language-php">$tablero[$fila][$columna][1] = $letras[$indiceLetra++];  // colocamos letra
+</code></pre>
+  <ul>
+    <li><strong>A favor:</strong> recorta <strong>antes</strong> de barajar, así que la caja y las letras escondidas
+      siempre coinciden; reparto
+      uniforme; una sola pasada y sin <code>array_shift()</code>; y una sola estructura que viaja entera (lo que se ve y
+      lo que se
+      esconde de una casilla van juntos, no pueden desincronizarse dos matrices).</li>
+    <li><strong>En contra:</strong> <code>$tablero[$fila][$columna][1]</code> se lee peor que
+      <code>$letras[$fila][$columna]</code> (¿qué era el 1?); los
+      campos ocultos tienen nombres más largos (<code>tablero[4][4][1]</code>); y la <strong>forma del rombo está
+        escrita dos veces</strong>: en la
+      fórmula y en el bucle. Si mañana el rombo cambia, hay que acordarse de cambiar las dos.</li>
+  </ul>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>La suma de la solución 03 tiene una fórmula cerrada. Los impares 1 + 3 + … + (lado − 2) suman ((lado − 1) / 2)²,
+      así que el total es 2 · ((lado − 1) / 2)² + lado = (lado² + 1) / 2. Con lado 7, (49 + 1) / 2 = 25; con lado 5, 13.
+      En PHP: <code>intdiv($lado * $lado + 1, 2)</code>.</p>
+  </div>
+
+  <h4 id="comparacion-y-eleccion">Comparación y elección</h4>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Solución 01</th>
+          <th>Solución 02</th>
+          <th>Solución 03</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Estructura</td>
+          <td>Dos matrices: <code>$tablero</code> y <code>$letras</code></td>
+          <td>Dos matrices</td>
+          <td>Una matriz de pares <code>[0]</code> / <code>[1]</code></td>
+        </tr>
+        <tr>
+          <td>Algoritmo</td>
+          <td>Recorrer y echar a cara o cruz</td>
+          <td>Barajar la lista y repartir</td>
+          <td>Contar, recortar, barajar y repartir al rellenar</td>
+        </tr>
+        <tr>
+          <td>¿Reparto uniforme?</td>
+          <td><strong>No</strong>: letras arriba y en orden</td>
+          <td>Sí</td>
+          <td>Sí</td>
+        </tr>
+        <tr>
+          <td>Número de operaciones</td>
+          <td>Aleatorio</td>
+          <td>Fijo (dos pasadas)</td>
+          <td>Fijo (una pasada)</td>
+        </tr>
+        <tr>
+          <td>Palabra más larga que el rombo</td>
+          <td>Correcto</td>
+          <td><strong>Defecto</strong> (FIXME)</td>
+          <td>Correcto</td>
+        </tr>
+        <tr>
+          <td>Funciones de la biblioteca</td>
+          <td><code>random_int</code>, <code>substr</code></td>
+          <td><code>str_split</code>, <code>array_pad</code>, <code>shuffle</code>, <code>array_fill</code>,
+            <code>array_shift</code></td>
+          <td><code>str_split</code>, <code>array_pad</code>, <code>shuffle</code></td>
+        </tr>
+        <tr>
+          <td>Legibilidad</td>
+          <td>Bucle con contador y <code>%</code>: hay que pensarlo</td>
+          <td>La más clara</td>
+          <td>Índices <code>[0]</code> y <code>[1]</code> poco expresivos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja resuelto">
+    <div class="titulo-caja">Ejercicio resuelto</div>
+    <p><strong>¿Cuál elegirías y por qué?</strong> La solución 01 queda descartada por el requisito: "al azar" significa
+      que cualquier
+      asterisco tiene la misma probabilidad de esconder una letra, y en la 01 no es así. Entre la 02 y la 03, el
+      algoritmo correcto es el de la 03 (recortar <strong>antes</strong> de barajar), y la estructura más legible es la
+      de la 02 (dos
+      matrices con nombre). La mejor opción combina las dos: <strong>la solución 02 con su FIXME corregido</strong>, que
+      consiste solo
+      en mover una línea: <code>$palabra = substr($palabra, 0, $numeroAsteriscos);</code> pasa a estar
+      <strong>antes</strong> de
+      <code>str_split($palabra)</code>. Así se conservan los nombres claros, el reparto uniforme, la cuenta de
+      asteriscos en el
+      mismo bucle que dibuja el rombo (sin fórmula duplicada) y la caja coincide siempre con lo escondido. Si se quiere
+      una sola estructura, la de la 03 es válida, pero mejor con claves con nombre
+      (<code>['ve' =&gt; '*', 'oculta' =&gt; 'r']</code>)
+      que con <code>[0]</code> y <code>[1]</code>.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>En este paso <strong>no se ve nada nuevo</strong>: las letras están en <code>$letras</code> (o en
+      <code>[1]</code>), pero todavía no se escriben en la
+      página. Es el momento del depurador (RNF-10): pon un punto de ruptura justo después de llamar a
+      <code>generarInformacionTablero()</code> y mira la matriz. Genera varios tableros de lado 7 con
+      <code>caracola</code> en la solución 01 y
+      fíjate en qué filas caen las letras; repite con la 02. Prueba también lado <code>5</code> con
+      <code>abcdefghijklmnopqrst</code>: la caja
+      debe mostrar 13 letras en las tres soluciones (en la 02 son las 13 primeras, pero las escondidas son otras).
+    </p>
+  </div>
+
+  <h3 id="36-paso-6-las-jugadas-el-tablero-viaja-en-campos-ocultos">3.6.- Paso 6: las jugadas (el tablero viaja en
+    campos ocultos)</h3>
+  <p><strong>Objetivo.</strong> Que la partida sobreviva al clic: guardar el tablero en campos <code>hidden</code>,
+    recuperarlo, decidir si la
+    casilla pulsada es acierto o fallo y mostrar el marcador (RF-06, RF-07, RF-08, RF-10).</p>
+  <p><strong>Por qué ahora.</strong> Es el FIXME del paso 4: hasta que el estado no viaja, no hay segunda petición
+    posible. Y ahora ya
+    hay algo que guardar: las letras escondidas del paso 5.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>En <code>dibujarTablero()</code>, junto a cada celda, sus campos ocultos (<code>tablero[f][c]</code> y
+      <code>letras[f][c]</code>; en la 03,
+      <code>tablero[f][c][0]</code> y <code>tablero[f][c][1]</code>). Se aprovecha el mismo recorrido que dibuja la
+      celda: "en una sola
+      tirada", dice el comentario.
+    </li>
+    <li>Al principio del script, la recuperación:
+      <code>$tablero = empty($_GET['tablero']) ? "" : $_GET['tablero'];</code> (y lo
+      mismo con <code>$letras</code> en la 01 y la 02).</li>
+    <li>En la rama de la jugada, los puntos, los fallos seguidos y el fin del juego (0 si no llegan) y la posición
+      pulsada
+      con <code>explode("x", $_GET['botonJugada'])</code>.</li>
+    <li>El acierto, si la letra oculta no es <code>"0"</code> (código debajo de esta lista); el fallo,
+      <code>$puntos -= 2</code> y
+      <code>$fallosSeguidos++</code>.
+    </li>
+    <li><code>marcador.php</code>: los puntos y los fallos seguidos a la vista, y los tres campos ocultos. Como solo se
+      incluye en la
+      rama de la jugada, el marcador aparece a partir del primer clic (RF-08) sin ningún <code>if</code> más.</li>
+  </ul>
+  <pre><code class="language-php">if($letras[$posicionX][$posicionY] != &quot;0&quot; ) {
+    // Sí la hay: cambiamos el asterisco por la letra
+    $tablero[$posicionX][$posicionY] = $letras[$posicionX][$posicionY];
+    // Quitamos la letra de la palabra
+    $palabra = substr_replace($palabra, &quot;&quot;, strpos($palabra, $letras[$posicionX][$posicionY]), 1);
+</code></pre>
+  <p><code>strpos()</code> encuentra <strong>la primera</strong> aparición de la letra en la palabra que queda y
+    <code>substr_replace()</code> la sustituye
+    por <code>""</code>: con <code>caracola</code>, acertar una <code>a</code> quita una sola <code>a</code> de la caja.
+    Al cambiar la casilla del tablero por la
+    letra, <code>dibujarTablero()</code> la pinta ya como botón deshabilitado.</p>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>La caja de texto también es estado.</strong> La palabra que queda no está en ningún campo oculto: viaja
+      en el campo de
+      texto <code>palabra</code> de <code>entrada.php</code>, porque el RF-06 pide que se vea cómo desaparecen las
+      letras. Cada jugada lee la
+      palabra de <code>$_GET['palabra']</code> (con la misma expresión regular del paso 3), le quita una letra y la
+      vuelve a escribir
+      como <code>value</code>. Un dato que el usuario puede ver y <strong>editar</strong> es un dato que hay que
+      validar.</p>
+  </div>
+
+  <p><strong>Lo que queda pendiente.</strong> La jugada confía en todo lo que llega: no comprueba que
+    <code>botonJugada</code> tenga la forma
+    <code>FxC</code>, que la casilla exista, que sea un asterisco sin descubrir ni que los puntos sean los que había. Se
+    marca con
+    un <code>FIXME (pendiente)</code> (RNF-08). Y otro FIXME de paso: <code>// FIXME (paso 7): $finJuego siempre vale 0: la partida no
+termina nunca</code>.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 4 y 5. Con F12 busca los campos <code>letras[...]</code> que no valen <code>"0"</code>: son las letras
+      escondidas. Pulsa una
+      (+5, se ve la letra, desaparece de la caja, fallos a 0) y una vacía (−2, un fallo más). Con <code>caracola</code>,
+      acierta una
+      <code>a</code> y comprueba que en la caja queda <code>cracola</code> (se ha quitado la primera <code>a</code>).
+      Mira también la barra de direcciones: con <code>method="get"</code> el tablero
+      entero viaja en la URL. Y haz 5 o 6 fallos seguidos: la partida no termina, que es el FIXME del paso 7.
+    </p>
+  </div>
+
+  <h3 id="37-paso-7-solucion-completa-el-fin-del-juego">3.7.- Paso 7 (solución completa): el fin del juego</h3>
+  <p><strong>Objetivo.</strong> Terminar la partida al acertar todas las letras o al 4.º fallo seguido, y dibujar el
+    tablero
+    deshabilitado (RF-09).</p>
+  <p><strong>Por qué al final.</strong> El fin del juego es una consecuencia de las jugadas: hasta que no hay aciertos y
+    fallos que
+    cuenten, no hay nada que pueda terminar. Y se añade sin romper nada de lo anterior.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>dibujarTablero()</code> recibe un parámetro nuevo <strong>con valor por defecto</strong>: <code>function dibujarTablero($tablero, $letras,
+  $deshabilitar = false)</code>. Las llamadas que ya existían no cambian; solo la del fin del juego pasa
+      <code>true</code>, y entonces
+      los asteriscos se escriben con <code>disabled</code> y sin <code>value</code>.</li>
+    <li>Tras un acierto, <code>if ( strlen($palabra) === 0 )</code> significa que no quedan letras:
+      <code>$finJuego = 1</code>.</li>
+    <li>Tras un fallo, el 4.º seguido también termina (código debajo de esta lista).</li>
+    <li>Si <code>$finJuego == 1</code>, se escribe <code>&lt;h1&gt;FIN DEL JUEGO&lt;/h1&gt;</code> y el tablero
+      deshabilitado. El valor viaja en el campo
+      oculto <code>finJuego</code>, y la jugada solo se procesa si <code>$finJuego != 1</code>.</li>
+  </ul>
+  <pre><code class="language-php">if ( $fallosSeguidos &lt; 3 ) {
+    $fallosSeguidos++;
+} else {
+    $fallosSeguidos++;
+    $finJuego = 1;
+}
+</code></pre>
+  <p>Fíjate en que <code>$fallosSeguidos++</code> está en las dos ramas: es la forma de decir "más de 3" (el 4.º fallo
+    termina, como
+    se decidió en el análisis), aunque se podría escribir más corto (apartado 5).</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 6 y 7: acierta las 8 letras de <code>caracola</code> (40 puntos menos los fallos) y, en otra partida, falla
+      4 veces
+      seguidas (−8). En los dos casos: FIN DEL JUEGO y ningún botón se puede pulsar. Si con F12 habilitas un botón y le
+      pones un <code>value</code>, la jugada no se procesa (<code>finJuego</code> vale 1), aunque la página sale vacía,
+      solo con el título.</p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 7 toca <code>dibujarTablero()</code> y las dos ramas de la jugada, que se usan en todos los demás casos.</p>
+  <ul>
+    <li>☐ Validación: lados 5, 7, 29 (bien); 4, 6, 31, <code>abc</code> (mal); palabras de 4 y 5 letras;
+      <code>pañuelo</code> y <code>canción</code>.</li>
+    <li>☐ Tablero: el número de asteriscos es (lado² + 1) / 2 (13 con lado 5, 25 con lado 7) y el rombo es simétrico.
+    </li>
+    <li>☐ Letras repetidas: con <code>caracola</code>, cada <code>a</code> acertada quita una sola <code>a</code> de la
+      caja.</li>
+    <li>☐ Palabra más larga que el rombo: lado 5 con 20 letras; la caja se queda con 13 (y, en la 02, el caso 10).</li>
+    <li>☐ Fin del juego: ganar con 0 fallos; perder exactamente en el 4.º fallo seguido; un acierto después de 3 fallos
+      pone el contador a 0 y la partida sigue.</li>
+    <li>☐ El marcador no aparece hasta el primer clic; la primera visita no muestra errores.</li>
+    <li>☐ Los FIXME (pendiente): casos 8, 9 y 10. Deben <strong>fallar</strong> en las soluciones de referencia; si los
+      corriges
+      (apartado 5), deben pasar y los demás casos seguir dando lo mismo.</li>
+  </ul>
+  <h2 id="5-revision-los-fixme-pendiente-y-otras-mejoras">5.- Revisión: los FIXME (pendiente) y otras mejoras</h2>
+  <p>El último paso es la solución de referencia <strong>sin cambiar el código</strong>: solo se han añadido
+    comentarios, entre ellos
+    los <code>FIXME (pendiente)</code>, que señalan defectos conocidos. Corregirlos es un buen ejercicio de revisión de
+    código
+    ajeno: primero se reproduce el defecto con un caso de prueba y después se corrige sin romper los demás.</p>
+  <div class="caja resuelto">
+    <div class="titulo-caja">Ejercicio resuelto</div>
+    <p><strong>FIXME 1 (las tres soluciones): la validación del lado.</strong> Con lado <code>3</code> y
+      <code>caracola</code> se dibuja el tablero, porque
+      la condición dice <code>$lado &lt; 1</code> y el mensaje "mayor o igual a 5". Corrección: usar los mismos límites
+      en la condición
+      y en los mensajes (<code>$lado &lt; 5 || $lado &gt; 29</code>) y que el mensaje los diga los dos ("entre 5 y 29").
+      Ahora, con lado
+      <code>31</code>, el mensaje que sale ("mayor o igual a 5") ni siquiera describe el error.
+    </p>
+  </div>
+  <div class="caja resuelto">
+    <div class="titulo-caja">Ejercicio resuelto</div>
+    <p><strong>FIXME 2 (solución 02): la palabra que no cabe.</strong> Con lado 5 (13 asteriscos) y
+      <code>abcdefghijklmnopqrst</code>, se esconden
+      13 letras cualesquiera de las 20, pero la caja conserva <code>abcdefghijklm</code>. Si se descubre, por ejemplo,
+      la <code>q</code>,
+      <code>strpos()</code> no la encuentra (devuelve <code>false</code>) y <code>substr_replace()</code> acaba quitando
+      otra letra. Corrección: recortar
+      la palabra <strong>antes</strong> de partirla y barajarla, como hace la solución 03; es mover una línea.
+    </p>
+  </div>
+
+  <p>El tercer FIXME es el más amplio:</p>
+  <pre><code class="language-php">// FIXME (pendiente): no se valida lo que llega del cliente (botonJugada, tablero, letras,
+//        puntos...): con la URL manipulada hay errores o se puede hacer trampa  [RNF-08]
+</code></pre>
+  <p>Con <code>&amp;botonJugada=9x9</code> en la URL, <code>$letras[9][9]</code> no existe: salen avisos <em>Undefined
+      array key</em> y el script sigue
+    adelante con un valor que no existe. También se puede pulsar dos veces la misma letra (cambiando a mano el
+    <code>value</code>
+    de un botón deshabilitado), escribir otra palabra en la caja a mitad de partida o poner <code>puntos=1000</code>.
+    Una parte se
+    puede arreglar validando la jugada antes de procesarla. Por ejemplo (es una propuesta, no está en las soluciones):
+  </p>
+  <pre><code class="language-php">// solo se acepta un asterisco que exista y que no esté descubierto
+$jugadaValida = is_array($tablero) &amp;&amp; is_string($_GET['botonJugada'])
+    &amp;&amp; preg_match('/^(\d+)x(\d+)$/', $_GET['botonJugada'], $m) === 1
+    &amp;&amp; ($tablero[$m[1]][$m[2]] ?? null) === '*';
+</code></pre>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>Validar la jugada evita los avisos y las casillas imposibles, pero <strong>no</strong> impide hacer trampa: las
+      letras
+      escondidas y los puntos están en la página, y quien los ve los puede cambiar. Es la limitación de diseño que
+      señala
+      el README: con campos <code>hidden</code>, el estado está en manos del cliente. Para protegerlo hace falta
+      guardarlo en el
+      servidor (sesiones, en un tema posterior) o, al menos, firmarlo (<code>hash_hmac()</code>) para detectar si
+      alguien lo ha
+      modificado. Además, todo lo que viene del cliente y se escribe en la página debería pasar por
+      <code>htmlspecialchars()</code>,
+      que estas soluciones no usan.</p>
+  </div>
+
+  <p>Otras mejoras que no cambian el comportamiento (refactorización) o lo mejoran un poco:</p>
+  <ul>
+    <li><strong>Un mensaje para cada error de la palabra.</strong> <code>pañuelo</code> se convierte en <code>""</code>
+      y sale "debe tener 5 caracteres como
+      mínmo" (con la errata): el usuario no sabe que el problema es la ñ. El RF-02 pide decir <em>cuál</em> es el error.
+    </li>
+    <li><strong>El fin del juego se puede calcular</strong>: <code>$finJuego</code> es
+      <code>strlen($palabra) === 0 || $fallosSeguidos &gt; 3</code>. Un campo
+      oculto menos que se pueda manipular. Y el <code>if</code> de los fallos se queda en
+      <code>$fallosSeguidos++;</code> seguido de
+      <code>if ($fallosSeguidos &gt; 3) $finJuego = 1;</code>.
+    </li>
+    <li><strong>El rombo se calcula dos veces</strong> (en <code>generarInformacionTablero()</code> y en
+      <code>dibujarTablero()</code>; en la 03, tres con la
+      fórmula). <code>dibujarTablero()</code> no lo necesita: la propia matriz dice si la casilla es <code>o</code>,
+      <code>*</code> o una letra.</li>
+    <li><strong>Menos campos ocultos.</strong> Las casillas <code>o</code> no se usan nunca en la jugada y cada fila
+      tiene al menos un asterisco
+      (así que <code>count($tablero)</code> sigue dando el lado): se podrían dejar de enviar. Con
+      <code>method="get"</code>, cada campo alarga
+      la URL, que crece con lado²; con lados grandes la URL puede pasar del límite del servidor.
+      <code>method="post"</code> lo evita
+      (y saca el estado de la barra de direcciones, aunque siga en el código fuente).</li>
+    <li><strong>HTML válido.</strong> El botón <em>Borrar</em> es un <code>&lt;button type="reset"&gt;</code> con un
+      enlace dentro (un elemento interactivo
+      dentro de otro, que el HTML no permite), y los campos ocultos están dentro de <code>&lt;tr&gt;</code>, entre
+      celdas. Los navegadores
+      lo toleran, pero un enlace normal a la página y los campos ocultos fuera de la tabla son más correctos.</li>
+    <li><strong>Comentarios que no mienten.</strong> En el fin del juego, el comentario dice "no ponemos el campo oculto
+      name="primeraVez"", pero ese campo se escribe siempre al principio del script.</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Comprobar un límite y anunciar otro en el mensaje</td>
+          <td>Lados 1 y 3 aceptados (FIXME)</td>
+          <td>Constantes o una sola función de validación</td>
+        </tr>
+        <tr>
+          <td>Recortar la palabra después de barajar</td>
+          <td>La caja y lo escondido no coinciden (solución 02)</td>
+          <td>Recortar primero, como la 03</td>
+        </tr>
+        <tr>
+          <td>"Al azar" con decisiones secuenciales a cara o cruz</td>
+          <td>Letras casi siempre arriba y en orden (solución 01)</td>
+          <td>Barajar una lista (<code>shuffle</code>)</td>
+        </tr>
+        <tr>
+          <td>Olvidar que el tablero no sobrevive al clic</td>
+          <td>El tablero desaparece al pulsar (FIXME del paso 4)</td>
+          <td>Escribir el estado en campos <code>hidden</code></td>
+        </tr>
+        <tr>
+          <td>Comparar la letra oculta con <code>!== 0</code> (estricto)</td>
+          <td>Todas las casillas parecen esconder letra: llega <code>"0"</code>, no <code>0</code></td>
+          <td>Lo que llega de un formulario es siempre string</td>
+        </tr>
+        <tr>
+          <td><code>include "entrada.php"</code> antes de generar el tablero</td>
+          <td>La caja muestra la palabra sin recortar</td>
+          <td>Incluirlo después de la función que modifica <code>$palabra</code></td>
+        </tr>
+        <tr>
+          <td>Terminar en el 3.º fallo</td>
+          <td>No cumple "más de 3 fallos seguidos"</td>
+          <td>Escribir la interpretación en el análisis</td>
+        </tr>
+        <tr>
+          <td>Usar la casilla pulsada sin validarla</td>
+          <td>Avisos de PHP y trampas con la URL (FIXME)</td>
+          <td><code>preg_match</code> y comprobar que existe y es <code>*</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Cómo se guarda una matriz en campos ocultos? <strong>Con un campo por casilla cuyo nombre lleva los índices
+          entre
+          corchetes (<code>tablero[2][3]</code>); PHP reconstruye el array en <code>$_GET['tablero']</code>.</strong>
+      </li>
+      <li>¿Por qué el servidor sabe qué asterisco se ha pulsado? <strong>Porque todos los botones se llaman
+          <code>botonJugada</code> y solo
+          se envía el pulsado, con su posición en el <code>value</code> (<code>"2x3"</code>).</strong></li>
+      <li>¿Dónde viaja la palabra que queda por descubrir? <strong>En la caja de texto visible <code>palabra</code>: el
+          requisito pide que
+          las letras acertadas desaparezcan de ella.</strong></li>
+      <li>¿Por qué las soluciones 01 y 02 solo se diferencian en una función y la 03 en varios pasos? <strong>Porque 01
+          y 02
+          cambian el algoritmo con la misma estructura de datos; la 03 cambia la estructura, y eso afecta a todo el
+          código
+          que la usa.</strong></li>
+      <li>¿Por qué la solución 01 no reparte las letras de verdad al azar? <strong>Porque coloca las letras en orden
+          mientras
+          recorre el tablero de arriba abajo y cada asterisco se queda con la siguiente con un 50 % de probabilidad: los
+          primeros asteriscos tienen muchas más posibilidades.</strong></li>
+      <li>¿Qué hay que cambiar en la solución 02 para que la palabra recortada coincida con las letras escondidas?
+        <strong>Recortar la palabra antes de <code>str_split()</code> y <code>shuffle()</code>.</strong>
+      </li>
+      <li>¿Por qué <code>dibujarTablero()</code> recibe <code>$deshabilitar = false</code> con valor por defecto?
+        <strong>Para añadir el fin del juego
+          sin cambiar las llamadas que ya existían.</strong></li>
+      <li>¿Impide la validación de la jugada que se haga trampa? <strong>No: las letras y los puntos siguen en la
+          página; para
+          protegerlos hay que guardar el estado en el servidor o firmarlo.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

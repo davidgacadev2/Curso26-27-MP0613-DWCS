@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tema 2: explicaciones de las tareas paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="tema-2-explicaciones-de-las-tareas-paso-a-paso">Tema 2: explicaciones de las tareas paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#tareas-de-ejemplo-del-tema-soluciones-de-referencia">Tareas de ejemplo del tema (soluciones de
+          referencia)</a></li>
+      <li><a href="#nuevas-propuestas-de-tarea">Nuevas propuestas de tarea</a></li>
+      <li><a href="#como-usarlas">Cómo usarlas</a></li>
+    </ul>
+  </div>
+
+  <p>Para cada tarea de <code>EJEMPLOS TAREA-02</code> (copiada en <code>DOCUMENTACION</code>, una carpeta por tarea),
+    una explicación <strong>motivada</strong> de cómo se
+    avanza desde el enunciado hasta la solución final: no repite el código, sino que cuenta <strong>por qué</strong> se
+    construye en
+    ese orden, qué decisión se toma en cada paso, qué se deja provisional y cómo se comprueba antes de seguir.</p>
+  <p>Todas siguen las fases de los apuntes
+    <a href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El
+      proceso de desarrollo de software</a>:
+  </p>
+  <ol>
+    <li><strong>Análisis</strong>: requisitos, lo que el enunciado no dice, entradas y salidas (los casos de prueba) y
+      los datos: qué se
+      guarda y dónde (HTTP no tiene estado).</li>
+    <li><strong>Diseño</strong>: ficheros y funciones (divide y vencerás) y estados de la página.</li>
+    <li><strong>Codificación incremental</strong>: un apartado por cada carpeta <code>pasoN</code> (objetivo, por qué
+      ahora, qué se escribe y
+      cuadro <em>Pruébalo</em>).</li>
+    <li><strong>Pruebas finales</strong>, <strong>refactorización y mejoras</strong>, <strong>errores típicos</strong> y
+      <strong>autoevaluación</strong>.</li>
+  </ol>
+  <p>Las explicaciones en HTML (<code>.html</code>, con el formato de los apuntes del módulo) están en la raíz de esta
+    carpeta y sus versiones en Markdown (<code>.md</code>), en <code>DOCUMENTACION/MARKDOWN</code>. Todo lo que citan
+    está copiado
+    en <code>DOCUMENTACION</code>: lo común a todas las tareas (apuntes, método de los autómatas) en
+    <code>DOCUMENTACION/COMUN</code>
+    y lo específico de cada tarea (enunciado, requisitos, soluciones, pasos y diagramas) en
+    <code>DOCUMENTACION/&lt;tarea&gt;</code>. Todos los enlaces son relativos, así que la carpeta se puede mover a
+    cualquier
+    sitio sin romperlos.
+  </p>
+  <h2 id="tareas-de-ejemplo-del-tema-soluciones-de-referencia">Tareas de ejemplo del tema (soluciones de referencia)
+  </h2>
+  <p>Explican la descomposición en pasos de las soluciones de referencia de
+    <code>Material referencia/tema-02/CODIGO SOLUCIONES/Ejemplos-Tareas</code>, incluidos sus defectos pendientes
+    (<code>FIXME</code>).
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Tarea</th>
+          <th>Pasos</th>
+          <th>Explicación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Agenda de contactos (02A)</td>
+          <td>5</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/EJEMPLO-TAREA-02A-Agenda.md">Markdown</a> · <a
+              href="EJEMPLO-TAREA-02A-Agenda.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Tablero con letras ocultas (02B), tres soluciones</td>
+          <td>7</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/EJEMPLO-TAREA-02B-TableroLetras.md">Markdown</a> · <a
+              href="EJEMPLO-TAREA-02B-TableroLetras.html">HTML</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="nuevas-propuestas-de-tarea">Nuevas propuestas de tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Tarea</th>
+          <th>Nivel</th>
+          <th>Pasos</th>
+          <th>Explicación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Calendario</td>
+          <td>Básico</td>
+          <td>4</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-BASICA-Calendario.md">Markdown</a> · <a
+              href="TAREA-02-BASICA-Calendario.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Comanda del Bar Baio</td>
+          <td>Básico</td>
+          <td>4</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-BASICA-ComandaBarBaio.md">Markdown</a> · <a
+              href="TAREA-02-BASICA-ComandaBarBaio.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Cuaderno de notas</td>
+          <td>Medio</td>
+          <td>4</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-MEDIA-CuadernoNotas.md">Markdown</a> · <a
+              href="TAREA-02-MEDIA-CuadernoNotas.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Memoria de parejas</td>
+          <td>Medio</td>
+          <td>6</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-MEDIA-MemoriaParejas.md">Markdown</a> · <a
+              href="TAREA-02-MEDIA-MemoriaParejas.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>El ahorcado</td>
+          <td>Medio</td>
+          <td>6</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-MEDIA-Ahorcado.md">Markdown</a> · <a
+              href="TAREA-02-MEDIA-Ahorcado.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Buscaminas</td>
+          <td>Avanzado</td>
+          <td>5</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-AVANZADA-Buscaminas.md">Markdown</a> · <a
+              href="TAREA-02-AVANZADA-Buscaminas.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Cuatro en raya</td>
+          <td>Avanzado</td>
+          <td>6</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-AVANZADA-CuatroEnRaya.md">Markdown</a> · <a
+              href="TAREA-02-AVANZADA-CuatroEnRaya.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Código secreto</td>
+          <td>Avanzado (con autómata)</td>
+          <td>6</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-AVANZADA-CodigoSecreto.md">Markdown</a> · <a
+              href="TAREA-02-AVANZADA-CodigoSecreto.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Ascensor</td>
+          <td>Avanzado (con autómata)</td>
+          <td>6</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-AVANZADA-Ascensor.md">Markdown</a> · <a
+              href="TAREA-02-AVANZADA-Ascensor.html">HTML</a></td>
+        </tr>
+        <tr>
+          <td>Siete y media</td>
+          <td>Avanzado (con autómata)</td>
+          <td>6</td>
+          <td><a href="DOCUMENTACION/MARKDOWN/TAREA-02-AVANZADA-SieteYMedia.md">Markdown</a> · <a
+              href="TAREA-02-AVANZADA-SieteYMedia.html">HTML</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="como-usarlas">Cómo usarlas</h2>
+  <ul>
+    <li><strong>Alumnado</strong>: lee el enunciado e intenta primero el análisis y el diseño por tu cuenta; después
+      compara con los
+      apartados 1 y 2 de la explicación. Para cada paso, abre la carpeta del paso y compárala con la anterior mientras
+      lees su apartado (<code>git diff --no-index "paso2" "paso3"</code> o, en VS Code, <em>Comparar
+        seleccionados</em>).</li>
+    <li><strong>Profesorado</strong>: los cuadros <em>Pruébalo</em> son los casos que conviene enseñar en clase en cada
+      paso, y los apartados
+      de errores típicos y autoevaluación sirven para la corrección.</li>
+  </ul>
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

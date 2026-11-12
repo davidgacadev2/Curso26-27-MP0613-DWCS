@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f2f5f9;
+    color: #222;
+    max-width: 640px;
+    margin: 20px auto;
+    padding: 0 16px;
+}
+
+h1 {
+    text-align: center;
+    color: #1f4e79;
+}
+
+fieldset {
+    border: 1px solid #9bb3cc;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+label {
+    margin-left: 8px;
+}
+
+input[type='number'] {
+    width: 80px;
+}
+
+.boton,
+button {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 10px;
+    border: 1px solid #1f4e79;
+    border-radius: 4px;
+    background-color: #e8f0f8;
+    color: #1f4e79;
+    text-decoration: none;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.errores {
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: 1px solid #c0392b;
+    background-color: #fdecea;
+    color: #c0392b;
+}
+
+.navegacion {
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0 8px;
+}
+
+.navegacion a {
+    color: #1f4e79;
+}
+
+table.calendario {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+table.calendario caption {
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 8px;
+}
+
+table.calendario th,
+table.calendario td {
+    border: 1px solid #c8d4e0;
+    text-align: center;
+    padding: 10px 0;
+}
+
+table.calendario th {
+    background-color: #1f4e79;
+    color: #fff;
+}
+
+td.vacio {
+    background-color: #f0f0f0;
+}
+
+td.finde {
+    background-color: #eef3f8;
+    color: #555;
+}
+
+td.festivo {
+    background-color: #fde2e2;
+    color: #b00020;
+    font-weight: bold;
+    cursor: help;
+}
+
+td.hoy {
+    outline: 3px solid #f39c12;
+    outline-offset: -3px;
+    font-weight: bold;
+}
+
+.resumen {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background-color: #fff;
+    border-left: 4px solid #1f4e79;
+}

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autómata del Boletín 03, ejercicio 8: ¿qué día de la semana es?</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+
+        /* Tabla de descriptores: un color de fondo por categoría */
+        tr.d-ee td { background: #fde4e4; }   /* Evento entrante */
+        tr.d-es td { background: #efe5fb; }   /* Evento saliente */
+        tr.d-st td { background: #dcebfb; }   /* Estado */
+        tr.d-ve td { background: #fff4c2; }   /* Variable de estado */
+        tr.d-va td { background: #fbe9d7; }   /* Variable */
+        tr.d-pl td { background: #ececec; }   /* Predicado */
+        tr.d-ac td { background: #e1f3d3; }   /* Acción */
+        tr[class^="d-"] td {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Autómata del Boletín 03, ejercicio 8: ¿qué día de la semana es?</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>La web del <strong>Bar Baio</strong> quiere un pequeño calendario: el cliente escribe una fecha y la página
+            le dice qué día de la semana es. <strong>Carlos</strong> ve enseguida que la página tiene un solo
+            formulario, pero muchas formas de equivocarse: un año fuera de rango, un mes 13, un 31 de abril, un 29 de
+            febrero de un año que no es bisiesto...</p>
+    </div>
+    <h2>1.- Enunciado</h2>
+    <p>Desarrolla un script que solicite un número de año (1–3000), mes (1–12) y día (1–31) e indique qué día de la
+        semana, como cadena de texto ("lunes", ..., "domingo"), sería. Utiliza la expresión de Michael Keith y Tom
+        Craver:</p>
+    <pre><code>(d+=m&lt;3?y--:y-2,23*m/9+d+4+y/4-y/100+y/400)%7</code></pre>
+    <p>donde d = día, y = año y m = mes. La expresión devuelve un número entre 0 y 6, donde 0 = domingo, 1 = lunes... 6
+        = sábado. El script debe comprobar que la entrada es correcta: que el día del mes es válido para el mes
+        indicado. Recuerda que un año es bisiesto si es divisible por 4 pero no por 100, o si es divisible por 400.</p>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>La expresión está escrita en C: las divisiones son <strong>enteras</strong> (en PHP, <code>intdiv</code>), y
+            <code>d += m &lt; 3 ? y-- : y-2</code> significa "si el mes es enero o febrero, suma a d el año y
+            <strong>después</strong> réstale 1 al año; si no, suma a d el año menos 2". Con esa traducción, la fórmula
+            da el mismo resultado que <code>DateTime::format('w')</code> para todas las fechas probadas, también el año
+            1 (calendario gregoriano extendido hacia atrás).</p>
+    </div>
+    <h2>2.- Análisis</h2>
+    <ul>
+        <li><strong>Eventos entrantes.</strong> <em>Enviar</em> (un <code>submit</code>) y la <strong>carga</strong> de
+            la página sin parámetros. El botón <em>Borrar</em> es un <code>&lt;button type="reset"&gt;</code>: lo
+            resuelve el navegador vaciando los campos, <strong>no llega al servidor</strong>.
+        </li>
+        <li><strong>Eventos salientes.</strong> Cuatro variantes: formulario vacío, con avisos de rango, con el aviso
+            "ese día no existe en ese mes" y con el resultado.
+        </li>
+        <li><strong>Estados.</strong> ST0 y ST1, como en el ejercicio anterior: tras cada respuesta la página vuelve a
+            esperar una fecha.
+        </li>
+        <li><strong>Predicados.</strong> Tres de rango (año, mes, día) y uno más: <strong>el día existe en ese mes de
+                ese año</strong>. Este último solo se puede calcular si los tres primeros son ciertos (para saber
+            cuántos días tiene el mes hay que conocer un mes válido y, para febrero, un año válido).
+        </li>
+        <li><strong>Acciones previas.</strong> Limpiar y validar los tres campos (AC0, AC1, AC2).
+        </li>
+    </ul>
+    <h2>3.- Diagrama de estado-transición ampliado</h2>
+    <figure><svg viewBox="0 0 700 430" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="m2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="70" cy="70" r="30" fill="#ffffff" stroke="#2a4fa0" stroke-width="3" /><text x="70" y="75"
+                text-anchor="middle" font-weight="bold" font-size="14">STx</text><text x="70" y="115"
+                text-anchor="middle" font-size="11" fill="#333">cualquier estado</text>
+            <circle cx="70" cy="230" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="70" y="235"
+                text-anchor="middle" font-weight="bold" font-size="14">ST0</text><text x="70" y="275"
+                text-anchor="middle" font-size="11" fill="#333">Carga de página</text>
+            <circle cx="300" cy="230" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="300" y="235"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text><text x="266" y="268" text-anchor="end"
+                font-size="11" fill="#333">Esperando</text><text x="266" y="281" text-anchor="end" font-size="11"
+                fill="#333">una fecha</text>
+            <path d="M70.0,101.0 Q70.0,150.0 70.0,197.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m2)" /><text x="85" y="138" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#c0392b" font-weight="bold">Carga</text><text x="85" y="152" text-anchor="start"
+                font-family="Arial, sans-serif" font-size="10.5" fill="#555555" font-style="italic">(URL sin
+                parámetros)</text>
+            <path d="M101.0,230.0 Q185.0,230.0 267.0,230.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m2)" /><text x="185" y="207" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T1</text><text x="185" y="221" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES0</text>
+            <path d="M287.0,203.0 C230.3,132.3 369.7,132.3 314.4,200.3" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m2)" /><text x="360" y="30" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2 (a)</text><text x="360" y="44" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="360" y="58" text-anchor="start" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0, AC1, AC2</text><text x="360" y="72" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">!PL0 || !PL1 || !PL2</text><text
+                x="360" y="86" text-anchor="start" font-family="Consolas, monospace" font-size="11.5"
+                fill="#2e7d32">AC5</text><text x="360" y="100" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#8e44ad" font-weight="bold">ES1</text>
+            <path d="M327.0,217.0 C397.7,160.3 397.7,299.7 329.7,244.4" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m2)" /><text x="430" y="200" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2 (b)</text><text x="430" y="214" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="430" y="228" text-anchor="start" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0, AC1, AC2</text><text x="430" y="242" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1 &amp;&amp; PL2
+                &amp;&amp; !PL3</text><text x="430" y="256" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#8e44ad" font-weight="bold">ES2</text>
+            <path d="M313.0,257.0 C369.7,327.7 230.3,327.7 285.6,259.7" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m2)" /><text x="360" y="330" text-anchor="start" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2 (c)</text><text x="360" y="344" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="360" y="358" text-anchor="start" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0, AC1, AC2</text><text x="360" y="372" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1 &amp;&amp; PL2
+                &amp;&amp; PL3</text><text x="360" y="386" text-anchor="start" font-family="Consolas, monospace"
+                font-size="11.5" fill="#2e7d32">AC6, AC7</text><text x="360" y="400" text-anchor="start"
+                font-family="Consolas, monospace" font-size="11.5" fill="#8e44ad" font-weight="bold">ES3</text><text
+                x="20" y="360" text-anchor="start" font-size="10.5" fill="#555" font-style="italic">Borrar es un
+                &lt;button type="reset"&gt;:</text><text x="20" y="374" text-anchor="start" font-size="10.5" fill="#555"
+                font-style="italic">lo resuelve el navegador (HTML/JS)</text>
+        </svg>
+        <figcaption>Figura 1. Diagrama del Boletín 03, ejercicio 8</figcaption>
+    </figure>
+    <h2>4.- Autómata</h2>
+    <h3>4.1.- Tabla de descriptores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th>Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE0</td>
+                <td>Carga</td>
+                <td>se pide la página sin parámetros (primera vez o recarga desde la barra de direcciones)</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE1</td>
+                <td>Enviar</td>
+                <td>el usuario pulsa "Enviar"</td>
+            </tr>
+            <tr class="d-ee">
+                <td>Evento entrante</td>
+                <td>EE2</td>
+                <td>Borrar</td>
+                <td><code>&lt;button type="reset"&gt;</code>: lo resuelve el navegador (HTML/JS)</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES0</td>
+                <td>formularioFecha</td>
+                <td>formulario vacío</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES1</td>
+                <td>formularioErroresRango</td>
+                <td>formulario con lo escrito y un aviso junto a cada campo fuera de rango</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES2</td>
+                <td>formularioFechaInexistente</td>
+                <td>formulario con "El mes M del año A solo tiene N días"</td>
+            </tr>
+            <tr class="d-es">
+                <td>Evento saliente</td>
+                <td>ES3</td>
+                <td>formularioResultado</td>
+                <td>formulario con "El D/M/A es lunes..."</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST0</td>
+                <td>CargaPagina</td>
+                <td>la página aún no se ha mostrado</td>
+            </tr>
+            <tr class="d-st">
+                <td>Estado</td>
+                <td>ST1</td>
+                <td>EsperandoFecha</td>
+                <td>el formulario está a la vista</td>
+            </tr>
+            <tr class="d-ve">
+                <td>Variable de estado</td>
+                <td>VE0</td>
+                <td><code>$estado</code></td>
+                <td>estado actual (campo oculto)</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE1, VE2, VE3</td>
+                <td><code>$anio</code>, <code>$mes</code>, <code>$dia</code></td>
+                <td>la fecha escrita</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE4</td>
+                <td><code>$diaSemana</code></td>
+                <td>0 (domingo) ... 6 (sábado)</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE5</td>
+                <td><code>$nombreDia</code></td>
+                <td>"domingo" ... "sábado"</td>
+            </tr>
+            <tr class="d-va">
+                <td>Variable</td>
+                <td>VE6</td>
+                <td><code>$errores</code></td>
+                <td>avisos de los campos no válidos</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL0</td>
+                <td>año válido</td>
+                <td><code>$anio</code> es un entero entre 1 y 3000</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL1</td>
+                <td>mes válido</td>
+                <td><code>$mes</code> es un entero entre 1 y 12</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL2</td>
+                <td>día válido</td>
+                <td><code>$dia</code> es un entero entre 1 y 31</td>
+            </tr>
+            <tr class="d-pl">
+                <td>Predicado</td>
+                <td>PL3</td>
+                <td>el día existe</td>
+                <td><code>$dia &lt;= diasDelMes($mes, $anio)</code> (solo si PL0, PL1 y PL2)</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC0, AC1, AC2</td>
+                <td>validar año, mes y día</td>
+                <td><code>trim</code> y <code>FILTER_VALIDATE_INT</code> con <code>min_range</code> y
+                    <code>max_range</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC3</td>
+                <td><code>esBisiesto($anio)</code></td>
+                <td><code>($anio % 4 == 0 &amp;&amp; $anio % 100 != 0) || $anio % 400 == 0</code></td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC4</td>
+                <td><code>diasDelMes($mes, $anio)</code></td>
+                <td>31, 30, o 28/29 en febrero (usa AC3); la usa PL3</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC5</td>
+                <td>avisos</td>
+                <td>añadir a <code>$errores</code> el aviso de cada campo fuera de rango</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC6</td>
+                <td><code>$diaSemana = diaDeLaSemana(...)</code></td>
+                <td>la fórmula de Keith y Craver</td>
+            </tr>
+            <tr class="d-ac">
+                <td>Acción</td>
+                <td>AC7</td>
+                <td><code>$nombreDia = DIAS[$diaSemana]</code></td>
+                <td>el nombre del día</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.2.- Tabla de eventos-estados ampliada</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Carga (EE0)</th>
+                <th>Enviar (EE1)</th>
+                <th>Borrar (EE2)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ST0</td>
+                <td>T1</td>
+                <td>T1</td>
+                <td>---</td>
+            </tr>
+            <tr>
+                <td>ST1</td>
+                <td>T1</td>
+                <td>T2</td>
+                <td>HTML/JS</td>
+            </tr>
+        </tbody>
+    </table>
+    <ul>
+        <li><em>Borrar</em> en ST1 es <strong>HTML/JS</strong>: el navegador vacía los campos y el servidor no se
+            entera. En ST0 no hay formulario, así que no puede pulsarse (<code>---</code>).
+        </li>
+        <li><em>Enviar</em> en ST0 solo llega si se ha quitado el campo <code>estado</code> de la página: se trata como
+            la primera carga.
+        </li>
+    </ul>
+    <h3>4.3.- Tabla de transiciones</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>AEs antes de los PLs</th>
+                <th>PLs</th>
+                <th>Nuevo ST</th>
+                <th>AEs después</th>
+                <th>ESs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>T1</td>
+                <td>---</td>
+                <td>---</td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES0</td>
+            </tr>
+            <tr>
+                <td>T2 (a)</td>
+                <td>AC0, AC1, AC2</td>
+                <td><code>!PL0 || !PL1 || !PL2</code></td>
+                <td>ST1</td>
+                <td>AC5</td>
+                <td>ES1</td>
+            </tr>
+            <tr>
+                <td>T2 (b)</td>
+                <td>AC0, AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2 &amp;&amp; !PL3</code></td>
+                <td>ST1</td>
+                <td>---</td>
+                <td>ES2</td>
+            </tr>
+            <tr>
+                <td>T2 (c)</td>
+                <td>AC0, AC1, AC2</td>
+                <td><code>PL0 &amp;&amp; PL1 &amp;&amp; PL2 &amp;&amp; PL3</code></td>
+                <td>ST1</td>
+                <td>AC6, AC7</td>
+                <td>ES3</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>4.4.- Comprobación de predicados (T2)</h3>
+    <p>Con cuatro predicados habría 16 combinaciones, pero PL3 <strong>no se evalúa</strong> si alguno de los tres
+        primeros es falso (se escribe <strong>x</strong>: da igual su valor). Quedan 9 filas:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th>PL2</th>
+                <th>PL3</th>
+                <th>(a)</th>
+                <th>(b)</th>
+                <th>(c)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>x</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Un 1 en cada fila: completos y excluyentes. La <strong>x</strong> se traduce en el código en el orden de las
+        condiciones: PL3 va después de comprobar PL0, PL1 y PL2, en un <code>elseif</code> (o detrás de ellos en un
+        <code>&amp;&amp;</code>), así nunca se llama a <code>diasDelMes()</code> con un mes 13.</p>
+    <h2>5.- Del autómata al código</h2>
+    <p>Fragmento de <code>solucion/index.php</code>:</p>
+    <pre><code>case 2:                                                    // ---- T2
+    // AC0, AC1, AC2: limpiar y validar
+    $anio = filter_var($valores['anio'], FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 1, 'max_range' =&gt; 3000]]);
+    $mes = filter_var($valores['mes'], FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 1, 'max_range' =&gt; 12]]);
+    $dia = filter_var($valores['dia'], FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 1, 'max_range' =&gt; 31]]);
+    $pl0 = $anio !== false;
+    $pl1 = $mes !== false;
+    $pl2 = $dia !== false;
+
+    if (!$pl0 || !$pl1 || !$pl2) {                         // (a)
+        $estado = ST1;
+        // AC5: un aviso por cada campo fuera de rango
+        es1($valores, $errores);
+    } elseif ($dia &gt; diasDelMes($mes, $anio)) {            // (b): PL0 &amp;&amp; PL1 &amp;&amp; PL2 &amp;&amp; !PL3
+        $estado = ST1;
+        es2($valores, $mes, $anio, diasDelMes($mes, $anio));
+    } else {                                               // (c): PL0 &amp;&amp; PL1 &amp;&amp; PL2 &amp;&amp; PL3
+        $estado = ST1;
+        $diaSemana = diaDeLaSemana($dia, $mes, $anio);     // AC6
+        $nombreDia = DIAS[$diaSemana];                     // AC7
+        es3($valores, $dia, $mes, $anio, $nombreDia);
+    }
+    break;</code></pre>
+    <pre><code>function diaDeLaSemana(int $dia, int $mes, int $anio): int     // AC6
+{
+    if ($mes &lt; 3) {
+        $dia += $anio;                     // y-- : se suma el año y DESPUÉS se resta 1
+        $anio--;
+    } else {
+        $dia += $anio - 2;
+    }
+    return (intdiv(23 * $mes, 9) + $dia + 4 + intdiv($anio, 4) - intdiv($anio, 100) + intdiv($anio, 400)) % 7;
+}</code></pre>
+    <h2>6.- Pruebas: un camino por cada fila</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Prueba</th>
+                <th>Camino</th>
+                <th>Resultado comprobado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>18/10/2026</td>
+                <td>T2 (c)</td>
+                <td>domingo</td>
+            </tr>
+            <tr>
+                <td>1/1/2000</td>
+                <td>T2 (c)</td>
+                <td>sábado</td>
+            </tr>
+            <tr>
+                <td>29/2/2024 (bisiesto)</td>
+                <td>T2 (c)</td>
+                <td>jueves</td>
+            </tr>
+            <tr>
+                <td>29/2/2000 (bisiesto por ser divisible por 400)</td>
+                <td>T2 (c)</td>
+                <td>martes</td>
+            </tr>
+            <tr>
+                <td>25/12/1</td>
+                <td>T2 (c)</td>
+                <td>martes</td>
+            </tr>
+            <tr>
+                <td>29/2/2023</td>
+                <td>T2 (b)</td>
+                <td>"El mes 2 del año 2023 solo tiene 28 días"</td>
+            </tr>
+            <tr>
+                <td>29/2/1900 (divisible por 100: no bisiesto)</td>
+                <td>T2 (b)</td>
+                <td>solo tiene 28 días</td>
+            </tr>
+            <tr>
+                <td>31/4/2025</td>
+                <td>T2 (b)</td>
+                <td>solo tiene 30 días</td>
+            </tr>
+            <tr>
+                <td>mes 13</td>
+                <td>T2 (a)</td>
+                <td>solo el aviso del mes</td>
+            </tr>
+            <tr>
+                <td>año 0, mes "abc", día 32</td>
+                <td>T2 (a)</td>
+                <td>los tres avisos</td>
+            </tr>
+            <tr>
+                <td>día 31, mes 0</td>
+                <td>T2 (a)</td>
+                <td>aviso del mes; <strong>no</strong> se evalúa PL3</td>
+            </tr>
+            <tr>
+                <td>Enviar sin <code>estado</code></td>
+                <td>T1</td>
+                <td>formulario vacío</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Para practicar</h2>
+    <ul>
+        <li>Cambia <em>Borrar</em> por un botón <code>submit</code> que llegue al servidor. ¿Qué celdas de la tabla de
+            eventos-estados cambian? ¿Hace falta una transición nueva o sirve T1?
+        </li>
+        <li>Añade la salida "y es festivo nacional" para el 1 de enero, el 1 de mayo y el 25 de diciembre. ¿Es un
+            predicado nuevo, un evento saliente nuevo o las dos cosas? Rehaz la tabla de verdad.
+        </li>
+    </ul>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

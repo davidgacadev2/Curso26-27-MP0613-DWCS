@@ -1,0 +1,59 @@
+label {
+	display: inline-block;
+	width: 140px;
+	height: 20px;
+	font-weight: bold; 
+	color:blue;
+}
+
+form input {
+	height: 20px;
+}
+
+.visualizarAgenda {
+	background: rgba(0, 0, 0, 0);
+	border: none;
+	outline: none;
+	color: blue;
+	font-weight: bold;
+	margin-right: 2px;
+}
+
+body {
+	background:#FA8072;
+}
+
+h3 {
+	text-align: center;	
+}
+
+fieldset {
+	width:40%; 
+	margin:auto; 
+	padding:15px;
+}
+
+.botonReset {
+	height:28px; 
+	color:green;	
+}
+
+.botonEnviar {
+	margin-right:3px;
+	height:28px;
+	color:blue;	
+}
+
+.botonVaciar {
+	height:28px; 
+	color:red;	
+}
+
+p.aviso {
+	color:white; 
+	font-weight:bold;
+}
+
+a {
+	text-decoration: none;	
+}

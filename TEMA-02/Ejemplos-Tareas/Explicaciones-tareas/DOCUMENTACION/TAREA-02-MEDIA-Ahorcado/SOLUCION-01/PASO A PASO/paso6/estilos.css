@@ -1,0 +1,20 @@
+/* TAREA-02 MEDIA: El ahorcado — estilos */
+body { font-family: Arial, Helvetica, sans-serif; background: #eef3f0; color: #222; margin: 2em; max-width: 48em; }
+h1 { color: #2f6b4f; }
+.errores { background: #fde2e2; border: 1px solid #c62828; color: #8e1b1b; padding: 0.8em 2em; }
+.configuracion label { display: block; margin: 0.5em 0; }
+.marcador { background: #fff; border: 1px solid #b9cfc3; display: inline-block; padding: 0.4em 1em; }
+.dibujo { background: #fff; border: 1px solid #b9cfc3; display: inline-block; padding: 0.6em 1.2em; font-size: 1.2em; line-height: 1.15; }
+.dibujo.perdida { color: #c62828; }
+.palabra span { display: inline-block; min-width: 1.4em; margin: 0 0.12em; font: bold 1.8em monospace; text-align: center; }
+.palabra span.acierto { color: #2f6b4f; }
+.palabra span.faltaba { color: #c62828; }
+.mensaje { font-weight: bold; }
+.final { font-size: 1.25em; font-weight: bold; }
+.final.ganada { color: #2e7d32; }
+.final.perdida { color: #c62828; }
+.teclado { display: grid; grid-template-columns: repeat(9, 2.6em); gap: 0.35em; margin: 1em 0; }
+.teclado button { height: 2.4em; font-weight: bold; font-size: 1em; cursor: pointer; }
+.teclado button.acierto { background: #c6efa0; }
+.teclado button.fallo { background: #f4b4b4; }
+.invisible { position: absolute; left: -9999px; }

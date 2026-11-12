@@ -1,0 +1,13 @@
+# Datos de prueba para la carga masiva (las líneas con # se ignoran)
+Ana Pérez Lago;7,5;6;8,25
+brais   OTERO;4;5,5;3
+Carmen Núñez Vázquez;9;9,5;10
+Diego Fernández;5;5;4,5
+Uxía Rodríguez-Castro;6,75;7;6
+
+# A partir de aquí, líneas con errores a propósito:
+Eva Martínez;8;7
+X;5;5;5
+Fran López;11;6;7
+Gael Santos;6;seis;7
+Hugo 2º Gómez;6;6;6

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoria de parejas (TAREA-02, nivel medio): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="memoria-de-parejas-tarea-02-nivel-medio-como-se-llega-a-la-solucion-paso-a-paso">Memoria de parejas (TAREA-02,
+    nivel medio): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-el-formulario-de-configuracion-y-su-validacion">3.2.- Paso 2: el formulario de
+              configuración y su validación</a></li>
+          <li><a href="#33-paso-3-el-tablero-barajado-y-la-partida-en-campos-ocultos">3.3.- Paso 3: el tablero barajado
+              y la partida en campos ocultos</a></li>
+          <li><a href="#34-paso-4-girar-cartas-parejas-fallos-y-marcador">3.4.- Paso 4: girar cartas, parejas, fallos y
+              marcador</a></li>
+          <li><a href="#35-paso-5-fin-de-la-partida-y-nueva-partida">3.5.- Paso 5: fin de la partida y nueva partida</a>
+          </li>
+          <li><a href="#36-paso-6-solucion-completa-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa): no fiarse
+              del navegador</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-MEDIA-MemoriaParejas/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-MemoriaParejas/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-MemoriaParejas/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-MemoriaParejas/SOLUCION-01/PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p>La biblioteca municipal quiere un <em>memory</em> de parejas para las tardes de juegos y <strong>Juan</strong> se
+      lo encarga a
+      <strong>Carlos</strong>. Carlos ya se imagina el tablero de botones, pero <strong>María</strong> le hace una
+      pregunta: "Cuando el jugador
+      gira la segunda carta y no es pareja, las dos se ven un momento y luego vuelven a estar boca abajo. ¿Dónde
+      guardas esas dos cartas?". Carlos piensa un rato: "En ningún sitio. Solo se ven en esa respuesta; en la
+      siguiente petición ya no existen". "Exacto. Pues empieza por ahí: decide qué tiene que <strong>recordar</strong>
+      la página
+      entre un clic y el siguiente, y qué solo dura una respuesta".
+    </p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso3&quot; &quot;PASO A PASO/paso4&quot;
+</code></pre>
+  <p>(desde la carpeta <code>SOLUCION-01</code>; en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 8 requisitos (R1…R8) que <a
+      href="DOCUMENTACION/TAREA-02-MEDIA-MemoriaParejas/Requisitos.md">Requisitos.md</a>
+    convierte en 12 requisitos funcionales comprobables. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Configurar</td>
+          <td>R1, R2 · RF-01, RF-02</td>
+          <td>Cuatro datos con valores iniciales; <strong>todos</strong> los errores a la vez; formulario pegajoso;
+            letras sin repetir y suficientes.</td>
+        </tr>
+        <tr>
+          <td>Crear el tablero</td>
+          <td>R3 · RF-03</td>
+          <td>Cada letra <strong>dos veces</strong>, barajadas y repartidas en filas: <code>str_split</code>,
+            <code>shuffle</code>, <code>array_chunk</code>.</td>
+        </tr>
+        <tr>
+          <td>Jugar un turno</td>
+          <td>R4, R5 · RF-04…RF-07</td>
+          <td>Primera carta pendiente, segunda carta: pareja (+10) o fallo (−2). Marcador desde la primera carta.</td>
+        </tr>
+        <tr>
+          <td>Terminar</td>
+          <td>R6 · RF-08…RF-10</td>
+          <td>Ganar al encontrar todas, perder al <strong>superar</strong> los fallos; botones deshabilitados; <em>Nueva
+              partida</em>.</td>
+        </tr>
+        <tr>
+          <td>Estado y seguridad</td>
+          <td>R7, R8 · RF-11, RF-12</td>
+          <td>Todo en campos ocultos (el tablero como <code>cartas[f][c]</code>); revalidar lo recibido; nada sin
+            escapar.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son tres: <strong>sin <code>$_SESSION</code></strong>
+    (RNF-02), el <strong>tablero
+      como array en campos ocultos</strong> (RNF-03) y <strong>ninguna entrada produce avisos de PHP</strong> (RNF-09).
+  </p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Cómo se identifica una carta?</td>
+          <td>Por su posición <code>"fila-columna"</code>, empezando en 0 (<code>"1-2"</code>). Va en el
+            <code>value</code> del botón.</td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa si sobran letras?</td>
+          <td>Se usan las primeras: con 2 × 3 y <code>ABCD</code> el tablero usa <code>ABC</code>
+            (<code>substr()</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Qué es "superar" los fallos?</td>
+          <td>Tener <strong>más</strong> de los permitidos: con 1 permitido, se pierde al segundo fallo
+            (<code>&gt;</code> y no <code>&gt;=</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Se guardan las cartas de un fallo?</td>
+          <td>No: se devuelven aparte (<code>$temporales</code>) y solo se pintan en esa respuesta.</td>
+        </tr>
+        <tr>
+          <td>¿Cuenta como fallo pulsar una carta no válida?</td>
+          <td>No: mensaje <em>Esa carta no se puede elegir</em> y no cambia nada (ni siquiera las cartas giradas).</td>
+        </tr>
+        <tr>
+          <td>¿Cuándo aparece el marcador?</td>
+          <td>Cuando se ha girado al menos una carta: un contador <code>giradas</code> que empieza en 0.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo pruebo siempre con el mismo reparto?</td>
+          <td>Una <strong>semilla</strong> en un campo oculto del formulario y <code>mt_srand($semilla)</code> antes de
+            <code>shuffle()</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). El caso
+      de "superar" es típico: la diferencia entre <code>&gt;</code> y <code>&gt;=</code> es un fallo más o menos, y solo
+      un ejemplo concreto del
+      enunciado ("con 3 permitidos, al 4.º fallo") lo aclara.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son ejemplos concretos de entrada y salida. Escríbelos en
+    una tabla
+    antes de programar: serán las pruebas de cada paso. Con la semilla 7, el tablero 2 × 3 con <code>ABC</code> queda
+    <code>A C B</code> / <code>B C A</code> (dato del README de la solución), y eso permite escribir los casos de juego
+    con posiciones
+    exactas.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Abrir la página</td>
+          <td>Formulario con 4, 4, <code>ABCDEFGH</code> y 8; no aparece "Puntos:"</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3 filas y 3 columnas</td>
+          <td>"Con 3 filas y 3 columnas hay 9 cartas: el número de cartas debe ser par."</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Filas 7, columnas <code>x</code>, letras <code>aab</code>, fallos 0</td>
+          <td>Cuatro errores a la vez, uno de ellos "Repetidas: A"</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>2 × 3 con <code>AB</code></td>
+          <td>"Para 3 parejas hacen falta al menos 3 letras (has escrito 2)."</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Letras <code>&lt;b&gt;x</code></td>
+          <td>Error, y el campo muestra <code>&amp;lt;B&amp;gt;X</code> en el código fuente</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>2 × 3, <code>abcd</code> con espacios delante y detrás, semilla 7</td>
+          <td>6 botones (<code>0-0</code> a <code>1-2</code>) y solo las letras <code>ABC</code></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Pulsar <code>0-0</code>; después, otra vez <code>0-0</code></td>
+          <td>"Has girado una A. Elige la segunda carta." y "Puntos: 0"; luego "Esa carta no se puede elegir"</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><code>0-0</code> y <code>1-2</code></td>
+          <td>"¡Pareja de A! +10 puntos." y "Parejas: 1 de 3"</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Después, <code>0-1</code> y <code>1-0</code></td>
+          <td>"No son pareja (C y B)", 8 puntos y 1 fallo; en el clic siguiente la B vuelve a estar boca abajo</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>2 × 3 sin fallos</td>
+          <td>"Has encontrado las 3 parejas con 30 puntos"; un clic posterior no cambia el marcador</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>2 × 2, 1 fallo permitido, dos fallos</td>
+          <td>"Has superado los 1 fallos permitidos" y ningún botón de carta</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td><em>Nueva partida</em> tras un 2 × 3 con <code>ABC</code> y 1 fallo</td>
+          <td>El formulario muestra esos valores</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td><code>cartas[0][0]=Z</code>, <code>encontradas=0-0</code>, <code>filas=9</code>,
+            <code>cartas[1][1]=&lt;script&gt;</code></td>
+          <td>"La partida recibida no es válida"</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td><code>carta[]=0-0</code> o <code>carta=9-9</code></td>
+          <td>"Esa carta no se puede elegir", <strong>sin avisos de PHP</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 13 y 14 son <strong>maliciosos</strong>: no se pueden provocar con la página normal, hay que editar el
+    HTML con F12 o
+    enviar la petición con <code>curl</code>. El caso 13 pide algo más fino que "que no dé error":
+    <code>encontradas=0-0</code> es <strong>media
+      pareja</strong>, una posición que existe pero que no puede estar encontrada sola.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada clic en una carta es una petición nueva: el script empieza desde
+    cero y tiene
+    que <strong>reconstruir la partida</strong> a partir de lo que envíe el formulario.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Filas, columnas, letras, fallos permitidos</td>
+          <td>int / string</td>
+          <td>campos ocultos</td>
+          <td>Para validar el tablero y volver al formulario con <em>Nueva partida</em></td>
+        </tr>
+        <tr>
+          <td>Tablero</td>
+          <td>array de filas</td>
+          <td>un campo oculto <strong>por carta</strong>: <code>cartas[1][2]</code></td>
+          <td>Lo pide R7: PHP reconstruye el array a partir de los corchetes</td>
+        </tr>
+        <tr>
+          <td>Parejas encontradas</td>
+          <td>lista de posiciones</td>
+          <td><strong>un</strong> campo oculto: <code>"0-0,1-2"</code></td>
+          <td><code>implode(',', ...)</code> al escribir, <code>explode(',', ...)</code> al leer</td>
+        </tr>
+        <tr>
+          <td>Carta pendiente del turno</td>
+          <td>string (<code>''</code> si no hay)</td>
+          <td>campo oculto</td>
+          <td>Es lo que distingue "primera carta" de "segunda carta"</td>
+        </tr>
+        <tr>
+          <td>Puntos, fallos, cartas giradas</td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>El marcador y el fin de la partida dependen de ellos</td>
+        </tr>
+        <tr>
+          <td>Semilla</td>
+          <td>int</td>
+          <td>campo oculto <strong>del formulario</strong></td>
+          <td>Solo se usa al crear el tablero</td>
+        </tr>
+        <tr>
+          <td>Cartas de un fallo (<code>$temporales</code>)</td>
+          <td>array</td>
+          <td>variable</td>
+          <td>Solo se ven en la respuesta a ese clic</td>
+        </tr>
+        <tr>
+          <td>Jugando / ganada / perdida</td>
+          <td>—</td>
+          <td><strong>se calcula</strong> (<code>estadoPartida()</code>)</td>
+          <td>Sale de las encontradas y los fallos</td>
+        </tr>
+        <tr>
+          <td>Errores, mensaje de la jugada</td>
+          <td>array / string</td>
+          <td>variables</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Aquí el secreto sí viaja en la página.</strong> En el ahorcado se guardaba un índice para que la palabra
+      no
+      apareciera en el HTML. En esta tarea R7 obliga a guardar el tablero en campos ocultos, así que con Ctrl+U se
+      ven todas las letras: es el límite de guardar el estado en el cliente, y se resolverá cuando veáis las
+      sesiones. Lo que <strong>sí</strong> se puede (y se debe) evitar es que, cambiando esos campos, se juegue una
+      partida
+      <strong>imposible</strong>: eso es R8.
+    </p>
+  </div>
+
+  <p>La partida queda como un array asociativo (<code>nuevaPartida()</code>):</p>
+  <pre><code class="language-php">['filas' =&gt; 2, 'columnas' =&gt; 3, 'letras' =&gt; 'ABC', 'maxFallos' =&gt; 8,
+ 'cartas' =&gt; [['A', 'C', 'B'], ['B', 'C', 'A']],
+ 'encontradas' =&gt; [], 'pendiente' =&gt; '', 'puntos' =&gt; 0, 'fallos' =&gt; 0, 'giradas' =&gt; 0]
+</code></pre>
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Dos ficheros PHP con una responsabilidad cada uno: <code>funciones.php</code> (lógica, sin HTML) e
+    <code>index.php</code> (decide qué
+    hacer y muestra la página), más <code>estilos.css</code>. <code>index.php</code> sigue la estructura de siempre:</p>
+  <pre><code class="language-text">1. Inicializar          -&gt; cargar funciones, valores por defecto (4 x 4, ABCDEFGH, 8)
+2. Recibir y validar    -&gt; ¿qué botón se ha pulsado? (Empezar, una carta, Nueva partida)
+3. Procesar             -&gt; crear el tablero, o leer el estado, validarlo y jugar la carta
+4. Preparar mensajes    -&gt; estado de la partida y mensaje final
+5. Mostrar la página    -&gt; formulario de configuración O tablero con marcador y campos ocultos
+</code></pre>
+  <p>Cada tarea del paso 3 es una función pequeña que <strong>recibe</strong> lo que necesita y
+    <strong>devuelve</strong> un resultado (sin
+    <code>echo</code>):
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>e()</code></td>
+          <td>Escapar para el HTML</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarEntrada()</code></td>
+          <td>Los cuatro datos del formulario → <code>[configuración, errores]</code></td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>crearTablero()</code></td>
+          <td>Cada letra dos veces, barajadas con la semilla, en filas</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>nuevaPartida()</code> / <code>leerEstado()</code></td>
+          <td>La partida recién empezada / la partida de los campos ocultos, sin avisos</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>letraEn()</code></td>
+          <td>La letra de <code>"fila-columna"</code>, o <code>null</code> si no existe</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>jugar()</code></td>
+          <td>Girar una carta → <code>[mensaje, cartas que se ven solo ahora]</code></td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>cartaVisible()</code></td>
+          <td>¿Se ve la letra de esta posición?</td>
+          <td>3 (provisional), 4, 5</td>
+        </tr>
+        <tr>
+          <td><code>estadoPartida()</code></td>
+          <td><code>jugando</code>, <code>ganada</code> o <code>perdida</code></td>
+          <td>3 (provisional), 5</td>
+        </tr>
+        <tr>
+          <td><code>estadoValido()</code></td>
+          <td>¿Es una partida posible?</td>
+          <td>6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p><code>jugar()</code> recibe la partida <strong>por referencia</strong> (<code>array &amp;$partida</code>) y
+      devuelve <strong>dos</strong> cosas: el mensaje y las
+      cartas temporales. Devolver un array <code>[mensaje, temporales]</code> y recogerlo con
+      <code>[$mensaje, $temporales] = jugar($partida, $posicion);</code> es más claro que usar variables globales o dos
+      funciones que repitan la misma lógica.
+    </p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>La partida tiene dos estados "de juego" que no se ven a simple vista: <strong>esperando la primera carta</strong>
+    (<code>pendiente</code>
+    vacía) y <strong>esperando la segunda</strong> (<code>pendiente</code> con una posición). El botón pulsado decide la
+    transición
+    (<em>evento [condición] / acción</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración válida]</td>
+          <td>crear el tablero barajado</td>
+          <td>Primera carta</td>
+        </tr>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración no válida]</td>
+          <td>mostrar todos los errores</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Con tablero</td>
+          <td>carta [estado recibido no válido]</td>
+          <td>error</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Primera / Segunda carta</td>
+          <td>carta [no existe, ya encontrada o es la pendiente]</td>
+          <td>"Esa carta no se puede elegir"</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>Primera carta</td>
+          <td>carta [válida]</td>
+          <td><code>pendiente</code> = posición, <code>giradas</code> + 1</td>
+          <td>Segunda carta</td>
+        </tr>
+        <tr>
+          <td>Segunda carta</td>
+          <td>carta [misma letra]</td>
+          <td>2 encontradas más, +10</td>
+          <td>Primera carta, o Ganada si no quedan</td>
+        </tr>
+        <tr>
+          <td>Segunda carta</td>
+          <td>carta [otra letra]</td>
+          <td>−2, fallos + 1, cartas temporales</td>
+          <td>Primera carta, o Perdida si fallos &gt; permitidos</td>
+        </tr>
+        <tr>
+          <td>Ganada / Perdida</td>
+          <td>carta (petición forzada)</td>
+          <td>no se juega</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>Con tablero</td>
+          <td><em>Nueva partida</em></td>
+          <td>formulario con la configuración anterior</td>
+          <td>Sin partida</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dibujar los estados aclara dos cosas. La primera: tras un <strong>fallo</strong> se vuelve a "Primera carta" aunque
+    las dos
+    cartas se estén viendo; por eso no se guardan. La segunda: la flecha "jugar sobre una partida terminada" obliga a
+    que <code>jugar()</code> mire el estado <strong>antes</strong> de girar nada.</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden:
+    primero lo
+    que permite <strong>configurar</strong>, después lo que permite <strong>ver</strong> el tablero, luego
+    <strong>jugar</strong>, <strong>terminar</strong> y, al final,
+    hacerlo <strong>robusto</strong>.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs y esqueleto HTML</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Constantes, <code>e()</code>, validación y formulario pegajoso</td>
+          <td>R1, R2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Tablero barajado, cartas como botones, partida en campos ocultos</td>
+          <td>R3, R7</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Girar cartas: primera y segunda, pareja o fallo, marcador</td>
+          <td>R4, R5, R7</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Fin de la partida (ganada o perdida) y <em>Nueva partida</em></td>
+          <td>R6</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td><strong>Solución completa:</strong> validar el estado recibido</td>
+          <td>R8</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> El turno tiene muchas condiciones (carta no válida, primera, segunda, pareja,
+    fallo,
+    partida terminada) y es fácil olvidar una. Los TODO son el <strong>plan</strong> dentro del propio código: en
+    <code>index.php</code>, uno
+    por cada botón y en el orden en que se ejecutará; en <code>funciones.php</code>, la <strong>firma</strong> de cada
+    función con lo que
+    recibe y lo que devuelve:</p>
+  <pre><code class="language-php">// TODO: función jugar(array &amp;$partida, string $posicion): array -&gt; gira una carta: [mensaje, cartas que se ven solo ahora]
+    // TODO: si la partida ya ha terminado, no se juega
+</code></pre>
+  <p>Fíjate en que algunos TODO están <strong>dentro</strong> de otros (sangrados): son detalles que se resolverán más
+    tarde que la
+    función que los contiene. El de <code>jugar()</code> no se programa hasta el paso 5, aunque <code>jugar()</code> se
+    escribe en el 4.</p>
+  <p><strong>Decisión clave.</strong> Ya en el paso 1, <code>index.php</code> tiene un TODO "no fiarse del navegador"
+    justo después de
+    recuperar la partida. Queda reservado el sitio de la validación, aunque se programe la última.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título y nada más, pero <strong>no hay errores de PHP</strong>. Con la extensión <em>Todo
+        Tree</em> de VS Code
+      verás la lista de lo que queda por hacer. A partir de ahora, cada TODO que se programa pierde la palabra
+      <code>TODO</code>.</p>
+  </div>
+
+  <h3 id="32-paso-2-el-formulario-de-configuracion-y-su-validacion">3.2.- Paso 2: el formulario de configuración y su
+    validación</h3>
+  <p><strong>Objetivo.</strong> Las constantes, <code>e()</code>, <code>validarEntrada()</code> con todos los mensajes y
+    el formulario pegajoso (R1, R2).</p>
+  <p><strong>Por qué ahora.</strong> Sin una configuración válida no hay tablero. Y la validación tiene bastantes casos
+    (rangos,
+    paridad, letras repetidas, letras suficientes) que conviene probar <strong>solos</strong>, sin un juego encima que
+    distraiga.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Constantes para los límites y los puntos (<code>MIN_LADO</code>, <code>MAX_LADO</code>, <code>MIN_FALLOS</code>,
+      <code>MAX_FALLOS</code>, <code>PUNTOS_PAREJA</code>,
+      <code>PUNTOS_FALLO</code>): los mensajes de error y las etiquetas del formulario se construyen con ellas.
+    </li>
+    <li><code>validarEntrada()</code> lee los cuatro datos <strong>sin avisos</strong>:
+      <code>filter_var(... ?? '', FILTER_VALIDATE_INT, $rango)</code>
+      para los números y <code>is_string(... ?? null)</code> antes de <code>strtoupper(trim(...))</code> para las
+      letras.</li>
+    <li>Las comprobaciones dependen unas de otras: la paridad solo se mira si filas y columnas son válidas, y "hacen
+      falta al menos N letras" solo si las letras son correctas y no hay repetidas. Así cada error es
+      <strong>útil</strong>: no
+      sale "faltan letras" cuando el problema es que hay un <code>&lt;</code>.</li>
+    <li>Las repetidas se sacan con <code>count_chars()</code> (código debajo de esta lista).</li>
+    <li>Si no hay errores, la configuración devuelve las letras ya <strong>recortadas</strong> a las parejas
+      (<code>substr($letras, 0, $parejas)</code>).</li>
+    <li>En el formulario, un campo oculto <code>semilla</code> con <code>random_int(1, 999999)</code>: todavía no se
+      usa, pero el formulario
+      ya queda completo.</li>
+  </ul>
+  <pre><code class="language-php">// validarEntrada() (paso 2, funciones.php): las letras que aparecen más de una vez
+$repetidas = array_keys(array_filter(count_chars($letras, 1), fn($veces) =&gt; $veces &gt; 1));
+</code></pre>
+  <p><code>count_chars($letras, 1)</code> devuelve <code>código ASCII =&gt; veces</code>; por eso el mensaje pasa las
+    claves por
+    <code>array_map('chr', ...)</code> para escribir "Repetidas: A" y no "Repetidas: 65".
+  </p>
+  <p><strong>Un truco provisional.</strong> <code>index.php</code> deja
+    <code>$estado = $partida === null ? 'sin partida' : 'jugando';</code>. Todavía no
+    hay partida, pero la vista ya puede usar <code>$estado</code>; el paso 5 lo sustituirá por
+    <code>estadoPartida()</code>.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 a 5. Comprueba que en el caso 3 salen los <strong>cuatro</strong> errores a la vez y que con
+      <code>&lt;b&gt;x</code> el código fuente
+      (Ctrl+U) muestra <code>&amp;lt;B&amp;gt;X</code>. Con datos correctos (2 × 3 y <code>abcd</code>) el formulario
+      vuelve a salir, ahora con
+      <code>ABC</code>: aún no hay tablero, pero ya se ve que las letras se normalizan y se recortan.
+    </p>
+  </div>
+
+  <h3 id="33-paso-3-el-tablero-barajado-y-la-partida-en-campos-ocultos">3.3.- Paso 3: el tablero barajado y la partida
+    en campos ocultos</h3>
+  <p><strong>Objetivo.</strong> Crear el tablero (R3), dibujarlo como botones y guardarlo en campos ocultos para
+    recuperarlo en la
+    petición siguiente (R7).</p>
+  <p><strong>Por qué ahora.</strong> Es la decisión de datos más delicada de la tarea: un <strong>array de
+      arrays</strong> que tiene que salir
+    de PHP, viajar como texto en el HTML y volver a ser un array. Conviene comprobar que ese viaje de ida y vuelta
+    funciona <strong>antes</strong> de escribir ninguna regla del juego.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>crearTablero()</code> son tres funciones de la biblioteca encadenadas (código debajo de esta lista).</li>
+    <li><code>nuevaPartida()</code> monta el array de la partida con todo a cero y <code>leerEstado()</code> hace lo
+      contrario: lo reconstruye
+      desde <code>$_POST</code>. Cada campo se protege: <code>(int) (... ?? 0)</code> para los números,
+      <code>is_string</code> para los textos e
+      <code>is_array($datos['cartas'] ?? null)</code> para el tablero. Todavía <strong>no se valida</strong> que la
+      partida sea posible.
+    </li>
+    <li>En <code>index.php</code>, <em>Empezar</em> usa la semilla si es un entero válido y, si no,
+      <code>random_int(1, PHP_INT_MAX)</code>.</li>
+    <li>En el HTML, una tabla con un <code>&lt;button name="carta" value="1-2"&gt;?&lt;/button&gt;</code> por carta y,
+      debajo, un campo oculto
+      por carta: <code>name="cartas[&lt;?= $f ?&gt;][&lt;?= $c ?&gt;]"</code>.</li>
+  </ul>
+  <pre><code class="language-php">// crearTablero() (paso 3, funciones.php)
+$cartas = str_split($letras . $letras);    // &quot;ABC&quot; -&gt; A, B, C, A, B, C
+mt_srand($semilla);                         // la misma semilla da siempre el mismo reparto (para probar)
+shuffle($cartas);
+return array_chunk($cartas, $columnas);     // [[fila 0], [fila 1], ...]
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Los corchetes en el <code>name</code> crean arrays en <code>$_POST</code>.</strong> Seis campos
+      <code>cartas[0][0]</code> … <code>cartas[1][2]</code> llegan
+      como <code>$_POST['cartas'] = [0 =&gt; ['A', 'C', 'B'], 1 =&gt; ['B', 'C', 'A']]</code>: el mismo array que se
+      escribió. Por la
+      misma razón, alguien puede enviar <code>cartas=hola</code> (un texto) o <code>carta[]=0-0</code> (un array donde
+      esperas un texto), y
+      por eso cada lectura empieza con <code>is_array</code> o <code>is_string</code>.</p>
+  </div>
+
+  <p><strong>Dos funciones provisionales.</strong> La vista ya llama a <code>cartaVisible()</code> para decidir si pinta
+    la letra o el botón,
+    y el paso 5 necesitará <code>estadoPartida()</code>. Para que la página funcione ya, se escriben con un valor fijo y
+    un
+    comentario que lo dice:</p>
+  <pre><code class="language-php">return false;                               // provisional: todas boca abajo
+</code></pre>
+  <p>Así la vista se escribe <strong>entera</strong> ahora (con la clase <code>encontrada</code> o <code>girada</code> y
+    el <code>disabled</code> según <code>$estado</code>) y
+    no hay que volver a tocarla cuando las funciones hagan su trabajo de verdad.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 6: con F12 pon 7 en el campo <code>semilla</code>, elige 2 × 3 y <code>abcd</code>. Deben salir 6 botones
+      <code>?</code>; con Ctrl+U
+      comprueba los seis campos <code>cartas[f][c]</code> (<code>A C B</code> / <code>B C A</code>). Pulsa cualquier
+      carta: el tablero <strong>vuelve
+        igual</strong>, porque todavía no se juega, pero eso demuestra que la partida sobrevive a la petición. Con el
+      depurador, pon un punto de ruptura después de <code>leerEstado()</code> y mira <code>$partida['cartas']</code>.
+    </p>
+  </div>
+
+  <h3 id="34-paso-4-girar-cartas-parejas-fallos-y-marcador">3.4.- Paso 4: girar cartas, parejas, fallos y marcador</h3>
+  <p><strong>Objetivo.</strong> Programar el turno completo (R4), el marcador (R5) y el resto del estado en campos
+    ocultos (R7).</p>
+  <p><strong>Por qué ahora.</strong> Con el tablero viajando bien, ya hay sobre qué jugar. El fin de la partida se deja
+    para el paso
+    5: primero hay que poder girar cartas para <strong>llegar</strong> a ganar o perder.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>letraEn()</code> es la <strong>puerta de entrada</strong> de cualquier posición: comprueba el formato con
+      <code>preg_match('/^(\d+)-(\d+)$/', ...)</code> y busca la carta con <code>?? null</code>. Devuelve la letra o
+      <code>null</code>, nunca un
+      aviso, aunque llegue <code>9-9</code> o <code>hola</code>.
+    </li>
+    <li><code>jugar()</code> rechaza primero lo que no se puede elegir (posición inexistente, carta encontrada o la
+      propia carta
+      pendiente) y <strong>después</strong> suma <code>giradas</code>. Luego, dos caminos: si no hay pendiente, la carta
+      queda pendiente; si
+      la hay, se compara.</li>
+    <li>Las cartas de un fallo <strong>no se guardan</strong>: se devuelven en el segundo elemento del resultado (código
+      debajo de
+      esta lista). En la petición siguiente nadie las recuerda y vuelven a estar boca abajo sin hacer nada.</li>
+    <li><code>cartaVisible()</code> deja de ser provisional: se ve la letra si la carta está encontrada, es la pendiente
+      o está en
+      <code>$temporales</code>.
+    </li>
+    <li>En el HTML, el mensaje de la jugada y el marcador (solo si <code>giradas &gt; 0</code>), y los campos ocultos
+      que faltaban:
+      <code>encontradas</code> (con <code>implode(',', ...)</code>), <code>pendiente</code>, <code>puntos</code>,
+      <code>fallos</code> y <code>giradas</code>.
+    </li>
+  </ul>
+  <pre><code class="language-php">// jugar() (paso 4, funciones.php): la segunda carta no es pareja
+$partida['puntos'] -= PUNTOS_FALLO;
+$partida['fallos']++;
+$otra = letraEn($partida, $primera);
+return [&quot;No son pareja ($otra y $letra): −&quot; . PUNTOS_FALLO . ' puntos.', [$primera, $posicion]];
+</code></pre>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Guardar en un campo oculto las cartas del fallo "para enseñarlas" y borrarlas en la petición siguiente. Funciona,
+      pero añade un dato más que viaja, que hay que validar y que hay que acordarse de vaciar. Lo que solo dura
+      <strong>una
+        respuesta</strong> es una variable (<code>$temporales</code>), no parte del estado.</p>
+  </div>
+
+  <p><strong>Por qué un contador <code>giradas</code>.</strong> R5 pide el marcador "en cuanto se gira la primera
+    carta". No sirve mirar los
+    puntos o los fallos (tras la primera carta siguen a 0) ni la pendiente (tras una pareja vuelve a estar vacía).
+    Hace falta un dato que diga "ya se ha jugado algo".</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 7, 8 y 9 con la semilla 7. Pulsa <code>0-0</code> dos veces: la segunda vez, "Esa carta no se puede elegir"
+      y el
+      marcador no cambia. Tras el fallo C y B, pulsa cualquier otra carta: la B vuelve a salir como <code>?</code>. Con
+      el
+      depurador, pon un punto de ruptura en <code>jugar()</code> y mira <code>pendiente</code> y
+      <code>encontradas</code> en dos clics seguidos.
+      Con F12 cambia el <code>name</code> de un botón a <code>carta[]</code>: también "Esa carta no se puede elegir",
+      sin avisos (caso 14).</p>
+  </div>
+
+  <h3 id="35-paso-5-fin-de-la-partida-y-nueva-partida">3.5.- Paso 5: fin de la partida y nueva partida</h3>
+  <p><strong>Objetivo.</strong> Saber si la partida está ganada o perdida, mostrarlo y volver a empezar (R6).</p>
+  <p><strong>Por qué ahora.</strong> Con los turnos funcionando, ganar y perder son solo <strong>consecuencias</strong>
+    de las encontradas y los
+    fallos: no hace falta ningún campo oculto nuevo, solo una función que calcula.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>estadoPartida()</code> deja de ser provisional (código debajo de esta lista).</li>
+    <li><code>jugar()</code> resuelve su TODO pendiente: si la partida no está <code>jugando</code>, devuelve
+      "La partida ha terminado: empieza una nueva." sin tocar nada.</li>
+    <li><code>cartaVisible()</code> resuelve el suyo: al perder, se ven <strong>todas</strong> las cartas.</li>
+    <li>En <code>index.php</code>, <code>$estado</code> se calcula con <code>estadoPartida()</code> y se preparan los
+      mensajes finales.</li>
+    <li><em>Nueva partida</em> reutiliza <code>leerEstado()</code> para recuperar filas, columnas, letras y fallos
+      permitidos y
+      rellenar con ellos el formulario.</li>
+  </ul>
+  <pre><code class="language-php">// estadoPartida() (paso 5, funciones.php)
+if (count($partida['encontradas']) === $partida['filas'] * $partida['columnas']) {
+    return 'ganada';
+}
+if ($partida['fallos'] &gt; $partida['maxFallos']) {
+    return 'perdida';
+}
+return 'jugando';
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>La vista ya estaba preparada.</strong> Los botones llevan <code>disabled</code> cuando
+      <code>$estado !== 'jugando'</code> desde el paso 3,
+      pero hasta ahora <code>$estado</code> siempre valía <code>jugando</code>. En este paso no se toca esa línea del
+      HTML: basta con que
+      <code>$estado</code> empiece a valer <code>ganada</code> o <code>perdida</code>. Es la ventaja de haber dejado un
+      valor provisional en lugar de
+      no escribir nada.
+    </p>
+  </div>
+
+  <p>Un detalle: cuando la partida ya está ganada y llega un clic forzado, <code>jugar()</code> devuelve su mensaje,
+    pero
+    <code>index.php</code> lo <strong>sustituye</strong> por el mensaje final ("Has encontrado las 3 parejas…"). El
+    mensaje de <code>jugar()</code> no
+    llega a verse; lo que importa (RF-08) es que el marcador no cambia.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 10, 11 y 12. En el caso 11 la partida <strong>no</strong> debe terminar con el primer fallo (1 permitido),
+      sino con el
+      segundo, y entonces se ven todas las letras. Tras ganar, con F12 cambia un <code>&lt;span&gt;</code> por un botón
+      <code>name="carta" value="0-0"</code> y púlsalo: el marcador sigue igual.
+    </p>
+  </div>
+
+  <h3 id="36-paso-6-solucion-completa-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa): no fiarse del navegador
+  </h3>
+  <p><strong>Objetivo.</strong> Comprobar que el estado recibido es una partida posible (R8).</p>
+  <p><strong>Por qué al final (y no al principio).</strong> Para decidir qué es una partida "posible" hay que conocer
+    todas sus
+    piezas: el tablero (paso 3), qué significa <code>pendiente</code> y <code>encontradas</code> (paso 4) y cuántos
+    fallos caben en una
+    partida, incluida una ya perdida (paso 5). Hasta ahora el juego funcionaba con un <strong>cliente honrado</strong>;
+    este paso
+    lo prepara para uno que no lo es.</p>
+  <pre><code class="language-php">if (!estadoValido($partida)) {
+    $errores[] = 'La partida recibida no es válida (¿se han modificado los campos ocultos?). Empieza una nueva.';
+    $partida = null;
+}
+</code></pre>
+  <p><code>estadoValido()</code> va de lo general a lo particular, y cada comprobación se apoya en las anteriores:</p>
+  <ol>
+    <li>Dimensiones y fallos permitidos dentro de los rangos, y un número par de cartas.</li>
+    <li>Recorre <strong>las posiciones que debería haber</strong> (de <code>0-0</code> a la última) con
+      <code>?? null</code>, no las que han llegado: así
+      una carta que falta no da aviso, y cada letra debe ser una sola de <code>A</code> a <code>Z</code>.</li>
+    <li>Compara las letras del tablero, <strong>ordenadas</strong>, con las de <code>letras</code> duplicadas y
+      ordenadas: "cada letra
+      exactamente dos veces" en dos <code>sort()</code> y una comparación.</li>
+    <li>Las encontradas: posiciones que existen, sin repetir, y cada letra encontrada <strong>dos</strong> veces
+      (<code>array_count_values()</code>): así se rechaza la media pareja <code>encontradas=0-0</code>.</li>
+    <li>La pendiente, si hay, existe y no está encontrada; los fallos entre 0 y <code>maxFallos + 1</code>.</li>
+  </ol>
+  <p>¿Por qué <code>maxFallos + 1</code> y no <code>maxFallos</code>? Porque una partida <strong>perdida</strong> tiene
+    exactamente un fallo más de los
+    permitidos, y también es un estado posible: si llega un clic forzado sobre una partida perdida, la respuesta
+    debe ser "la partida ha terminado", no "la partida no es válida".</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 13 y 14. Con F12 cambia <code>cartas[0][0]</code> por <code>Z</code>, <code>encontradas</code> por
+      <code>0-0</code> o <code>filas</code> por <code>9</code>; o con <code>curl</code>:
+      <code>curl -d "carta=0-0&amp;filas=9" http://localhost:8000/</code>. Todas deben dar "La partida recibida no es
+      válida", sin
+      avisos de PHP y sin que se ejecute nada.
+    </p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 6 añade un <code>if</code> antes de jugar y podría rechazar una partida que sí es posible (por ejemplo, una
+    perdida).
+    Una lista de comprobación para esta tarea:</p>
+  <ul>
+    <li>☐ Casos correctos: ganar sin fallos, ganar con fallos (puntos que bajan) y perder.</li>
+    <li>☐ Casos límite: tableros 2 × 2 y 6 × 6; justo tantas letras como parejas; perder exactamente al superar el
+      máximo; puntos negativos.</li>
+    <li>☐ Turno: pulsar la pendiente, una carta encontrada y una posición inexistente (no cuentan como giradas).</li>
+    <li>☐ Maliciosos: arrays donde se espera un texto, letras cambiadas, media pareja, pendiente encontrada, HTML en
+      cualquier campo.</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code> y todos los textos que se escriben en el HTML
+      pasan por
+      <code>e()</code>.
+    </li>
+  </ul>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución ya está organizada en funciones cortas y no tiene <code>FIXME</code> pendientes. Aun así, quedan
+    detalles que se
+    podrían mejorar, buenos para practicar:</p>
+  <ul>
+    <li><strong>Estado mínimo.</strong> Los puntos se pueden calcular:
+      <code>PUNTOS_PAREJA * parejas − PUNTOS_FALLO * fallos</code>. Y las
+      cartas giradas también: las encontradas, más dos por cada fallo, más una si hay pendiente. Al guardarlos,
+      <code>estadoValido()</code> tendría que comprobar que cuadran, y no lo hace: un <code>puntos=1000</code> cambiado
+      con F12 se acepta.
+      Calcularlos elimina dos campos ocultos y ese problema a la vez.
+    </li>
+    <li><strong>Validación más fina.</strong> <code>estadoValido()</code> no comprueba que <code>letras</code> no tenga
+      repetidas (con <code>letras=AA</code> en un
+      2 × 2, un tablero de cuatro A pasa la validación) ni que cada fila tenga <strong>exactamente</strong>
+      <code>columnas</code> cartas: la
+      condición <code>count($todas) !== $filas * $columnas</code> siempre es falsa, porque el bucle ya añade justo esa
+      cantidad,
+      y una carta de más como <code>cartas[0][9]=Z</code> se acepta y se dibuja. Se arregla con
+      <code>is_array($fila)</code> y
+      <code>count($fila) === $columnas</code> para cada fila.
+    </li>
+    <li><strong>Avisos en el formulario.</strong> En <code>validarEntrada()</code>, el valor pegajoso de un número no
+      válido se obtiene con
+      <code>(string) ($datos['filas'] ?? '')</code>; si llega <code>filas[]=1</code>, convertir un array en texto
+      produce el aviso
+      <em>Array to string conversion</em>. Se evita con la misma idea que en las letras:
+      <code>is_string(...) ? ... : ''</code>.
+    </li>
+    <li><strong>Interfaz.</strong> El botón <em>Nueva partida</em> se ve durante toda la partida; el enunciado dice que
+      aparece al terminar.
+      Bastaría con envolverlo en <code>if ($estado !== 'jugando')</code>, o dejarlo y documentar la decisión.</li>
+    <li>Las ampliaciones del enunciado (jugadas, emojis, un solo campo con JSON, dos jugadores) son la siguiente
+      <strong>vuelta</strong> del proceso. Con emojis, por ejemplo, <code>str_split()</code> y <code>strlen()</code>
+      dejan de servir y hay que pasar a
+      <code>mb_str_split()</code>; y en lugar del tablero se podría guardar solo la semilla y volver a barajar en cada
+      petición.
+    </li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&gt;=</code> en lugar de <code>&gt;</code> para perder</td>
+          <td>Se pierde un fallo antes de lo que dice el enunciado</td>
+          <td>Probar el ejemplo "con 3 permitidos, al 4.º fallo"</td>
+        </tr>
+        <tr>
+          <td>Guardar las cartas del fallo en el estado</td>
+          <td>Un dato más que hay que vaciar y validar</td>
+          <td>Devolverlas aparte (<code>$temporales</code>)</td>
+        </tr>
+        <tr>
+          <td>Sumar <code>giradas</code> antes de comprobar la carta</td>
+          <td>Un clic no válido hace aparecer el marcador</td>
+          <td>Validar primero con <code>letraEn()</code></td>
+        </tr>
+        <tr>
+          <td>Leer <code>$_POST['cartas'][$f][$c]</code> sin <code>?? null</code></td>
+          <td><em>Undefined array key</em> si falta una carta</td>
+          <td><code>?? null</code> e <code>is_string</code></td>
+        </tr>
+        <tr>
+          <td>Validar solo que cada carta es una letra</td>
+          <td>Pasa un tablero con tres A y una B</td>
+          <td>Comparar las letras ordenadas con <code>letras</code> duplicadas</td>
+        </tr>
+        <tr>
+          <td>Aceptar cualquier posición en <code>encontradas</code></td>
+          <td>Media pareja o la misma carta dos veces</td>
+          <td><code>array_unique</code> y <code>array_count_values</code></td>
+        </tr>
+        <tr>
+          <td>Rechazar <code>fallos = maxFallos + 1</code></td>
+          <td>La partida perdida se ve como "no válida"</td>
+          <td>Ese estado también es posible</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué las dos cartas de un fallo no se guardan en un campo oculto? <strong>Porque solo se ven en esa
+          respuesta;
+          en la siguiente petición vuelven a estar boca abajo sin hacer nada, así que basta con una variable.</strong>
+      </li>
+      <li>¿Qué llega en <code>$_POST['cartas']</code> si el formulario tiene los campos <code>cartas[0][0]</code> …
+        <code>cartas[1][2]</code>? <strong>Un array
+          de dos filas con tres letras cada una: PHP reconstruye el array a partir de los corchetes del
+          <code>name</code>.</strong></li>
+      <li>¿Para qué sirven las funciones provisionales del paso 3? <strong>Para escribir ya la vista completa y que la
+          página funcione; en los pasos 4 y 5 se cambia su contenido sin tocar el HTML.</strong></li>
+      <li>¿Por qué <code>jugar()</code> suma <code>giradas</code> después de comprobar la carta? <strong>Porque una
+          carta que no se puede elegir no
+          es una jugada: no debe cambiar nada, tampoco hacer aparecer el marcador.</strong></li>
+      <li>¿Cómo comprueba <code>estadoValido()</code> que cada letra está exactamente dos veces? <strong>Ordena las
+          letras del tablero y
+          las de <code>letras</code> duplicadas, y las compara.</strong></li>
+      <li>¿Por qué se permiten <code>maxFallos + 1</code> fallos en un estado válido? <strong>Porque es el número de
+          fallos de una
+          partida perdida, que también es una partida posible.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

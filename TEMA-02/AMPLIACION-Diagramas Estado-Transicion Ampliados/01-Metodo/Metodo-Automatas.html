@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 2: Diseñar una página PHP con un autómata de estado-transición</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+        }
+
+        :root {
+            --verde: #c6efa0;
+            --verde-borde: #7cb342;
+            --azul: #dbe9fb;
+            --azul-borde: #5b8fd6;
+            --amarillo: #fff6c4;
+            --amarillo-borde: #d9b200;
+            --naranja: #ffe2c4;
+            --naranja-borde: #e08a2e;
+            --gris: #f1f1f1;
+            --morado: #ece2fb;
+            --morado-borde: #8e6bd1;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #222;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+
+
+
+
+
+        h1 {
+            font-size: 17pt;
+            color: #3c3c8c;
+            border-bottom: 3px solid #b39ddb;
+            padding-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            background: #c9b8f0;
+            padding: 4px 8px;
+            margin-top: 26px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            color: #3c3c8c;
+            margin-top: 18px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 10.5pt;
+            color: #5a4fcf;
+            margin: 14px 0 4px;
+            page-break-after: avoid;
+        }
+
+        ul {
+            margin: 4px 0 8px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            color: #6a1b9a;
+            background: #f6f2fb;
+            padding: 0 2px;
+        }
+
+        pre {
+            background: #f7f7f9;
+            border: 1px solid #ddd;
+            border-left: 4px solid #8e6bd1;
+            padding: 8px 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        pre code {
+            color: #222;
+            background: none;
+            padding: 0;
+            font-size: 9pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #e8e1f7;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .caja {
+            border: 1px solid #888;
+            border-radius: 2px;
+            padding: 4px 12px 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .titulo-caja {
+            font-weight: bold;
+            margin: 4px 0 2px;
+        }
+
+        .caso {
+            background: var(--verde);
+            border-color: var(--verde-borde);
+        }
+
+        .debes {
+            background: var(--azul);
+            border-color: var(--azul-borde);
+        }
+
+        .saber {
+            background: var(--amarillo);
+            border-color: var(--amarillo-borde);
+        }
+
+        .recomendacion {
+            background: var(--naranja);
+            border-color: var(--naranja-borde);
+        }
+
+        .resuelto {
+            background: var(--gris);
+        }
+
+        .resuelto {
+            page-break-inside: auto;
+        }
+
+        .resuelto pre {
+            background: #fff;
+            page-break-inside: auto;
+        }
+
+        .autoeval {
+            background: var(--morado);
+            border-color: var(--morado-borde);
+        }
+
+        figure {
+            margin: 12px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        figure svg,
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figure img {
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            font-size: 9pt;
+            color: #555;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .pie {
+            margin-top: 30px;
+            border-top: 1px dashed #999;
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>AMPLIACIÓN: Diseñar una página PHP con un autómata de estado-transición</h1>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p><strong>Carlos</strong> está haciendo el ejercicio de la media de una secuencia de números: primero se pide
+            cuántos números hay, después se van pidiendo uno a uno y al final se muestra la media. Lleva una hora
+            añadiendo <code>if</code> dentro de <code>if</code> y cada vez que arregla un caso se rompe otro: la página
+            no sabe en qué paso está, a veces pide el número 5 de 4 y, si se deja un campo vacío, vuelve al principio.
+        </p>
+        <p><strong>María</strong> le propone parar de escribir código y dibujar antes en un papel <strong>qué
+                páginas</strong> puede ver el usuario, <strong>qué botones</strong> puede pulsar en cada una y
+            <strong>qué tiene que comprobar</strong> el programa antes de pasar de una a otra. —Cuando lo tengas
+            dibujado —le dice—, el código sale casi solo: es un <code>switch</code> y unos <code>if</code>.
+            <strong>Juan</strong> sonríe: es la misma técnica con la que se programan los protocolos de comunicaciones,
+            y funciona igual de bien con las páginas web.</p>
+    </div>
+    <p>En esta unidad aprenderás a:</p>
+    <ul>
+        <li>describir el comportamiento de una página PHP con un <strong>diagrama de estado-transición
+                ampliado</strong>,
+        </li>
+        <li>identificar sus elementos: <strong>eventos entrantes</strong>, <strong>eventos salientes</strong>,
+            <strong>estados</strong>, <strong>variables de estado</strong>, <strong>predicados</strong> y
+            <strong>acciones</strong>,
+        </li>
+        <li>formalizarlo en un <strong>autómata</strong>: tabla de descriptores, tabla de eventos-estados y tabla de
+            transiciones,
+        </li>
+        <li>comprobar que los predicados de cada transición cubren <strong>todos los casos</strong> y <strong>no se
+                solapan</strong>,
+        </li>
+        <li>programar la página <strong>a partir del autómata</strong>, de forma casi mecánica.
+        </li>
+    </ul>
+    <p>La técnica viene de los libros de comunicaciones (Halsall, <em>Data Communications, Computer Networks and Open
+            Systems</em>), donde se usa para especificar protocolos. En el módulo la usamos para resolver los ejercicios
+        del tema 2. Ya hay tres resueltos así en los ejemplos del repositorio (Boletín 01-E01, Boletín 03-E01 y la Tarea
+        02A); con estos apuntes vienen diez más: cuatro problemas de los boletines y de la Tarea 02B, el Boletín 01-E01
+        rehecho y completado, y cinco problemas nuevos con más estados y transiciones (cajero, máquina expendedora,
+        reservas, tres en raya y examen tipo test).</p>
+    <h2>1.- Por qué un autómata para una página web</h2>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>Carlos se da cuenta de que su problema no es PHP: es que no tiene claro cuántas "situaciones" distintas tiene
+            su página y qué hace en cada una.</p>
+    </div>
+    <p>Una página PHP que se usa varias veces seguidas (un formulario que se corrige, un juego, un asistente en varios
+        pasos) tiene un problema de fondo: <strong>HTTP no tiene memoria</strong>. Cada vez que el usuario pulsa un
+        botón, el navegador hace una petición nueva y el script empieza desde cero: no sabe qué pasó en la petición
+        anterior si no se lo dice la propia página (en campos ocultos, en la URL... o, en el tema 5, en la sesión).</p>
+    <p>Por eso, cada petición se puede ver como un <strong>evento</strong> que llega a una página que está en un
+        <strong>estado</strong>. Según el evento y el estado, y según se cumplan o no ciertas
+        <strong>condiciones</strong>, el programa hace unas <strong>acciones</strong>, muestra una página (un
+        <strong>evento saliente</strong>) y pasa a otro estado. Eso es exactamente un autómata de estado-transición.</p>
+    <div class="caja debes">
+        <div class="titulo-caja">Debes conocer</div>
+        <p>El estado no vive en el servidor: <strong>viaja con la página</strong>. Si el autómata tiene más de un
+            estado, la página debe enviar en un campo oculto en qué estado está
+            (<code>&lt;input type="hidden" name="estado" value="2"&gt;</code>), y todo lo que haga falta recordar
+            (contadores, sumas, tableros...). Y como el usuario puede cambiar esos campos con las herramientas del
+            navegador, el programa debe <strong>comprobar</strong> el estado y los datos ocultos que recibe.</p>
+    </div>
+    <h2>2.- Los elementos del diagrama</h2>
+    <figure><svg viewBox="0 0 700 150" width="700" xmlns="http://www.w3.org/2000/svg"
+            font-family="Arial, Helvetica, sans-serif" font-size="12">
+            <defs>
+                <marker id="m0" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                    <path d="M0,0 L10,4 L0,8 z" fill="#3a5f9f" />
+                </marker>
+            </defs>
+            <circle cx="40" cy="110" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="40" y="115"
+                text-anchor="middle" font-weight="bold" font-size="14">ST1</text>
+            <circle cx="300" cy="110" r="30" fill="#ffffff" stroke="#5b8fd6" stroke-width="2" /><text x="300" y="115"
+                text-anchor="middle" font-weight="bold" font-size="14">ST2</text>
+            <path d="M71.0,110.0 Q170.0,110.0 267.0,110.0" fill="none" stroke="#3a5f9f" stroke-width="2"
+                marker-end="url(#m0)" /><text x="170" y="31" text-anchor="middle" font-family="Consolas, monospace"
+                font-size="10.5" fill="#5b8fd6">T2</text><text x="170" y="45" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#c0392b" font-weight="bold">Enviar</text><text
+                x="170" y="59" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#777777"
+                font-style="italic">antes: AC0</text><text x="170" y="73" text-anchor="middle"
+                font-family="Consolas, monospace" font-size="11.5" fill="#111111">PL0 &amp;&amp; PL1</text><text x="170"
+                y="87" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#2e7d32">AC2,
+                AC3</text><text x="170" y="101" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5"
+                fill="#8e44ad" font-weight="bold">ES2</text>
+            <rect x="375" y="12" width="12" height="12" fill="#5b8fd6" /><text x="393" y="22" font-size="11"
+                fill="#222">número de transición (tabla de eventos-estados)</text>
+            <rect x="375" y="33" width="12" height="12" fill="#c0392b" /><text x="393" y="43" font-size="11"
+                fill="#222">evento entrante: lo que hace el usuario</text>
+            <rect x="375" y="54" width="12" height="12" fill="#777777" /><text x="393" y="64" font-size="11"
+                fill="#222">acciones previas: leer, limpiar y validar</text>
+            <rect x="375" y="75" width="12" height="12" fill="#111111" /><text x="393" y="85" font-size="11"
+                fill="#222">predicado: condición para seguir la flecha</text>
+            <rect x="375" y="96" width="12" height="12" fill="#2e7d32" /><text x="393" y="106" font-size="11"
+                fill="#222">acciones específicas (instrucciones PHP)</text>
+            <rect x="375" y="117" width="12" height="12" fill="#8e44ad" /><text x="393" y="127" font-size="11"
+                fill="#222">evento saliente: lo que ve el usuario</text>
+        </svg>
+        <figcaption>Figura 1. Cómo se lee una flecha del diagrama de estado-transición ampliado</figcaption>
+    </figure>
+    <table>
+        <thead>
+            <tr>
+                <th>Elemento</th>
+                <th>Abreviatura</th>
+                <th>Qué es en una página PHP</th>
+                <th>Ejemplos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Evento entrante</td>
+                <td>EE0, EE1...</td>
+                <td>lo que provoca una petición: cargar la página, pulsar un botón, pulsar un enlace</td>
+                <td>Enviar, Borrar, Carga, Jugada</td>
+            </tr>
+            <tr>
+                <td>Evento saliente</td>
+                <td>ES0, ES1...</td>
+                <td>lo que se muestra al usuario como respuesta (cada variante distinta de la página)</td>
+                <td>formulario vacío, formulario con errores, resultados</td>
+            </tr>
+            <tr>
+                <td>Estado</td>
+                <td>ST0, ST1...</td>
+                <td>la situación en la que está la página: qué formulario muestra y qué espera</td>
+                <td>Carga de página, Esperando datos, Jugando</td>
+            </tr>
+            <tr>
+                <td>Variable de estado</td>
+                <td>VE0, VE1...</td>
+                <td>lo que hay que recordar entre peticiones (viaja en campos ocultos)</td>
+                <td><code>$estado</code>, <code>$contador</code>, <code>$sumatorio</code>, <code>$tablero</code></td>
+            </tr>
+            <tr>
+                <td>Predicado lógico</td>
+                <td>PL0, PL1...</td>
+                <td>una condición que se evalúa a <code>true</code> o <code>false</code>; elige el camino</td>
+                <td>"el importe es un número mayor que 0"</td>
+            </tr>
+            <tr>
+                <td>Acción específica</td>
+                <td>AC0, AC1...</td>
+                <td>una instrucción (o un grupo) de PHP</td>
+                <td><code>$suma = $a + $b</code>, "limpiar y validar el nombre"</td>
+            </tr>
+            <tr>
+                <td>Transición</td>
+                <td>T1, T2...</td>
+                <td>lo que pasa al llegar un evento en un estado</td>
+                <td>ver la tabla de transiciones</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Algunos convenios que usamos en los diagramas:</p>
+    <ul>
+        <li><strong>STx</strong> (círculo de borde grueso) representa <em>cualquier estado</em>: una flecha que sale de
+            STx (por ejemplo, con el evento "Borrar" o "Carga") significa que ese evento hace lo mismo esté la página en
+            el estado que esté.
+        </li>
+        <li><strong>ST0, Carga de página</strong> es el estado de partida: la petición llega sin campo
+            <code>estado</code> (la primera vez, o al pulsar un enlace a la página sin parámetros). Desde ST0 siempre se
+            muestra la página inicial y se pasa a ST1.
+        </li>
+        <li>Las acciones que se hacen <strong>antes</strong> de comprobar los predicados (leer <code>$_GET</code>,
+            limpiar y validar) se escriben en gris con "antes:"; las que se hacen <strong>después</strong>, en verde.
+            Esta distinción es la de la Tarea 02A: "AEs PRE PLs" y "AEs POST PLs".
+        </li>
+        <li>En los diagramas grandes, una <strong>caja discontinua</strong> con varios estados ("ST3, ST4") es como STx
+            pero solo para los estados que nombra: la flecha que sale de ella vale para todos. Sirve para no llenar el
+            dibujo de flechas iguales (<em>Salir</em>, <em>Cancelar</em>, <em>Recoger</em>...); la tabla de
+            eventos-estados sigue teniendo cada celda.
+        </li>
+        <li>Un <strong>evento interno</strong> no viene del navegador: lo produce el propio programa. Por ejemplo, en el
+            tres en raya, tras la jugada del jugador el autómata pasa al estado "turno de la máquina" y, en la misma
+            petición, se atiende el evento interno que hace la jugada del servidor. Ese estado es
+            <strong>transitorio</strong>: nunca se envía a la página.
+        </li>
+        <li>Un evento saliente con acciones entre corchetes, <code>ES3 [AC4]</code>, significa que al generar esa página
+            se ejecuta esa acción (normalmente, escribir las variables de estado en campos ocultos).
+        </li>
+    </ul>
+    <h2>3.- El método, paso a paso</h2>
+    <div class="caja caso">
+        <div class="titulo-caja">Caso práctico</div>
+        <p>María le enseña a Carlos el orden en que ella rellena las tablas. —No intentes dibujar el diagrama a la
+            primera: primero haz listas.</p>
+    </div>
+    <ul>
+        <li><strong>Lee el enunciado y dibuja la secuencia de páginas</strong> que verá el usuario en un uso normal
+            (como hace el boletín con "la misma página en distintos estados progresivos"). Añade los casos de error:
+            campo vacío, número fuera de rango...
+        </li>
+        <li><strong>Eventos entrantes (EE).</strong> Haz una lista de todo lo que puede provocar una petición: cada
+            botón <code>submit</code>, cada enlace, la primera carga. Los botones <code>type="reset"</code> no llegan al
+            servidor: los resuelve el navegador (se anotan como <em>HTML/JS</em>).
+        </li>
+        <li><strong>Eventos salientes (ES).</strong> Una entrada por cada variante distinta de la página: inicial, con
+            errores, con resultados, final...
+        </li>
+        <li><strong>Estados (ST).</strong> Un estado por cada situación en la que la página espera algo distinto.
+            Pregunta clave: <em>¿necesito saber algo de la petición anterior para atender esta?</em> Si la respuesta no
+            cambia, es el mismo estado.
+        </li>
+        <li><strong>Variables de estado (VE).</strong> Lo que debe sobrevivir de una petición a la siguiente. Cada una
+            tendrá su campo oculto (y su validación al volver).
+        </li>
+        <li><strong>Predicados (PL).</strong> Cada condición <strong>atómica</strong>: "el lado es impar", "la casilla
+            esconde una letra". Mejor muchos predicados simples que pocos complicados: así se pueden combinar y
+            comprobar.
+        </li>
+        <li><strong>Acciones (AC).</strong> Lo que hay que calcular o cambiar. Distingue las previas (validar las
+            entradas, que se necesitan para evaluar los predicados) de las que se hacen según el camino elegido.
+        </li>
+        <li><strong>Dibuja el diagrama</strong>: un círculo por estado y una flecha por cada camino posible, con su
+            evento, sus predicados, sus acciones y su evento saliente.
+        </li>
+        <li><strong>Tabla de eventos-estados</strong>: una fila por estado y una columna por evento entrante; en cada
+            celda, el número de la transición (o <code>---</code> si ese evento no puede darse en ese estado, o
+            <code>HTML/JS</code>).
+        </li>
+        <li><strong>Tabla de transiciones</strong>: para cada número, sus caminos: acciones previas, predicados, nuevo
+            estado, acciones y eventos salientes.
+        </li>
+        <li><strong>Comprueba los predicados</strong> de cada transición (apartado 4).
+        </li>
+        <li><strong>Programa</strong> siguiendo el autómata (apartado 5) y <strong>prueba un camino por cada
+                fila</strong> de la tabla de transiciones.
+        </li>
+    </ul>
+    <h2>4.- Comprobar los predicados: completos y excluyentes</h2>
+    <p>Cuando una transición tiene varios caminos, sus predicados deben cumplir dos reglas:</p>
+    <ul>
+        <li><strong>Completos</strong>: para cualquier combinación de valores de los predicados, <strong>algún</strong>
+            camino se cumple. Si no, hay un caso que el programa no sabe tratar (y la página se queda en blanco o hace
+            algo raro).
+        </li>
+        <li><strong>Excluyentes</strong>: para cada combinación, se cumple <strong>uno solo</strong>. Si se cumplen dos,
+            el resultado depende del orden de los <code>if</code>, y eso suele ser un error escondido.
+        </li>
+    </ul>
+    <p>Se comprueba con una <strong>tabla de verdad</strong>: una fila por cada combinación de los predicados (2
+        predicados, 4 filas; 3 predicados, 8 filas...) y una columna por camino. En cada fila debe haber
+        <strong>exactamente un 1</strong>. Por ejemplo, para la T2 del Boletín 01-E01:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>PL0</th>
+                <th>PL1</th>
+                <th><code>!PL0 || !PL1</code></th>
+                <th><code>PL0 &amp;&amp; PL1</code></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Cuando un predicado solo tiene sentido si otros se cumplen (por ejemplo, "el día existe en ese mes" solo se puede
+        comprobar si el mes es válido), en la tabla se escribe <strong>x</strong> ("da igual, no se evalúa") y en el
+        código va <strong>detrás</strong> en un <code>&amp;&amp;</code>: PHP evalúa en cortocircuito y no llega a
+        calcularlo.</p>
+    <div class="caja recomendacion">
+        <div class="titulo-caja">Recomendación</div>
+        <p>Haz siempre esta comprobación antes de programar. En el Boletín 01-E01 del material, por ejemplo, falta un
+            predicado: si el segundo número es 0, <code>$numero1 % $numero2</code> lanza
+            <code>DivisionByZeroError</code> en PHP 8. Con la tabla de predicados delante es fácil verlo: el resto solo
+            se puede calcular si se cumple "el segundo número no es 0" (el hueco PL2 que quedó en blanco en la tabla de los ejemplos
+            del repositorio).</p>
+    </div>
+    <h2>5.- Del autómata al código</h2>
+    <p>El código tiene siempre la misma forma: leer el estado y el evento, consultar la tabla y ejecutar la transición.
+        Esta es la plantilla que siguen las soluciones de los cuatro ejemplos (la misma idea que el
+        <code>index.php</code> del Boletín 01-E01 de los ejemplos del repositorio):</p>
+    <pre><code>&lt;?php
+// Estados y eventos entrantes: constantes con el nombre del autómata
+const ST0 = 0;  const ST1 = 1;          // Carga de página, Esperando datos
+const EE0 = 0;  const EE1 = 1;          // Calcular, Borrar
+
+// Tabla de eventos-estados ampliada: $automata[estado][evento] = número de transición
+$automata = [
+    ST0 =&gt; [EE0 =&gt; 1, EE1 =&gt; 1],
+    ST1 =&gt; [EE0 =&gt; 2, EE1 =&gt; 1],
+];
+
+// 1. Estado (campo oculto, VALIDADO) y evento entrante (qué botón ha llegado)
+$estado = filter_input(INPUT_GET, 'estado', FILTER_VALIDATE_INT);
+if ($estado === null || $estado === false || !isset($automata[$estado])) {
+    $estado = ST0;                      // primera carga o estado manipulado: empezar
+}
+$evento = ($_GET['evento'] ?? '') === 'calcular' ? EE0 : EE1;
+
+// 2. La transición que dice la tabla
+switch ($automata[$estado][$evento] ?? 1) {     // ?? 1: evento imposible (---) -&gt; empezar
+    case 1:                                     // ---- T1
+        $estado = ST1;
+        es0();                                  // evento saliente: una función por ES
+        break;
+    case 2:                                     // ---- T2
+        // acciones previas (AEs PRE): leer, limpiar y validar
+        $pl0 = ...;                             // predicados como variables booleanas
+        $pl1 = ...;
+        if (!$pl0 || !$pl1) {                   // un if / elseif por camino, en el orden de la tabla
+            $estado = ST1;
+            es1(...);
+        } else {                                // PL0 &amp;&amp; PL1
+            $estado = ST1;
+            // acciones (AEs POST)
+            es2(...);
+        }
+        break;
+}
+// 3. El nuevo estado viaja con la página
+echo '&lt;input type="hidden" name="estado" value="' . $estado . '"&gt;';</code></pre>
+    <p>Observa:</p>
+    <ul>
+        <li>Las abreviaturas del autómata aparecen en el código como <strong>constantes y comentarios</strong>
+            (<code>ST1</code>, <code>// T2</code>, <code>// PL0 &amp;&amp; PL1</code>, <code>// AC3</code>): quien lea
+            el código puede ir del diagrama al programa y al revés.
+        </li>
+        <li>Cada <strong>evento saliente</strong> es una función (<code>es0()</code>, <code>es1()</code>...): así queda
+            claro qué página se muestra en cada camino.
+        </li>
+        <li>Los predicados se calculan en <strong>variables booleanas</strong> con el nombre del predicado
+            (<code>$pl0</code>); el <code>if</code> queda casi igual que en la tabla.
+        </li>
+        <li>La celda <code>---</code> de la tabla no puede darse usando la página normalmente (no hay botón para ese
+            evento). Si llega, alguien ha manipulado la página: lo más seguro es <strong>empezar de nuevo</strong> (T1).
+        </li>
+    </ul>
+    <p>En los ejemplos del repositorio hay también una versión más "pura" del Boletín 03-E01 (no incluida en este material) en la que las
+        transiciones son <strong>datos</strong>: un array con, para cada transición, el predicado, el nuevo estado, las
+        acciones y la salida. Es una buena forma de ver que el autómata es una tabla; la versión con <code>switch</code>
+        es más fácil de depurar paso a paso.</p>
+    <h2>6.- Errores frecuentes</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Error</th>
+                <th>Consecuencia</th>
+                <th>Cómo evitarlo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>No guardar el estado en la página</td>
+                <td>la página no sabe en qué paso está y vuelve al principio</td>
+                <td>campo oculto <code>estado</code> en todos los formularios</td>
+            </tr>
+            <tr>
+                <td>Fiarse del estado y de los ocultos</td>
+                <td>un usuario los cambia con F12 y llega a un estado imposible</td>
+                <td>validarlos como cualquier otra entrada; si no valen, T1</td>
+            </tr>
+            <tr>
+                <td>Predicados que no cubren todos los casos</td>
+                <td>combinaciones en las que no se muestra nada</td>
+                <td>tabla de verdad: un 1 en cada fila</td>
+            </tr>
+            <tr>
+                <td>Predicados que se solapan</td>
+                <td>el resultado depende del orden de los <code>if</code></td>
+                <td>tabla de verdad: un solo 1 en cada fila</td>
+            </tr>
+            <tr>
+                <td>Evaluar un predicado que no tiene sentido</td>
+                <td>avisos o errores (dividir entre 0, índice que no existe)</td>
+                <td>ponerlo detrás de los que lo hacen posible en un <code>&amp;&amp;</code></td>
+            </tr>
+            <tr>
+                <td>Mezclar estados con eventos salientes</td>
+                <td>demasiados estados, todos iguales</td>
+                <td>un estado nuevo solo si la página espera algo distinto</td>
+            </tr>
+            <tr>
+                <td>Olvidar los eventos de "Borrar" o de recarga</td>
+                <td>el usuario no puede empezar de nuevo</td>
+                <td>columna para cada botón y para la carga sin parámetros</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>7.- Ejemplos resueltos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ejemplo</th>
+                <th>Qué practica</th>
+                <th>Estados</th>
+                <th>Eventos</th>
+                <th>Dónde está</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Boletín 01-E01: suma, resta, producto y resto</td>
+                <td>lo mínimo: dos estados y un formulario</td>
+                <td>2</td>
+                <td>Enviar, Reset</td>
+                <td>ejemplos del repositorio; <strong>rehecho y completado</strong> (PL2, el cociente) en
+                    <a href="../02-Ejemplos/05-B01-E01-Operaciones/Automata-B01-E01.html"><code>05-B01-E01-Operaciones</code></a></td>
+            </tr>
+            <tr>
+                <td>Boletín 03-E01: media de una secuencia</td>
+                <td>un contador en campos ocultos; varios caminos</td>
+                <td>4</td>
+                <td>Enviar, Borrar</td>
+                <td>ejemplos del repositorio</td>
+            </tr>
+            <tr>
+                <td>Tarea 02A: agenda</td>
+                <td>un array en campos ocultos; acciones antes y después de los predicados</td>
+                <td>3</td>
+                <td>Enviar, Limpiar, Vaciar</td>
+                <td>ejemplos del repositorio; su autómata, en
+                    <a href="../02-Ejemplos/EJEMPLO-TAREA-02A-Agenda/DIAGRAMA%20ESTADO-TRANSICION/Automata-Agenda.html"><code>EJEMPLO-TAREA-02A-Agenda</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Boletín 02-E01: impuestos</strong></td>
+                <td>validación de dos campos, acciones previas</td>
+                <td>2</td>
+                <td>Calcular, Borrar</td>
+                <td><a href="../02-Ejemplos/01-B02-E01-Impuestos/Automata-B02-E01.html"><code>01-B02-E01-Impuestos</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Boletín 03-E08: día de la semana</strong></td>
+                <td>cuatro predicados, uno que depende de los otros (cortocircuito); <code>type="reset"</code></td>
+                <td>2</td>
+                <td>Carga, Enviar, (Borrar)</td>
+                <td><a href="../02-Ejemplos/02-B03-E08-DiaSemana/Automata-B03-E08.html"><code>02-B03-E08-DiaSemana</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Boletín 05-E04: producto de matrices</strong></td>
+                <td>dos formularios seguidos, matrices en campos ocultos, eventos imposibles</td>
+                <td>4</td>
+                <td>Carga, Enviar</td>
+                <td><a href="../02-Ejemplos/03-B05-E04-ProductoMatrices/Automata-B05-E04.html"><code>03-B05-E04-ProductoMatrices</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Tarea 02B: juego de tablero</strong></td>
+                <td>cinco estados, tres eventos, caminos imposibles en un estado</td>
+                <td>5</td>
+                <td>Carga, Enviar, Jugada</td>
+                <td><a href="../02-Ejemplos/EJEMPLO-TAREA-02B-JuegoTablero/Automata-TAREA-02B.html"><code>EJEMPLO-TAREA-02B-JuegoTablero</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Cajero automático</strong></td>
+                <td>la cuenta en campos ocultos <strong>firmados</strong> (<code>hash_hmac</code>); PIN con intentos;
+                    cascadas de predicados</td>
+                <td>8</td>
+                <td>9</td>
+                <td><a href="../02-Ejemplos/06-Cajero/Automata-Cajero.html"><code>06-Cajero</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Máquina expendedora</strong></td>
+                <td>datos en el valor del botón; un predicado que <strong>busca</strong> (dar el cambio con las monedas
+                    que hay); modo mantenimiento</td>
+                <td>7</td>
+                <td>9</td>
+                <td><a href="../02-Ejemplos/07-Expendedora/Automata-Expendedora.html"><code>07-Expendedora</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Reservas del Bar Baio</strong></td>
+                <td>asistente con <em>Atrás</em> y <em>Editar</em> desde el resumen: una variable de estado
+                    (<code>$editando</code>) cambia el destino; fechas</td>
+                <td>7</td>
+                <td>6</td>
+                <td><a href="../02-Ejemplos/08-ReservaBarBaio/Automata-ReservaBarBaio.html"><code>08-ReservaBarBaio</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Tres en raya contra el servidor</strong></td>
+                <td><strong>evento interno</strong> (el turno de la máquina) y estado transitorio</td>
+                <td>7</td>
+                <td>7</td>
+                <td><a href="../02-Ejemplos/09-TresEnRaya/Automata-TresEnRaya.html"><code>09-TresEnRaya</code></a></td>
+            </tr>
+            <tr>
+                <td><strong>Examen tipo test</strong></td>
+                <td>preguntas saltadas, revisión de pendientes, dos modos; predicados evaluados después de una acción
+                </td>
+                <td>6</td>
+                <td>8</td>
+                <td><a href="../02-Ejemplos/10-ExamenTest/Automata-ExamenTest.html"><code>10-ExamenTest</code></a></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Para empezar, el más sencillo es el Boletín 01-E01. Cada ejemplo nuevo tiene su documento con el enunciado, el
+        análisis, el diagrama, las tablas del autómata, la comprobación de los predicados, la solución en PHP programada
+        a partir del autómata (<code>solucion/index.php</code>, dentro de la carpeta de cada ejemplo en
+        <code>../02-Ejemplos/</code>) y las pruebas que recorren todos los caminos.</p>
+    <div class="caja autoeval">
+        <div class="titulo-caja">Autoevaluación</div>
+        <ul>
+            <li>¿Por qué una página PHP con varios pasos necesita un campo oculto con el estado? <strong>Porque HTTP no
+                    tiene memoria: cada petición empieza desde cero y la única forma de saber en qué paso está la página
+                    es que la propia página lo envíe.</strong>
+            </li>
+            <li>Un botón <code>&lt;button type="reset"&gt;</code>, ¿es un evento entrante del autómata del servidor?
+                <strong>No: lo resuelve el navegador (borra los campos) y no llega ninguna petición al servidor. En la
+                    tabla de eventos-estados se anota como HTML/JS.</strong>
+            </li>
+            <li>Una transición tiene los caminos <code>PL0 &amp;&amp; PL1</code> y <code>!PL0</code>. ¿Están bien?
+                <strong>No: con PL0 cierto y PL1 falso no se cumple ninguno (no son completos). Falta el camino
+                    <code>PL0 &amp;&amp; !PL1</code>.</strong>
+            </li>
+            <li>¿Qué significa <code>---</code> en una celda de la tabla de eventos-estados? <strong>Que ese evento no
+                    puede ocurrir en ese estado usando la página normalmente (no hay botón para él). Si llega, la página
+                    se ha manipulado y lo prudente es empezar de nuevo.</strong>
+            </li>
+            <li>¿Por qué "el día existe en ese mes" se escribe detrás de "el mes es válido" en el
+                <code>&amp;&amp;</code>? <strong>Porque solo se puede calcular si el mes es válido; el
+                    <code>&amp;&amp;</code> de PHP no evalúa la segunda parte si la primera es falsa
+                    (cortocircuito).</strong>
+            </li>
+        </ul>
+    </div>
+    <div class="pie">Material elaborado para el módulo MP0613. Ejemplos probados con PHP 8.2.</div>
+</body>
+
+</html>

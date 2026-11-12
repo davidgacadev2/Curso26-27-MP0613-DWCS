@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El ahorcado (TAREA-02, nivel medio): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="el-ahorcado-tarea-02-nivel-medio-como-se-llega-a-la-solucion-paso-a-paso">El ahorcado (TAREA-02, nivel medio):
+    cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</a>
+        <ul>
+          <li><a href="#21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</a>
+          </li>
+          <li><a href="#22-estados-de-la-pagina">2.2.- Estados de la página</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-empezar-una-partida-y-guardarla-en-campos-ocultos">3.2.- Paso 2: empezar una partida y
+              guardarla en campos ocultos</a></li>
+          <li><a href="#33-paso-3-la-palabra-con-huecos-y-el-teclado">3.3.- Paso 3: la palabra con huecos y el
+              teclado</a></li>
+          <li><a href="#34-paso-4-fallos-dibujo-y-fin-de-la-partida">3.4.- Paso 4: fallos, dibujo y fin de la
+              partida</a></li>
+          <li><a href="#35-paso-5-resolver-marcador-y-nueva-partida">3.5.- Paso 5: resolver, marcador y nueva
+              partida</a></li>
+          <li><a href="#36-paso-6-solucion-completa-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa): no fiarse
+              del navegador</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-MEDIA-Ahorcado/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-Ahorcado/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-Ahorcado/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-MEDIA-Ahorcado/SOLUCION-01/PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p><strong>Carlos</strong> ya ha leído el enunciado del ahorcado dos veces y tiene ganas de abrir el editor.
+      <strong>María</strong> lo para:
+      "Antes, dime qué es lo único que no puede aparecer nunca en el HTML". Carlos duda: "¿La palabra?". "Exacto. Y
+      eso lo cambia todo: si la palabra no viaja en la página, ¿cómo sabrá el servidor qué palabra se está jugando en
+      la siguiente petición?". Carlos se da cuenta de que la tarea no empieza por el teclado de letras, sino por
+      decidir <strong>qué datos</strong> se guardan y <strong>dónde</strong>.</p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis (apartados 1 y 2) antes de
+    leer el
+    nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso2&quot; &quot;PASO A PASO/paso3&quot;
+</code></pre>
+  <p>(desde la carpeta <code>SOLUCION-01</code>; en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 10 requisitos (R1…R10) que <a
+      href="DOCUMENTACION/TAREA-02-MEDIA-Ahorcado/Requisitos.md">Requisitos.md</a>
+    convierte en 8 requisitos funcionales comprobables. Agrupados por lo que significan para el programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Configurar y empezar</td>
+          <td>R1, R2 · RF-01, RF-02</td>
+          <td>Un fichero que <strong>devuelve</strong> un array; un formulario generado a partir de él; validar
+            categoría y dificultad con una <strong>lista blanca</strong>.</td>
+        </tr>
+        <tr>
+          <td>Jugar</td>
+          <td>R4, R5, R6 · RF-03, RF-04</td>
+          <td>Mostrar huecos, un teclado de 27 botones, contar fallos y dibujar el muñeco. Todo con
+            <strong>multibyte</strong> (Ñ, tildes, Ü).</td>
+        </tr>
+        <tr>
+          <td>Resolver y terminar</td>
+          <td>R7, R8, R9 · RF-05…RF-07</td>
+          <td>Comparar sin tildes, penalizar 2 fallos, detectar partida ganada o perdida, marcador.</td>
+        </tr>
+        <tr>
+          <td>No fiarse del cliente</td>
+          <td>R3, R10 · RF-08, RNF-07, RNF-08</td>
+          <td>La palabra <strong>no</strong> viaja en el HTML; todo lo que llega en campos ocultos se
+            <strong>revalida</strong>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los requisitos no funcionales que más condicionan el código son tres: <strong>sin <code>$_SESSION</code></strong>
+    (RNF-03: el estado viaja en
+    campos ocultos), <strong>estado mínimo</strong> (RNF-05: lo que se puede calcular no se guarda) y <strong>la palabra
+      no aparece en el
+      HTML</strong> (RNF-07).</p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <p>Al leer con calma aparecen preguntas. Conviene escribir la respuesta <strong>antes</strong> de programar:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Con qué letra se descubre la Ü de CIGÜEÑA?</td>
+          <td>Con la U: se compara la <strong>letra base</strong> (<code>quitarTildes()</code>). La Ñ es otra letra y no
+            se convierte en N.</td>
+        </tr>
+        <tr>
+          <td>¿El espacio de A CORUÑA es una letra?</td>
+          <td>No: se muestra como espacio, no cuenta en "N letras" y no hay que adivinarlo.</td>
+        </tr>
+        <tr>
+          <td>¿Qué pasa si llega una letra repetida aunque el botón esté deshabilitado?</td>
+          <td>Mensaje <em>Ya habías probado la A.</em> y no cuenta como fallo.</td>
+        </tr>
+        <tr>
+          <td>¿Cuántos fallos cuesta resolver mal?</td>
+          <td>2 (constante <code>FALLOS_PALABRA</code>).</td>
+        </tr>
+        <tr>
+          <td>¿Qué etapa del dibujo corresponde a 3 fallos de 4?</td>
+          <td>La proporcional: <code>round(fallos * 6 / maxFallos)</code>.</td>
+        </tr>
+        <tr>
+          <td>¿Cómo pruebo siempre con la misma palabra?</td>
+          <td>Una <strong>semilla</strong> en un campo oculto y <code>mt_srand($semilla)</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Si algo no está claro y no puedes preguntar, <strong>apunta la decisión</strong> (en un comentario o en el
+      README). Así quien
+      corrija sabrá que no es un olvido, y tú no cambiarás de criterio a mitad de la tarea.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son ejemplos concretos de entrada y salida. Escríbelos en
+    una tabla
+    antes de programar: serán las pruebas de cada paso.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Abrir la página</td>
+          <td>Formulario con Animales y normal (6 fallos) seleccionados</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Animales, normal, semilla 15</td>
+          <td>"7 letras"; en el HTML hay <code>indice=2</code> pero <strong>no</strong> CIGÜEÑA</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Con CIGÜEÑA: U, Ñ, Z</td>
+          <td>Se ve la Ü, "La Ñ aparece una vez", Z en rojo; "Fallos: 1 de 6"</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Con CIGÜEÑA: C, I, G, E, A</td>
+          <td>"¡Has acertado CIGÜEÑA con 1 fallo!" y teclado deshabilitado</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Galicia, difícil, semilla 4: X, K, Q, W</td>
+          <td>"Te han ahorcado. La palabra era A CORUÑA." con la Ñ marcada en rojo</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Resolver <code>jabali</code> (con espacios delante y detrás) con JABALÍ</td>
+          <td>"¡Correcto!" (no importan tildes, mayúsculas ni espacios de los extremos)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Resolver <code>a coruna</code> con A CORUÑA</td>
+          <td>2 fallos: la Ñ no es una N</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><code>indice=99</code>, <code>usadas=AA</code>, <code>maxfallos=7</code>, <code>letra[]=A</code></td>
+          <td>"La partida recibida no es válida", <strong>sin avisos de PHP</strong></td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td><code>categoria=&lt;script&gt;…</code></td>
+          <td>Error y el texto se ve escapado, no se ejecuta</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 8 y 9 son <strong>maliciosos</strong>: no se pueden provocar con el formulario normal, hay que editar el
+    HTML con F12
+    o enviar la petición con <code>curl</code>. Que estén en la lista desde el principio obliga a pensar en ellos en el
+    diseño.</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Es la decisión más importante de la tarea. Como <strong>HTTP no tiene estado</strong>, cada clic en una letra es
+    una petición
+    nueva: el script empieza desde cero y tiene que <strong>reconstruir la partida</strong> a partir de lo que envíe el
+    formulario.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Palabras por categoría</td>
+          <td>array <code>categoría =&gt; lista</code></td>
+          <td><code>palabras.php</code> (<code>return [...]</code>)</td>
+          <td>Datos fijos, separados del código (RNF-04)</td>
+        </tr>
+        <tr>
+          <td>Categoría de la partida</td>
+          <td>string</td>
+          <td>campo oculto</td>
+          <td>Para encontrar la lista</td>
+        </tr>
+        <tr>
+          <td><strong>Índice</strong> de la palabra</td>
+          <td>int</td>
+          <td>campo oculto</td>
+          <td>En lugar de la palabra: así no aparece en el HTML (R3)</td>
+        </tr>
+        <tr>
+          <td>Fallos permitidos</td>
+          <td>int</td>
+          <td>campo oculto</td>
+          <td>Depende de la dificultad elegida</td>
+        </tr>
+        <tr>
+          <td>Letras usadas</td>
+          <td><strong>un solo</strong> string (<code>"UÑZ"</code>)</td>
+          <td>campo oculto</td>
+          <td>Con ellas se calculan huecos y fallos</td>
+        </tr>
+        <tr>
+          <td>Palabras falladas al resolver</td>
+          <td>int</td>
+          <td>campo oculto</td>
+          <td>Cada una suma 2 fallos</td>
+        </tr>
+        <tr>
+          <td>Victorias y derrotas</td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>Sobreviven de una partida a otra (R9)</td>
+        </tr>
+        <tr>
+          <td>Huecos, fallos, ganada/perdida</td>
+          <td>—</td>
+          <td><strong>se calculan</strong></td>
+          <td>Si se guardaran, podrían contradecirse con las letras usadas</td>
+        </tr>
+        <tr>
+          <td>Errores, mensaje de la jugada</td>
+          <td>array / string</td>
+          <td>variables</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Guarda el estado mínimo y calcula el resto.</strong> Si guardaras también los fallos en un campo oculto,
+      alguien podría
+      enviar <code>fallos=0</code> con diez letras falladas, y tendrías que comprobar que los dos datos coinciden. Si
+      los fallos se
+      <strong>cuentan</strong> a partir de las letras usadas, esa contradicción es imposible. Menos datos guardados
+      significa menos
+      cosas que validar.
+    </p>
+  </div>
+
+  <p>La partida queda como un array asociativo:</p>
+  <pre><code class="language-php">['categoria' =&gt; 'Animales', 'indice' =&gt; 2, 'maxFallos' =&gt; 6, 'usadas' =&gt; 'UÑZ', 'palabrasFalladas' =&gt; 0]
+</code></pre>
+  <h2 id="2-diseno-como-se-organiza">2.- Diseño: ¿cómo se organiza?</h2>
+  <h3 id="21-divide-y-venceras-ficheros-y-funciones">2.1.- Divide y vencerás: ficheros y funciones</h3>
+  <p>Tres ficheros con una responsabilidad cada uno: <code>palabras.php</code> (datos), <code>funciones.php</code>
+    (lógica, sin HTML) e
+    <code>index.php</code> (decide qué hacer y muestra la página). <code>index.php</code> sigue la estructura de siempre
+    de los apuntes:
+  </p>
+  <pre><code class="language-text">1. Inicializar          -&gt; cargar funciones y palabras, valores por defecto, leer el marcador
+2. Recibir y validar    -&gt; ¿qué botón se ha pulsado? (empezar, letra, resolver, nueva partida)
+3. Procesar             -&gt; elegir palabra, probar letra, resolver, actualizar el marcador
+4. Preparar mensajes    -&gt; fallos, estado (jugando/ganada/perdida), mensaje final
+5. Mostrar la página    -&gt; formulario de configuración O partida (sin lógica, solo variables)
+</code></pre>
+  <p>Cada tarea del paso 3 es una función pequeña con un verbo en el nombre, que <strong>recibe</strong> lo que necesita
+    y
+    <strong>devuelve</strong> un resultado (sin <code>echo</code>), para poder probarla y depurarla por separado:
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Responsabilidad</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>e()</code></td>
+          <td>Escapar para el HTML</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>validarConfiguracion()</code></td>
+          <td>Categoría y dificultad de la lista → <code>[configuración, errores]</code></td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>nuevaPartida()</code> / <code>palabraSecreta()</code></td>
+          <td>Elegir el índice al azar / recuperar la palabra con el índice</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>leerEstado()</code></td>
+          <td>Pasar de <code>$_POST</code> al array de la partida, sin avisos</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>quitarTildes()</code> / <code>letrasUsadas()</code></td>
+          <td>Letra base / partir <code>"UÑZ"</code> en letras (multibyte)</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>palabraOculta()</code></td>
+          <td>Casillas con su letra o un hueco</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>probarLetra()</code></td>
+          <td>Añadir la letra y devolver el mensaje</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>contarFallos()</code> / <code>estadoPartida()</code> / <code>dibujo()</code></td>
+          <td>Calcular fallos, ganada/perdida, dibujo</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>resolver()</code> / <code>leerMarcador()</code></td>
+          <td>Decir la palabra entera / victorias y derrotas</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td><code>estadoValido()</code></td>
+          <td>¿Es una partida posible?</td>
+          <td>6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Fíjate en que <code>probarLetra()</code> y <code>resolver()</code> reciben la partida <strong>por
+        referencia</strong> (<code>array &amp;$partida</code>): modifican
+      las letras usadas y, además, devuelven el mensaje. Es una decisión de diseño razonable aquí, pero cuando una
+      función cambia sus parámetros conviene que el nombre lo deje claro y que esté documentado en la firma.</p>
+  </div>
+
+  <h3 id="22-estados-de-la-pagina">2.2.- Estados de la página</h3>
+  <p>La página tiene cuatro estados y el botón pulsado decide la transición (<em>evento [condición] / acción</em>):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Desde</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración válida]</td>
+          <td>elegir índice al azar</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Sin partida</td>
+          <td><em>Empezar</em> [configuración no válida]</td>
+          <td>mostrar errores</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>letra o <em>Resolver</em> [estado recibido no válido]</td>
+          <td>error</td>
+          <td>Sin partida</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>letra o <em>Resolver</em> [quedan huecos y fallos &lt; máximo]</td>
+          <td>añadir letra / comparar</td>
+          <td>Jugando</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>letra o <em>Resolver</em> [no quedan huecos]</td>
+          <td>victoria + 1</td>
+          <td>Ganada</td>
+        </tr>
+        <tr>
+          <td>Jugando</td>
+          <td>letra o <em>Resolver</em> [fallos ≥ máximo]</td>
+          <td>derrota + 1</td>
+          <td>Perdida</td>
+        </tr>
+        <tr>
+          <td>Ganada / Perdida</td>
+          <td>letra (petición forzada)</td>
+          <td>"La partida ya ha terminado"</td>
+          <td>igual</td>
+        </tr>
+        <tr>
+          <td>Ganada / Perdida</td>
+          <td><em>Nueva partida</em></td>
+          <td>conservar categoría, dificultad y marcador</td>
+          <td>Sin partida</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dos flechas no son evidentes y salen de dibujar el diagrama: la de "estado no válido" (R10) y la de "jugar sobre
+    una partida terminada". Esta última obliga a calcular <strong>cómo estaba la partida antes de la jugada</strong>
+    (<code>$antes</code>), y es
+    también lo que evita sumar dos veces la misma victoria.</p>
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden no es
+    casual: primero lo que permite <strong>ver</strong> algo, después lo que permite <strong>jugar</strong> y al final
+    lo que hace el juego
+    <strong>robusto</strong>.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición: TODOs y esqueleto HTML</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Palabras, configuración, palabra al azar, campos ocultos</td>
+          <td>R1, R2, R3</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Huecos, teclado, probar letras (multibyte)</td>
+          <td>R4, R5</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Fallos calculados, dibujo, fin de la partida</td>
+          <td>R6, R8</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Resolver, marcador, nueva partida</td>
+          <td>R7, R8, R9</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td><strong>Solución completa:</strong> validar el estado recibido</td>
+          <td>R10</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el diseño del apartado 2 al código, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> El enunciado tiene diez requisitos que se entrelazan; si se empieza a
+    escribir código
+    directamente, es fácil olvidar uno (por ejemplo, el de la partida terminada). Los TODO son el <strong>plan</strong>
+    escrito
+    dentro del propio código: en <code>index.php</code>, uno por cada parte de la estructura de los apuntes, en el orden
+    en que se
+    ejecutará; en <code>funciones.php</code>, la <strong>firma</strong> de cada función con lo que recibe y lo que
+    devuelve:</p>
+  <pre><code class="language-php">// TODO: función probarLetra(array &amp;$partida, mixed $letra, string $palabra): string -&gt; añade la letra y devuelve el mensaje
+// TODO: función contarFallos(array $partida, string $palabra): int -&gt; letras que no están + palabras falladas
+</code></pre>
+  <p>El HTML también se marca con TODOs: el formulario de configuración, la palabra con huecos, el teclado, los campos
+    ocultos... Es la "maqueta" de esta tarea: una página que ya carga, aunque solo muestra el título.</p>
+  <p><strong>Decisión clave.</strong> Ya en el paso 1 se escribe la estructura de la partida (en el comentario de
+    cabecera de
+    <code>funciones.php</code>) y se decide que la palabra <strong>no</strong> se guarda. Todo lo demás depende de eso.
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título y nada más, pero <strong>no hay errores de PHP</strong>. Con la extensión <em>Todo
+        Tree</em> de VS Code
+      verás la lista de lo que queda por hacer. A partir de ahora, cada TODO que se programa se borra.</p>
+  </div>
+
+  <h3 id="32-paso-2-empezar-una-partida-y-guardarla-en-campos-ocultos">3.2.- Paso 2: empezar una partida y guardarla en
+    campos ocultos</h3>
+  <p><strong>Objetivo.</strong> Formulario de configuración, elegir la palabra al azar y dejar la partida escrita en
+    campos
+    ocultos (R1, R2, R3).</p>
+  <p><strong>Por qué ahora.</strong> Sin una partida no se puede probar nada del juego. Y es el momento de comprobar la
+    decisión más
+    delicada (la palabra no está en el HTML) antes de construir nada encima.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>palabras.php</code> <strong>devuelve</strong> el array:
+      <code>$palabras = require __DIR__ . '/palabras.php';</code>. Añadir una categoría no
+      obliga a tocar el resto (RNF-04), y el <code>&lt;select&gt;</code> se genera con
+      <code>array_keys($palabras)</code>.</li>
+    <li><code>validarConfiguracion()</code> comprueba con <code>array_key_exists()</code> que la categoría y la
+      dificultad están en la lista.
+      Antes, <code>is_string($datos['categoria'] ?? null)</code>: si alguien envía <code>categoria[]=Frutas</code>,
+      llega un array y, sin esa
+      comprobación, <code>array_key_exists()</code> lanzaría un <code>TypeError</code>.</li>
+    <li><code>nuevaPartida()</code> elige el <strong>índice</strong>, no la palabra (ver el código debajo de esta
+      lista).</li>
+    <li>En el HTML, cinco campos ocultos (categoría, índice, fallos permitidos, letras usadas y palabras falladas),
+      todos
+      con <code>e()</code>.</li>
+  </ul>
+  <pre><code class="language-php">// nuevaPartida() (paso 2, funciones.php)
+mt_srand($semilla);                         // la misma semilla elige siempre la misma palabra (para probar)
+$indice = mt_rand(0, count($lista) - 1);
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>La semilla es una herramienta de prueba.</strong> Con <code>mt_srand(15)</code> el primer
+      <code>mt_rand()</code> da siempre el mismo
+      número, así que puedes repetir la misma palabra en cada prueba (en Animales, la semilla 15 da CIGÜEÑA). Para
+      jugar de verdad, el formulario manda una semilla aleatoria y, si no llega ninguna válida, se usa
+      <code>random_int()</code>. Es un ejemplo de diseñar pensando en <strong>cómo vas a probar</strong>.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 1 y 2. Elige Animales, normal, pon 15 en el campo <code>semilla</code> con F12 y pulsa <em>Empezar</em>.
+      Con Ctrl+U comprueba
+      que el código fuente contiene <code>name="indice" value="2"</code> y que <strong>no</strong> contiene CIGÜEÑA.
+      Prueba también a cambiar
+      con F12 una opción del <code>&lt;select&gt;</code> por <code>Plantas</code>: debe salir el error.</p>
+  </div>
+
+  <h3 id="33-paso-3-la-palabra-con-huecos-y-el-teclado">3.3.- Paso 3: la palabra con huecos y el teclado</h3>
+  <p><strong>Objetivo.</strong> Recuperar la partida en cada petición, mostrar la palabra con huecos y probar letras
+    (R4, R5).</p>
+  <p><strong>Por qué ahora.</strong> Es el corazón del juego y la parte con más trampas (la Ñ, las tildes). Conviene
+    tenerla
+    funcionando, y bien probada, antes de añadir fallos y finales que dependen de ella.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>leerEstado()</code> reconstruye la partida a partir de <code>$_POST</code>. Los enteros pasan por <code>filter_var(...,
+  FILTER_VALIDATE_INT)</code> y, si no valen, se ponen a <code>-1</code>: así un valor raro <strong>no produce
+        avisos</strong> y luego será
+      fácil de rechazar. Todavía <strong>no se valida</strong> que la partida sea posible: eso se deja para el paso 6.
+    </li>
+    <li><code>quitarTildes()</code> con <code>strtr()</code> y la constante <code>SIN_TILDE</code> (Á→A … Ü→U,
+      <strong>sin la Ñ</strong>).</li>
+    <li><code>letrasUsadas()</code> con <code>mb_str_split()</code>, y <code>palabraOculta()</code>, que devuelve un
+      array de casillas
+      (<code>['letra' =&gt; 'Ü', 'clase' =&gt; 'acierto']</code>). La función <strong>no escribe HTML</strong>: devuelve
+      datos y la vista los pinta.</li>
+    <li><code>probarLetra()</code>: valida la letra (string, un carácter, del abecedario), detecta las repetidas, la
+      añade a
+      <code>usadas</code> y cuenta las apariciones con <code>mb_substr_count(quitarTildes($palabra), $letra)</code>.
+    </li>
+    <li>En el HTML, el teclado: un <code>&lt;button name="letra" value="A"&gt;</code> por letra, con clase
+      <code>acierto</code> o <code>fallo</code> y
+      <code>disabled</code> si ya se ha usado.
+    </li>
+  </ul>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Usar <code>str_split()</code> y <code>strlen()</code>. En UTF-8 la Ñ ocupa <strong>2 bytes</strong>:
+      <code>str_split('AÑ')</code> da tres trozos y el segundo y
+      el tercero no son letras. Con <code>mb_str_split('AÑ')</code> se obtiene <code>['A', 'Ñ']</code>. Lo mismo pasa
+      con <code>strlen('Ñ')</code>, que
+      vale 2: en esta tarea <strong>todas</strong> las funciones de texto deben ser <code>mb_</code>.</p>
+  </div>
+
+  <p><strong>Un truco provisional.</strong> En este paso todavía no se sabe si la partida ha terminado, así que el
+    código deja
+    <code>$antes = 'jugando';</code>. Es un valor provisional, consciente y marcado: el paso 4 lo sustituye por el
+    cálculo
+    real. Avanzar con "lo más sencillo que funcione" y arreglarlo después es desarrollo incremental, siempre que no se
+    olvide (para eso están los TODO y los FIXME).
+  </p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 3 con la semilla 15: la U debe descubrir la <strong>Ü</strong>, la Ñ debe decir "aparece una vez" y la Z
+      salir en rojo.
+      Con el depurador, pon un punto de ruptura en <code>probarLetra()</code> y mira cómo cambia
+      <code>$partida['usadas']</code> en cada clic.
+      Con F12, cambia el <code>value</code> de un botón por <code>AB</code>: "Esa letra no es válida.".</p>
+  </div>
+
+  <h3 id="34-paso-4-fallos-dibujo-y-fin-de-la-partida">3.4.- Paso 4: fallos, dibujo y fin de la partida</h3>
+  <p><strong>Objetivo.</strong> Contar los fallos, dibujar el ahorcado y saber si la partida está ganada o perdida (R6,
+    R8).</p>
+  <p><strong>Por qué ahora.</strong> Con las letras funcionando, los fallos son solo una <strong>consecuencia</strong>
+    de ellas: no hace falta
+    ningún campo oculto nuevo, solo funciones que calculan.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>contarFallos()</code>: las letras usadas que no están en la palabra (sin tildes).</li>
+    <li><code>estadoPartida()</code>: primero mira los fallos (si se ha llegado al máximo, <code>perdida</code>) y
+      después si queda algún
+      hueco (<code>jugando</code>) o no (<code>ganada</code>). Reutiliza <code>palabraOculta()</code>: no se repite la
+      lógica de los huecos.</li>
+    <li><code>dibujo()</code>: siete etapas y una <strong>regla de tres</strong> para que la dificultad influya (código
+      debajo de la lista).</li>
+    <li>En <code>index.php</code> se sustituye el <code>$antes = 'jugando'</code> provisional por
+      <code>estadoPartida()</code>: una partida terminada ya
+      no admite jugadas ("La partida ya ha terminado").</li>
+    <li>Al perder, <code>palabraOculta(..., true)</code> enseña las letras que faltaban con la clase
+      <code>faltaba</code>.</li>
+  </ul>
+  <pre><code class="language-php">// dibujo() (paso 4, funciones.php)
+$etapa = min(6, (int) round($fallos * 6 / $maxFallos));     // con 4 fallos permitidos se avanza más deprisa
+</code></pre>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>El dibujo es un <code>&lt;pre&gt;</code> con texto, pero pasa igualmente por <code>e()</code>. ¿Por qué, si lo
+      genera el propio programa y hoy
+      no contiene <code>&lt;</code> ni <code>&amp;</code>? Porque es más fácil cumplir una regla sin excepciones que
+      recordar cuáles son las
+      excepciones: si mañana el dibujo incluye algún dato del usuario (su nombre, por ejemplo), ya estará escapado.
+      <strong>Todo</strong> lo que se escribe en el HTML se escapa.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 4 y 5. Con 4 fallos permitidos el muñeco debe completarse en 4 fallos, y con 8, en 8. Al ganar, el teclado
+      queda deshabilitado; si con F12 habilitas un botón y lo pulsas, sale "La partida ya ha terminado".</p>
+  </div>
+
+  <h3 id="35-paso-5-resolver-marcador-y-nueva-partida">3.5.- Paso 5: resolver, marcador y nueva partida</h3>
+  <p><strong>Objetivo.</strong> Completar la funcionalidad: decir la palabra entera (R7), llevar el marcador (R9) y
+    volver a jugar.</p>
+  <p><strong>Por qué ahora.</strong> Son funciones que se apoyan en todo lo anterior: <code>resolver()</code> usa
+    <code>quitarTildes()</code> y
+    <code>letrasUsadas()</code>; el marcador necesita <code>estadoPartida()</code> antes y después de la jugada.
+  </p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>resolver()</code> normaliza lo escrito (<code>mb_strtoupper(trim(...))</code>) y compara <strong>sin
+        tildes</strong>. Si acierta, marca como
+      usadas todas las letras de la palabra: así <code>estadoPartida()</code> dirá <code>ganada</code> <strong>sin
+        necesidad de un campo nuevo</strong>.
+      Si falla, <code>palabrasFalladas++</code>, y <code>contarFallos()</code> suma <code>FALLOS_PALABRA</code> por cada
+      una.</li>
+    <li>El marcador se actualiza comparando <code>$antes</code> y <code>$despues</code>: solo cuenta la jugada que
+      <strong>termina</strong> la partida.</li>
+    <li><em>Nueva partida</em> lee el estado anterior para proponer la misma categoría y dificultad
+      (<code>array_search($anterior['maxFallos'], DIFICULTADES, true)</code> traduce 6 a <code>normal</code>).</li>
+    <li>El botón invisible al principio del formulario: <em>Intro</em> pulsa el <strong>primer</strong> botón del
+      formulario, que sin él
+      sería la letra A.</li>
+  </ul>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Cada decisión del análisis simplifica un paso posterior.</strong> Como la victoria se <em>calcula</em> a
+      partir de las letras
+      usadas, resolver bien la palabra no necesita ningún dato nuevo: basta con dar por usadas sus letras. Si en el
+      paso 2 se hubiera guardado un campo <code>ganada=1</code>, ahora habría que mantener sincronizados dos datos.</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 6 y 7: <code>jabali</code> (con espacios delante y detrás) vale por JABALÍ, pero <code>a coruna</code> no
+      vale por A CORUÑA (la Ñ no es N) y cuesta 2 fallos.
+      Escribe en el campo y pulsa <em>Intro</em>: debe resolver, no probar la A. Gana una partida, pulsa <em>Nueva
+        partida</em> y
+      comprueba que el formulario lleva <code>name="victorias" value="1"</code>.</p>
+  </div>
+
+  <h3 id="36-paso-6-solucion-completa-no-fiarse-del-navegador">3.6.- Paso 6 (solución completa): no fiarse del navegador
+  </h3>
+  <p><strong>Objetivo.</strong> Comprobar que el estado recibido es una partida posible (R10).</p>
+  <p><strong>Por qué al final (y no al principio).</strong> Validar el estado exige saber qué es una partida "posible":
+    categoría
+    existente, índice dentro de la lista, dificultad válida, letras del abecedario sin repetir, y fallos que no
+    superen lo que cabe en una partida. Esa última comprobación usa <code>contarFallos()</code>, que no existía hasta el
+    paso 4.
+    Hasta ahora el juego funcionaba con un <strong>cliente honrado</strong>; este paso lo prepara para uno que no lo es.
+  </p>
+  <pre><code class="language-php">if (!estadoValido($partida, $palabras)) {
+    $errores[] = 'La partida recibida no es válida (¿se han modificado los campos ocultos?). Empieza una nueva.';
+    $partida = null;
+}
+</code></pre>
+  <p>Fíjate en el orden de <code>estadoValido()</code>: primero se comprueba que la categoría y el índice existen y
+    <strong>solo después</strong>
+    se llama a <code>palabraSecreta()</code>. Al revés, <code>indice=99</code> produciría un aviso de PHP <em>Undefined
+      array key</em>.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 8 y 9. Con F12 (o con <code>curl -d "letra=A&amp;categoria=Animales&amp;indice=99&amp;maxfallos=6&amp;usadas=&amp;palabrasfalladas=0"
+http://localhost:8000/</code>) prueba <code>indice=99</code>, <code>usadas=AA</code>, <code>usadas=1</code>,
+      <code>maxfallos=7</code>, <code>usadas=QWXYZK</code> y una
+      categoría con <code>&lt;script&gt;</code>. Todas deben dar "La partida recibida no es válida", sin avisos y sin
+      que se ejecute
+      nada.</p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    el paso 6 añade un <code>if</code> al principio de la jugada y podría haber estropeado algo que antes funcionaba.
+    Una lista de
+    comprobación para esta tarea:</p>
+  <ul>
+    <li>☐ Casos correctos: ganar y perder en las tres dificultades.</li>
+    <li>☐ Casos límite: perder exactamente en el último fallo permitido; ganar resolviendo con 1 fallo menos del máximo;
+      resolver mal cuando solo queda 1 fallo (2 fallos de golpe: la partida termina igual).</li>
+    <li>☐ Multibyte: CIGÜEÑA, JABALÍ, PINGÜINO, A CORUÑA, PIÑA.</li>
+    <li>☐ Maliciosos: arrays donde se espera un texto, índices fuera de rango, letras repetidas o que no son letras,
+      HTML en cualquier campo.</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code> y la palabra nunca en el código fuente mientras se
+      juega.</li>
+  </ul>
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución ya está organizada en funciones cortas, así que la refactorización se hizo sobre la marcha. Aun así,
+    quedan detalles que se podrían mejorar sin cambiar el comportamiento, buenos para practicar:</p>
+  <ul>
+    <li><code>letrasUsadas($partida)</code> se llama varias veces en cada petición (en el teclado, una vez por botón):
+      se podría
+      calcular una sola vez antes del HTML y guardarla en una variable.</li>
+    <li>El teclado y la palabra mezclan algo de lógica en la vista (calcular la clase de cada botón). Se podría mover a
+      una función <code>teclado(array $partida, string $palabra): array</code> que devuelva cada botón con su clase y si
+      está
+      deshabilitado, igual que hace <code>palabraOculta()</code>.</li>
+    <li>Las ampliaciones del enunciado (pista, dos jugadores, puntuación) son la siguiente <strong>vuelta</strong> del
+      proceso: cada una
+      empieza otra vez por el análisis. Por ejemplo, en el modo de dos jugadores la palabra tendría que viajar en el
+      HTML, y <code>base64_encode</code> no la protege: solo la disfraza.</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Guardar la palabra en un campo oculto</td>
+          <td>Ctrl+U la revela</td>
+          <td>Guardar categoría e índice (R3)</td>
+        </tr>
+        <tr>
+          <td><code>str_split</code>, <code>strlen</code>, <code>strtoupper</code></td>
+          <td>La Ñ se rompe; las longitudes no cuadran</td>
+          <td>Funciones <code>mb_</code></td>
+        </tr>
+        <tr>
+          <td>Incluir la Ñ en <code>SIN_TILDE</code></td>
+          <td>PIÑA se resuelve con "pina"</td>
+          <td>La Ñ es una letra distinta</td>
+        </tr>
+        <tr>
+          <td>Guardar también los fallos</td>
+          <td>Datos que se contradicen y hay que validar</td>
+          <td>Calcularlos a partir de las letras</td>
+        </tr>
+        <tr>
+          <td>Leer <code>$_POST['indice']</code> sin comprobar</td>
+          <td>Avisos de PHP o <code>TypeError</code> con <code>indice[]=1</code></td>
+          <td><code>?? ''</code>, <code>is_string</code>, <code>filter_var</code></td>
+        </tr>
+        <tr>
+          <td>Llamar a <code>palabraSecreta()</code> antes de validar</td>
+          <td><em>Undefined array key</em> con <code>indice=99</code></td>
+          <td>Validar categoría e índice primero</td>
+        </tr>
+        <tr>
+          <td>Sumar la victoria cada vez que se ve la partida ganada</td>
+          <td>El marcador crece al recargar</td>
+          <td>Comparar el estado antes y después de la jugada</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué se guarda el <strong>índice</strong> de la palabra y no la palabra? <strong>Porque todo lo que está
+          en el HTML lo puede
+          ver el jugador con Ctrl+U; con el índice, el servidor recupera la palabra de
+          <code>palabras.php</code>.</strong></li>
+      <li>¿Por qué los fallos no se guardan en un campo oculto? <strong>Porque se pueden calcular a partir de las letras
+          usadas;
+          guardarlos permitiría estados contradictorios que habría que validar.</strong></li>
+      <li>¿Qué da <code>str_split('Ñ')</code>? ¿Y <code>mb_str_split('Ñ')</code>? <strong>Dos bytes sueltos;
+          <code>['Ñ']</code>.</strong></li>
+      <li>¿Por qué la validación del estado (paso 6) llega al final? <strong>Porque necesita funciones que se escriben
+          antes
+          (<code>contarFallos()</code>), y porque primero hay que tener un juego que funcione con un cliente
+          honrado.</strong></li>
+      <li>¿Para qué sirve la semilla? <strong>Para repetir siempre la misma palabra al probar y depurar.</strong></li>
+      <li>¿Qué variable evita que una partida terminada admita más jugadas o sume dos victorias?
+        <strong><code>$antes</code>: el estado de
+          la partida antes de aplicar la jugada.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>

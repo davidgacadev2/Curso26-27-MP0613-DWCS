@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El ascensor del instituto (TAREA-02, nivel avanzado): cómo se llega a la solución paso a paso</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --verde: #c6efa0;
+      --verde-borde: #7cb342;
+      --azul: #dbe9fb;
+      --azul-borde: #5b8fd6;
+      --amarillo: #fff6c4;
+      --amarillo-borde: #d9b200;
+      --naranja: #ffe2c4;
+      --naranja-borde: #e08a2e;
+      --gris: #f1f1f1;
+      --morado: #ece2fb;
+      --morado-borde: #8e6bd1;
+      --rojo: #fde0e0;
+      --rojo-borde: #d64545;
+      --turquesa: #d9f3f0;
+      --turquesa-borde: #2a9d8f;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #222;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+      background: #fff;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #999;
+      padding: 6px 0;
+      margin-bottom: 14px;
+      font-size: 9pt;
+      gap: 8px;
+    }
+
+    .cabecera>span {
+      flex: 1;
+    }
+
+    .cabecera>span:last-child {
+      text-align: right;
+    }
+
+    .cabecera .centro {
+      flex: 2;
+      text-align: center;
+      color: #5a4fcf;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    h1 {
+      font-size: 17pt;
+      color: #3c3c8c;
+      border-bottom: 3px solid #b39ddb;
+      padding-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      background: #c9b8f0;
+      padding: 4px 8px;
+      margin-top: 26px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11.5pt;
+      color: #3c3c8c;
+      margin-top: 18px;
+      page-break-after: avoid;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      color: #5a4fcf;
+      margin: 14px 0 4px;
+      page-break-after: avoid;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #6a1b9a;
+      background: #f6f2fb;
+      padding: 0 2px;
+    }
+
+    pre {
+      background: #f7f7f9;
+      border: 1px solid #ddd;
+      border-left: 4px solid #8e6bd1;
+      padding: 8px 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    pre code {
+      color: #222;
+      background: none;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 12px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #e8e1f7;
+    }
+
+    th,
+    td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla {
+      overflow-x: auto;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin: 10px 0;
+      padding: 2px 12px;
+      color: #444;
+    }
+
+    .caja {
+      border: 1px solid #888;
+      border-radius: 2px;
+      padding: 4px 12px 6px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .caja>p:first-of-type {
+      margin-top: 2px;
+    }
+
+    .titulo-caja {
+      font-weight: bold;
+      margin: 4px 0 2px;
+    }
+
+    .caso {
+      background: var(--verde);
+      border-color: var(--verde-borde);
+    }
+
+    .debes {
+      background: var(--azul);
+      border-color: var(--azul-borde);
+    }
+
+    .saber {
+      background: var(--amarillo);
+      border-color: var(--amarillo-borde);
+    }
+
+    .recomendacion {
+      background: var(--naranja);
+      border-color: var(--naranja-borde);
+    }
+
+    .resuelto {
+      background: var(--gris);
+      page-break-inside: auto;
+    }
+
+    .resuelto pre {
+      background: #fff;
+    }
+
+    .autoeval {
+      background: var(--morado);
+      border-color: var(--morado-borde);
+    }
+
+    .error {
+      background: var(--rojo);
+      border-color: var(--rojo-borde);
+    }
+
+    .prueba {
+      background: var(--turquesa);
+      border-color: var(--turquesa-borde);
+    }
+
+    .caja pre {
+      background: #fff;
+    }
+
+    .toc {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px 14px;
+      margin: 12px 0 18px;
+    }
+
+    .toc>ul {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .toc ul ul {
+      font-size: 9.5pt;
+    }
+
+    .toc-titulo {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .pie {
+      margin-top: 30px;
+      border-top: 1px dashed #999;
+      font-size: 8.5pt;
+      color: #666;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .toc>ul {
+        columns: 1;
+      }
+
+      .cabecera {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cabecera>span:last-child {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        max-width: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .toc>ul {
+        columns: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="el-ascensor-del-instituto-tarea-02-nivel-avanzado-como-se-llega-a-la-solucion-paso-a-paso">El ascensor del
+    instituto (TAREA-02, nivel avanzado): cómo se llega a la solución paso a paso</h1>
+  <div class="toc">
+    <div class="toc-titulo">Índice</div>
+    <ul>
+      <li><a href="#1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</a>
+        <ul>
+          <li><a href="#11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</a></li>
+          <li><a href="#12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que
+              decidir)</a></li>
+          <li><a href="#13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los
+              casos de prueba desde el principio</a></li>
+          <li><a href="#14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-diseno-el-automata">2.- Diseño: el autómata</a>
+        <ul>
+          <li><a href="#21-estados-eventos-y-la-tabla-de-eventos-estados">2.1.- Estados, eventos y la tabla de
+              eventos-estados</a></li>
+          <li><a href="#22-las-transiciones-como-evento-condicion-accion">2.2.- Las transiciones como evento [condición]
+              / acción</a></li>
+          <li><a href="#23-los-invariantes-que-no-puede-pasar-en-cada-estado">2.3.- Los invariantes: qué no puede pasar
+              en cada estado</a></li>
+          <li><a href="#24-divide-y-venceras-del-automata-a-los-ficheros-y-funciones">2.4.- Divide y vencerás: del
+              autómata a los ficheros y funciones</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</a>
+        <ul>
+          <li><a href="#31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</a>
+          </li>
+          <li><a href="#32-paso-2-el-esqueleto-del-automata">3.2.- Paso 2: el esqueleto del autómata</a></li>
+          <li><a href="#33-paso-3-t2-llamar-con-el-ascensor-parado">3.3.- Paso 3: T2, llamar con el ascensor parado</a>
+          </li>
+          <li><a href="#34-paso-4-el-movimiento">3.4.- Paso 4: el movimiento</a></li>
+          <li><a href="#35-paso-5-emergencia-y-rearme">3.5.- Paso 5: emergencia y rearme</a></li>
+          <li><a href="#36-paso-6-solucion-completa-los-invariantes">3.6.- Paso 6 (solución completa): los
+              invariantes</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-pruebas-finales">4.- Pruebas finales</a></li>
+      <li><a href="#5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</a></li>
+      <li><a href="#6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</a></li>
+      <li><a href="#7-autoevaluacion">7.- Autoevaluación</a></li>
+    </ul>
+  </div>
+
+  <p><strong>Material de la tarea:</strong> <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/ENUNCIADO.md">enunciado</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/Requisitos.md">requisitos</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/DIAGRAMA%20ESTADO-TRANSICION/Automata-Ascensor.html">autómata
+      (HTML)</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/DIAGRAMA%20ESTADO-TRANSICION/Automata-Ascensor.pdf">autómata
+      (PDF)</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/SOLUCION-01/">solución</a> ·
+    <a href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/SOLUCION-01/PASO%20A%20PASO/">paso a paso</a> ·
+    apuntes de referencia: <a
+      href="DOCUMENTACION/COMUN/apuntes-proceso-desarrollo-software/Apuntes-Proceso-Desarrollo-Software.html">El proceso de desarrollo
+      de software</a>
+    y <a href="DOCUMENTACION/COMUN/metodo-automatas/Metodo-Automatas.html">el método de los diagramas de
+      estado-transición ampliados</a>
+  </p>
+  <div class="caja caso">
+    <div class="titulo-caja">Caso práctico</div>
+    <p>El departamento de Tecnología quiere explicar en clase cómo funciona el ascensor del instituto y
+      <strong>Juan</strong> le
+      encarga a <strong>Carlos</strong> la simulación: cinco plantas, un botón <em>Llamar</em> en cada una y un ascensor
+      que se mueve
+      instante a instante. Carlos mira el panel del ascensor de verdad: <em>Parado</em>, <em>Subiendo</em>,
+      <em>Bajando</em>, <em>Puertas
+        abiertas</em>, <em>Emergencia</em>... "Esto ya es un autómata", piensa. <strong>María</strong> le añade una
+      pregunta incómoda: "Vale, pero
+      en cada estado, ¿qué cosas <strong>no pueden pasar nunca</strong>? Un ascensor que sube sin nadie esperando
+      arriba, por
+      ejemplo". Carlos entiende que la tarea no empieza por dibujar el edificio, sino por el autómata y por esas
+      condiciones, los <strong>invariantes</strong>, que luego servirán para no fiarse de los campos ocultos.</p>
+  </div>
+
+  <p>Este documento no repite el código de la solución: explica <strong>por qué</strong> se construye en ese orden, qué
+    decisión se
+    toma en cada paso y cómo se comprueba antes de pasar al siguiente. Sigue las fases de los apuntes: análisis,
+    diseño, codificación incremental, pruebas y refactorización. Lo particular de esta tarea es que el diseño
+    <strong>es</strong> el
+    autómata: el diagrama, sus tablas y el código se corresponden fila a fila.</p>
+  <p><strong>Cómo usarlo.</strong> Lee primero el enunciado e intenta hacer tú el análisis y el autómata (apartados 1 y
+    2) antes de
+    leer el nuestro. Después, para cada paso del apartado 3, abre la carpeta del paso y compárala con la anterior:</p>
+  <pre><code class="language-bash">git diff --no-index &quot;PASO A PASO/paso3&quot; &quot;PASO A PASO/paso4&quot;
+</code></pre>
+  <p>(desde la carpeta <code>SOLUCION-01</code>; en VS Code: seleccionar los dos ficheros, botón derecho, <em>Comparar
+      seleccionados</em>).</p>
+  <h2 id="1-analisis-que-hay-que-hacer">1.- Análisis: ¿qué hay que hacer?</h2>
+  <h3 id="11-los-requisitos-en-pocas-palabras">1.1.- Los requisitos, en pocas palabras</h3>
+  <p>El enunciado tiene 7 requisitos (R1…R7) que <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/Requisitos.md">Requisitos.md</a>
+    convierte en 5 requisitos funcionales con criterios de aceptación. Agrupados por lo que significan para el
+    programador:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Requisitos</th>
+          <th>Qué implica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Diseñar con el autómata</td>
+          <td>R1, R2 · RF-01, RNF-02</td>
+          <td>Diagrama y tablas <strong>antes</strong> del código; constantes <code>ST0</code>…<code>ST6</code> y
+            <code>EE0</code>…<code>EE4</code>, tabla <code>$automata</code>, un <code>case</code> por transición,
+            predicados en <code>$pl0</code>, <code>$pl1</code>…</td>
+        </tr>
+        <tr>
+          <td>Llamar</td>
+          <td>R3, R4 · RF-02</td>
+          <td>La planta va en el valor del botón (<code>llamar:3</code>); añadir sin repetir; abrir si está parado allí;
+            nada si ya está abierto allí.</td>
+        </tr>
+        <tr>
+          <td>Moverse</td>
+          <td>R5 · RF-03</td>
+          <td>Cada <em>Avanzar</em> es un instante; ir a la más cercana (empate: arriba) y <strong>seguir en la misma
+              dirección</strong> mientras queden llamadas en ella.</td>
+        </tr>
+        <tr>
+          <td>Emergencia</td>
+          <td>R6 · RF-04</td>
+          <td>Anular las llamadas; <em>Rearmar</em>; a la tercera, fuera de servicio.</td>
+        </tr>
+        <tr>
+          <td>No fiarse del cliente</td>
+          <td>R7 · RF-05, RNF-03, RNF-04</td>
+          <td>Los datos de los campos ocultos deben ser posibles <strong>en el estado en el que dicen estar</strong>
+            (invariantes); nunca salir del edificio.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El requisito no funcional que más condiciona el código es <strong>RNF-02</strong>: el código tiene que
+    <em>parecerse</em> al autómata.
+    No basta con que el ascensor funcione; quien corrija debe poder poner el diagrama al lado del <code>switch</code> y
+    encontrar
+    cada flecha.</p>
+  <h3 id="12-lo-que-el-enunciado-no-dice-y-hay-que-decidir">1.2.- Lo que el enunciado no dice (y hay que decidir)</h3>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Pregunta</th>
+          <th>Decisión tomada en la solución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>¿Qué pasa si llaman desde la planta en la que el ascensor está <strong>en marcha</strong> (acaba de
+            salir)?</td>
+          <td>Se añade la llamada como cualquier otra (T3): la atenderá cuando vuelva.</td>
+        </tr>
+        <tr>
+          <td>¿Cuenta como parada abrir las puertas porque llaman desde la planta en la que ya está parado?</td>
+          <td>No: <code>paradas</code> solo sube en <code>parar()</code>, al <strong>llegar</strong> a una planta con
+            llamada.</td>
+        </tr>
+        <tr>
+          <td>¿Qué hace un evento que no tiene botón en ese estado (<em>Avanzar</em> en emergencia)?</td>
+          <td>Es una celda <code>---</code> de la tabla: se trata como T1 y se reinicia.</td>
+        </tr>
+        <tr>
+          <td>¿Con cuántas emergencias queda fuera de servicio?</td>
+          <td>Con 3: constante <code>MAX_EMERGENCIAS</code>; la tercera se cuenta en T9 y es <em>Rearmar</em> (T10)
+            quien pasa a ST6.</td>
+        </tr>
+        <tr>
+          <td>¿Qué dirección tiene el ascensor parado?</td>
+          <td>Ninguna (<code>''</code>): el invariante de ST1 lo exige.</td>
+        </tr>
+        <tr>
+          <td>¿Y si las puertas se abrieron sin viajar (T2)?</td>
+          <td>ST4 con dirección <code>''</code>; al cerrarlas (T8) no hay dirección que seguir y se usa la más cercana.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Cuando una decisión sale del <strong>diagrama</strong> y no del enunciado (como "un <code>---</code> reinicia"),
+      escríbela en la tabla de
+      eventos-estados y en un comentario del código. Así queda documentada en los dos sitios a la vez y nadie la tomará
+      por un olvido.</p>
+  </div>
+
+  <h3 id="13-entradas-y-salidas-los-casos-de-prueba-desde-el-principio">1.3.- Entradas y salidas: los casos de prueba
+    desde el principio</h3>
+  <p>Los criterios de aceptación de <code>Requisitos.md</code> son, en realidad, un <strong>recorrido</strong> completo
+    por el autómata. Conviene
+    escribirlos en una tabla antes de programar (los textos son los mensajes exactos del código):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Entrada</th>
+          <th>Salida esperada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Abrir la página</td>
+          <td>"El ascensor espera en la planta baja." (estado 1)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Llamar a la planta baja estando en ella</td>
+          <td>"El ascensor ya está aquí: se abren las puertas en la Planta baja." (estado 4)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Reiniciar; llamar a la 3.ª y a la 1.ª</td>
+          <td><code>llamadas</code> = <code>13</code> y los dos botones dicen "Esperando"</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><code>llamar:9</code> o <code>llamar:&lt;b&gt;</code></td>
+          <td>"Esa planta no existe.", sin <code>&lt;b&gt;</code> en la página</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Desde el caso 3, <em>Avanzar</em></td>
+          <td>"Se cierran las puertas y arranca hacia arriba." (la 1.ª está más cerca)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><em>Avanzar</em>; con las puertas abiertas en la 1.ª, llamar a la 1.ª y a la baja</td>
+          <td>"Llega a la 1.ª planta: se abren las puertas."; "Las puertas ya están abiertas en la 1.ª planta.";
+            <code>llamadas</code> = <code>03</code></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><em>Avanzar</em>; en marcha, llamar a la 2.ª</td>
+          <td>"Se cierran las puertas y sigue subiendo." (aunque llamen desde la baja); <code>llamadas</code> =
+            <code>023</code></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><em>Avanzar</em> hasta terminar</td>
+          <td>Para en la 2.ª y en la 3.ª; "Se cierran las puertas y baja."; "Pasa por la 2.ª planta."; "Pasa por la 1.ª
+            planta."; llega a la Planta baja con "Plantas recorridas: 6" y "Paradas: 4"</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td><em>Avanzar</em> dos veces más</td>
+          <td>"Se cierran las puertas. No hay más llamadas." y "No hay llamadas: el ascensor sigue parado."</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Parado en la 2.ª con llamadas en la baja y la 4.ª, <em>Avanzar</em></td>
+          <td>Sube (empate)</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Tres emergencias con sus rearmes</td>
+          <td>"Ascensor rearmado (emergencias: 1 de 3).", "2 de 3"; a la tercera, "Fuera de servicio: 3 paradas de
+            emergencia. Avisa al técnico (Reiniciar)." (estado 6)</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td><code>estado=9</code>, <code>evento[]</code>, o <em>Avanzar</em> en emergencia</td>
+          <td>Se reinicia: "El ascensor espera en la planta baja."</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td><code>estado=2</code> con <code>piso=4</code> y sin llamadas, <code>piso=7</code>,
+            <code>llamadas=31</code> o <code>33</code>, <code>direccion=x</code>, <code>piso[]</code>,
+            <code>llamadas=&lt;script&gt;…</code></td>
+          <td>"Los datos del ascensor no son válidos…" y estado 1, sin avisos de PHP</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los casos 12 y 13 son <strong>maliciosos</strong>: solo se pueden provocar cambiando los campos ocultos con F12 o
+    con <code>curl</code>.
+    Que estén aquí desde el principio obliga a pensar en ellos en el diseño (apartado 2.3).</p>
+  <h3 id="14-los-datos-que-se-guarda-y-donde">1.4.- Los datos: qué se guarda y dónde</h3>
+  <p>Como <strong>HTTP no tiene estado</strong>, cada pulsación de <em>Avanzar</em> es una petición nueva: el script
+    empieza desde cero y tiene
+    que reconstruir el ascensor a partir de lo que envía el formulario. Hay que decidir el <strong>mínimo</strong> de
+    datos que lo
+    describen:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Estructura</th>
+          <th>Dónde vive</th>
+          <th>¿Por qué?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Estado del autómata</td>
+          <td>int (<code>ST1</code>…<code>ST6</code>)</td>
+          <td>campo oculto <code>estado</code></td>
+          <td>Decide qué fila de la tabla se usa</td>
+        </tr>
+        <tr>
+          <td>Planta</td>
+          <td>int de 0 a 4</td>
+          <td>campo oculto <code>piso</code></td>
+          <td>Dónde está la cabina</td>
+        </tr>
+        <tr>
+          <td>Dirección</td>
+          <td><code>''</code>, <code>sube</code> o <code>baja</code></td>
+          <td>campo oculto <code>direccion</code></td>
+          <td><strong>Hace falta también con las puertas abiertas</strong> (ver la caja)</td>
+        </tr>
+        <tr>
+          <td>Llamadas pendientes</td>
+          <td>array de enteros, viaja como texto ordenado (<code>"024"</code>)</td>
+          <td>campo oculto <code>llamadas</code></td>
+          <td>Un texto corto que se valida con una sola expresión regular</td>
+        </tr>
+        <tr>
+          <td>Emergencias</td>
+          <td>int</td>
+          <td>campo oculto</td>
+          <td>Para saber cuándo queda fuera de servicio</td>
+        </tr>
+        <tr>
+          <td>Plantas recorridas, paradas</td>
+          <td>int</td>
+          <td>campos ocultos</td>
+          <td>Contadores de R3</td>
+        </tr>
+        <tr>
+          <td>Mensaje, aviso</td>
+          <td>string</td>
+          <td>variables</td>
+          <td>Solo duran la petición</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>¿Por qué una variable <code>direccion</code> si ya hay estados <em>Subiendo</em> y
+        <em>Bajando</em>?</strong> Porque con las puertas abiertas
+      (ST4) el ascensor no se mueve, pero al cerrarlas tiene que seguir en la dirección que llevaba (R5). Ese dato no se
+      puede deducir de la planta ni de las llamadas: si está en la 2.ª con llamadas en la 0 y en la 4, solo la dirección
+      dice si va a por la 4.ª o a por la baja. Lo que no se puede calcular, <strong>se guarda</strong>.</p>
+  </div>
+
+  <p>El ascensor queda como un array asociativo (comentario de cabecera de <code>funciones.php</code>):</p>
+  <pre><code class="language-php">['piso' =&gt; 2, 'direccion' =&gt; 'sube', 'llamadas' =&gt; [0, 4], 'emergencias' =&gt; 0, 'recorridas' =&gt; 7, 'paradas' =&gt; 3]
+</code></pre>
+  <h2 id="2-diseno-el-automata">2.- Diseño: el autómata</h2>
+  <h3 id="21-estados-eventos-y-la-tabla-de-eventos-estados">2.1.- Estados, eventos y la tabla de eventos-estados</h3>
+  <p>El <a
+      href="DOCUMENTACION/TAREA-02-AVANZADA-Ascensor/DIAGRAMA%20ESTADO-TRANSICION/Automata-Ascensor.html">autómata</a>
+    tiene 7 estados, 5 eventos entrantes y 10 transiciones. Lo especial de esta tarea es que <strong>los estados de la
+      página
+      son los del propio ascensor</strong>: la pregunta del método "¿necesito saber algo de la petición anterior?" tiene
+    una
+    respuesta física: si se mueve y hacia dónde.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Carga</th>
+          <th>Llamar</th>
+          <th>Avanzar</th>
+          <th>Emergencia</th>
+          <th>Rearmar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ST0 Carga</td>
+          <td>T1</td>
+          <td>T1</td>
+          <td>T1</td>
+          <td>T1</td>
+          <td>T1</td>
+        </tr>
+        <tr>
+          <td>ST1 Parado</td>
+          <td>T1</td>
+          <td>T2</td>
+          <td>T5</td>
+          <td>T9</td>
+          <td>---</td>
+        </tr>
+        <tr>
+          <td>ST2 Subiendo</td>
+          <td>T1</td>
+          <td>T3</td>
+          <td>T6</td>
+          <td>T9</td>
+          <td>---</td>
+        </tr>
+        <tr>
+          <td>ST3 Bajando</td>
+          <td>T1</td>
+          <td>T3</td>
+          <td>T7</td>
+          <td>T9</td>
+          <td>---</td>
+        </tr>
+        <tr>
+          <td>ST4 Puertas abiertas</td>
+          <td>T1</td>
+          <td>T4</td>
+          <td>T8</td>
+          <td>T9</td>
+          <td>---</td>
+        </tr>
+        <tr>
+          <td>ST5 Emergencia</td>
+          <td>T1</td>
+          <td>---</td>
+          <td>---</td>
+          <td>---</td>
+          <td>T10</td>
+        </tr>
+        <tr>
+          <td>ST6 Fuera de servicio</td>
+          <td>T1</td>
+          <td>---</td>
+          <td>---</td>
+          <td>---</td>
+          <td>---</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Fíjate en la columna <em>Avanzar</em>: es el evento más interesante, porque hace <strong>una cosa distinta en cada
+      estado</strong>
+    (arrancar, subir, bajar, cerrar puertas). Por eso tiene cuatro transiciones distintas. Las celdas <code>---</code>
+    son eventos
+    que la página no permite (sus botones están deshabilitados): si llegan, alguien ha manipulado la petición.</p>
+  <h3 id="22-las-transiciones-como-evento-condicion-accion">2.2.- Las transiciones como evento [condición] / acción</h3>
+  <p>Cada transición tiene uno o varios caminos, según sus predicados. Resumidas (la tabla completa, con acciones antes
+    y
+    después, está en el apartado 5.3 del autómata):</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Transición</th>
+          <th>Evento [condición]</th>
+          <th>Acción</th>
+          <th>Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>T1</td>
+          <td>Carga, <code>---</code> o datos no válidos</td>
+          <td>AC0: planta baja, sin llamadas, contadores a 0</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>T2</td>
+          <td>Llamar [!PL1 planta no válida]</td>
+          <td>"Esa planta no existe."</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>T2</td>
+          <td>Llamar [PL1 &amp;&amp; PL2 es su planta]</td>
+          <td>abrir las puertas</td>
+          <td>ST4</td>
+        </tr>
+        <tr>
+          <td>T2</td>
+          <td>Llamar [PL1 &amp;&amp; !PL2]</td>
+          <td>AC3 añadir la llamada</td>
+          <td>ST1</td>
+        </tr>
+        <tr>
+          <td>T3 / T4</td>
+          <td>Llamar en marcha / con puertas abiertas</td>
+          <td>AC3 (en T4 con PL2: "ya están abiertas")</td>
+          <td>el mismo</td>
+        </tr>
+        <tr>
+          <td>T5</td>
+          <td>Avanzar parado [!PL3 / PL4 / !PL4]</td>
+          <td>nada / AC4 sube / AC4 baja</td>
+          <td>ST1 / ST2 / ST3</td>
+        </tr>
+        <tr>
+          <td>T6, T7</td>
+          <td>Avanzar subiendo o bajando: AC5 mover y después [PL5 llamada aquí]</td>
+          <td>AC6 parar</td>
+          <td>ST4 (si no, sigue)</td>
+        </tr>
+        <tr>
+          <td>T8</td>
+          <td>Avanzar con puertas abiertas [!PL3 / PL6 / PL7 / PL4 / !PL4]</td>
+          <td>sin dirección / sigue / sigue / AC4 sube / AC4 baja</td>
+          <td>ST1 / ST2 / ST3 / ST2 / ST3</td>
+        </tr>
+        <tr>
+          <td>T9</td>
+          <td>Emergencia en ST1…ST4</td>
+          <td>AC9: emergencias++, anular llamadas, sin dirección</td>
+          <td>ST5</td>
+        </tr>
+        <tr>
+          <td>T10</td>
+          <td>Rearmar [PL8 menos de 3 / !PL8]</td>
+          <td>mensaje</td>
+          <td>ST1 / ST6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La transición con más caminos es <strong>T8</strong> (cinco), y por eso el autómata incluye su <strong>comprobación
+      de predicados</strong>:
+    una tabla de verdad que demuestra que cada combinación de PL3, PL6, PL7 y PL4 lleva a un solo destino. Esa tabla
+    fija también el <strong>orden</strong> de los <code>if</code>: PL6 y PL7 (seguir en la dirección que llevaba) se
+    comprueban <strong>antes</strong> que
+    PL4 (la más cercana). Al revés, un ascensor que sube hacia la 4.ª se daría la vuelta en cuanto alguien llamara desde
+    una planta más cercana por debajo.</p>
+  <h3 id="23-los-invariantes-que-no-puede-pasar-en-cada-estado">2.3.- Los invariantes: qué no puede pasar en cada estado
+  </h3>
+  <p>Es la idea que María le pedía a Carlos, y la que convierte el autómata en una herramienta de
+    <strong>validación</strong>. Para
+    cada estado se escribe qué tienen que cumplir los datos:</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Estado</th>
+          <th>Invariante</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>todos</td>
+          <td>planta de 0 a 4; llamadas con cifras de 0 a 4, ordenadas y sin repetir; contadores ≥ 0; dirección
+            <code>''</code>, <code>sube</code> o <code>baja</code>; emergencias de 0 a 2 (3 solo en ST5)</td>
+        </tr>
+        <tr>
+          <td>ST1 Parado</td>
+          <td>no hay llamada en su planta (la habría atendido abriendo las puertas) y no tiene dirección</td>
+        </tr>
+        <tr>
+          <td>ST2 Subiendo</td>
+          <td>hay alguna llamada por encima y la dirección es <code>sube</code></td>
+        </tr>
+        <tr>
+          <td>ST3 Bajando</td>
+          <td>hay alguna llamada por debajo y la dirección es <code>baja</code></td>
+        </tr>
+        <tr>
+          <td>ST4 Puertas abiertas</td>
+          <td>no hay llamada en su planta (se quitó al llegar)</td>
+        </tr>
+        <tr>
+          <td>ST5 Emergencia</td>
+          <td>no hay llamadas y ha habido al menos una emergencia</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El predicado <strong>PL0</strong> ("los datos cumplen los invariantes de su estado") está en <strong>todas</strong>
+    las transiciones salvo
+    T1. Y los invariantes de ST2 y ST3 dan gratis el requisito RNF-04: si un ascensor sube, es porque hay una llamada
+    más
+    arriba, así que <strong>nunca puede pasar de la 4.ª</strong>.</p>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>Un invariante es mucho más fuerte que validar cada campo por separado.</strong> <code>estado=2</code> es
+      válido, <code>piso=4</code> es
+      válido y <code>llamadas</code> vacío es válido; pero los tres juntos describen un ascensor imposible (subiendo
+      desde la última
+      planta). Solo se detecta preguntando "¿es posible <strong>en este estado</strong>?".</p>
+  </div>
+
+  <h3 id="24-divide-y-venceras-del-automata-a-los-ficheros-y-funciones">2.4.- Divide y vencerás: del autómata a los
+    ficheros y funciones</h3>
+  <p><code>index.php</code> tiene lo que <strong>es</strong> el autómata: las constantes, la tabla
+    <code>$automata</code>, <code>evento()</code> (qué botón ha llegado),
+    <code>edificio()</code> (los eventos salientes ES0…ES4: todas las variantes de la página), <code>guardar()</code>
+    (AC8) y el <code>switch</code>.
+    <code>funciones.php</code> tiene las acciones y los predicados que ocupan más de una línea, sin HTML:
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Función</th>
+          <th>Elemento del autómata</th>
+          <th>Paso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>e()</code></td>
+          <td>Escapar para el HTML</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>ascensorInicial()</code></td>
+          <td>AC0</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>leerAscensor()</code></td>
+          <td>AC1 recuperar (sin comprobar: eso es PL0)</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>evento()</code>, <code>edificio()</code>, <code>guardar()</code></td>
+          <td>EE, ES0…ES4, AC8 (en <code>index.php</code>)</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>leerPlanta()</code></td>
+          <td>AC2; PL1 es "no devuelve <code>null</code>"</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>anadirLlamada()</code></td>
+          <td>AC3</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td><code>masCercanaArriba()</code></td>
+          <td>PL4</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>hayLlamadas()</code></td>
+          <td>base de PL6, PL7 (y de los invariantes de ST2/ST3)</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>mover()</code> / <code>parar()</code></td>
+          <td>AC5 / AC6</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><code>coherente()</code></td>
+          <td>PL0: los invariantes, con un <code>match</code></td>
+          <td>6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los predicados de una línea (PL2, PL3, PL5, PL8) no merecen una función: se escriben directamente en su variable
+    <code>$plN</code> dentro del <code>case</code>, que es lo que pide R2.
+  </p>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p><code>anadirLlamada()</code>, <code>mover()</code> y <code>parar()</code> reciben el ascensor <strong>por
+        referencia</strong> (<code>array &amp;$ascensor</code>) porque son
+      acciones: su trabajo es cambiarlo. Los predicados, en cambio, lo reciben por valor y solo devuelven
+      <code>bool</code>. Esa
+      separación (las acciones cambian, los predicados preguntan) es la misma que hay en las tablas del autómata.</p>
+  </div>
+
+  <h2 id="3-codificacion-la-solucion-paso-a-paso">3.- Codificación: la solución, paso a paso</h2>
+  <p>Cada carpeta <code>pasoN</code> es la aplicación completa al terminar ese paso, y todas se ejecutan. El orden sigue
+    al
+    autómata: primero el <strong>esqueleto</strong> que lo representa, después las transiciones de una en una (de la más
+    sencilla a
+    la más compleja) y al final PL0, que las protege a todas.</p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Qué se añade</th>
+          <th>Requisitos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Descomposición a partir del autómata, solo con TODOs</td>
+          <td>R1</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Esqueleto: constantes, tabla, <code>evento()</code>, <code>edificio()</code>, <code>guardar()</code>, AC1
+            y T1</td>
+          <td>R2, R3</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>T2: llamar con el ascensor parado</td>
+          <td>R4</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>El movimiento: T5, T6/T7, T8 y las llamadas en marcha T3/T4</td>
+          <td>R4, R5</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>T9 (emergencia) y T10 (rearmar; fuera de servicio a la tercera)</td>
+          <td>R6</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td><strong>Solución completa:</strong> PL0 con <code>coherente()</code></td>
+          <td>R7</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="31-paso-1-descomponer-el-problema-en-todos">3.1.- Paso 1: descomponer el problema en TODOs</h3>
+  <p><strong>Objetivo.</strong> Pasar el autómata al código como comentarios, sin programar nada todavía.</p>
+  <p><strong>Por qué empezar así.</strong> Con diez transiciones y nueve predicados es fácil perderse. Los TODO son el
+    plan escrito
+    dentro del propio código. En <code>funciones.php</code>, la <strong>firma</strong> de cada acción y predicado, con
+    su nombre del autómata:</p>
+  <pre><code class="language-php">// TODO: AC2 leerPlanta(array $datos): ?int -&gt; la planta del botón &quot;llamar:3&quot; (null si no es válida); PL1 es &quot;no es null&quot;
+// TODO: PL0 coherente(int $estado, array $ascensor): bool -&gt; ¿son posibles estos datos EN ESTE ESTADO? (invariantes)
+</code></pre>
+  <p>En <code>index.php</code>, las cuatro partes del programa en el orden en que se ejecutarán: (1) el estado, el
+    evento y la
+    transición que dice la tabla; (2) AC1 y PL0 antes de cualquier transición salvo T1; (3) la transición; (4) el evento
+    saliente y AC8.</p>
+  <p><strong>Decisión clave.</strong> Ya en el paso 1, la cabecera de <code>funciones.php</code> fija la estructura del
+    ascensor (con la
+    dirección) y la de <code>index.php</code> dice que el estado se comprueba con los invariantes <strong>antes</strong>
+    de cualquier
+    transición. Esas dos decisiones condicionan todo lo demás.</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Abre la página: sale el título y nada más, pero <strong>no hay errores de PHP</strong>. Con la extensión <em>Todo
+        Tree</em> de VS Code
+      verás la lista de lo que queda por hacer.</p>
+  </div>
+
+  <h3 id="32-paso-2-el-esqueleto-del-automata">3.2.- Paso 2: el esqueleto del autómata</h3>
+  <p><strong>Objetivo.</strong> Que el autómata exista en PHP: constantes, tabla, evento recibido, T1, la página y los
+    campos ocultos.</p>
+  <p><strong>Por qué ahora.</strong> Sin esqueleto no hay dónde "colgar" las transiciones. Y con él, cada paso siguiente
+    consiste
+    solo en añadir un <code>case</code>: el resto del programa ya no cambia.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>Las constantes <code>ST0</code>…<code>ST6</code> y <code>EE0</code>…<code>EE4</code>, y la tabla con
+      <code>null</code> donde el diagrama tiene <code>---</code>.</li>
+    <li><code>evento()</code> traduce el botón pulsado a un <code>EE</code> con un <code>match (true)</code>:
+      <code>str_starts_with($valor, 'llamar:')</code> es
+      <em>Llamar</em>; cualquier otra cosa (también <em>Reiniciar</em>) es la carga, EE0.
+    </li>
+    <li><code>leerAscensor()</code> reconstruye el ascensor sin avisos: los enteros pasan por
+      <code>filter_var(..., FILTER_VALIDATE_INT)</code>
+      y, si no valen, se ponen a <code>-1</code>; las llamadas, con
+      <code>array_map('intval', str_split($llamadas))</code>. Guarda también el
+      texto original en <code>textoLlamadas</code>, que necesitará PL0 en el paso 6.</li>
+    <li><code>edificio()</code> dibuja las plantas <strong>de arriba abajo</strong>
+      (<code>for ($planta = ULTIMA; $planta &gt;= 0; $planta--)</code>), con la
+      cabina, la flecha y los botones deshabilitados en ST5 y ST6. <code>guardar()</code> escribe siete campos ocultos,
+      todos con
+      <code>e()</code>.
+    </li>
+    <li>El <code>switch</code> solo tiene T1.</li>
+  </ul>
+  <p>La línea más importante del paso es la que consulta la tabla:</p>
+  <pre><code class="language-php">$transicion = $automata[$estado][$evento] ?? 1;                 // un evento imposible (&quot;---&quot;) se trata como T1
+</code></pre>
+  <p>El operador <code>??</code> trata el <code>null</code> de una celda <code>---</code> igual que una clave que no
+    existe: en los dos casos sale T1. Y
+    para PL0 se deja un <strong>valor provisional</strong> consciente: <code>$pl0 = true;</code> con su TODO, que el
+    paso 6 sustituirá por
+    <code>coherente()</code>.
+  </p>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong><code>case 1:</code> y <code>default:</code> juntos.</strong> El <code>switch</code> del paso 2 empieza
+      así: <code>case 1:</code> seguido de <code>default:</code>. Mientras se
+      construye paso a paso, una transición de la tabla que todavía no está programada (por ejemplo, T5) cae en el
+      <code>default</code> y se comporta como T1, en lugar de dejar la página en blanco. Es un andamio que permite
+      probar cada paso
+      sin que falte nada; en la solución completa todas las transiciones tienen su <code>case</code> y el
+      <code>default</code> solo recoge
+      lo imposible.
+    </p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 1: "El ascensor espera en la planta baja." y el edificio con la cabina abajo. Con Ctrl+U, comprueba los
+      siete
+      campos ocultos (<code>estado</code> vale 1). Pulsa cualquier botón: todos vuelven al principio, porque solo existe
+      T1. Con
+      F12, cambia <code>estado</code> por <code>9</code>: también.</p>
+  </div>
+
+  <h3 id="33-paso-3-t2-llamar-con-el-ascensor-parado">3.3.- Paso 3: T2, llamar con el ascensor parado</h3>
+  <p><strong>Objetivo.</strong> La primera transición "de verdad": las llamadas desde ST1 (R4).</p>
+  <p><strong>Por qué ahora.</strong> Es la más sencilla con predicados (PL1 y PL2, tres caminos) y la que
+    <strong>crea</strong> las llamadas: sin
+    ellas, el movimiento del paso 4 no tendría a dónde ir.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>leerPlanta()</code> corta lo que va detrás de <code>llamar:</code> y lo valida con
+      <code>FILTER_VALIDATE_INT</code> y el rango de 0 a
+      <code>ULTIMA</code>. Devuelve <code>?int</code>: <code>null</code> si no vale, y PL1 es simplemente
+      <code>$planta !== null</code>.
+    </li>
+    <li><code>anadirLlamada()</code> añade la planta si no está y ordena con <code>sort()</code>: así
+      <code>guardar()</code> escribe siempre un texto
+      ordenado (<code>"13"</code>), que es lo que exigirá el invariante.</li>
+    <li>El <code>case 2</code> copia la tabla de transiciones: un <code>if</code> por camino, en el mismo orden y con el
+      predicado en un
+      comentario.</li>
+  </ul>
+  <pre><code class="language-php">$pl1 = $planta !== null;                                // PL1: planta válida
+$pl2 = $planta === $ascensor['piso'];                   // PL2: es la planta en la que está
+if (!$pl1) {                                            // !PL1 -&gt; ST1, ES2 con el error
+</code></pre>
+  <div class="caja error">
+    <div class="titulo-caja">Error típico</div>
+    <p>Comparar con <code>in_array($planta, $ascensor['llamadas'], true)</code> (estricto) cuando las llamadas son
+      <strong>textos</strong>. Por
+      eso <code>leerAscensor()</code> las convierte con <code>intval</code>: <code>'3' === 3</code> es falso, y sin la
+      conversión la planta 3 nunca
+      estaría "esperando".</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 2, 3 y 4. Llama a la planta baja: se abren las puertas (estado 4). <em>Reiniciar</em> y llama a la 3.ª y a
+      la 1.ª:
+      el campo <code>llamadas</code> vale <code>13</code>. Con F12 cambia el valor de un botón por <code>llamar:9</code>
+      y por <code>llamar:&lt;b&gt;</code>. Y una
+      comprobación del andamio: pulsa <em>Avanzar</em>. Vuelve al principio, porque T5 todavía no existe y cae en el
+      <code>default</code>.</p>
+  </div>
+
+  <h3 id="34-paso-4-el-movimiento">3.4.- Paso 4: el movimiento</h3>
+  <p><strong>Objetivo.</strong> Que el ascensor se mueva: T5 (arrancar), T6 y T7 (subir y bajar), T8 (cerrar las puertas
+    y seguir) y
+    las llamadas en marcha y con las puertas abiertas, T3 y T4 (R4, R5).</p>
+  <p><strong>Por qué ahora, y todo junto.</strong> Estas transiciones forman un ciclo (ST1 → ST2 → ST4 → ST2…): por
+    separado no se
+    pueden probar, porque cada una deja el ascensor en un estado cuya transición haría falta a continuación. T3 y T4 van
+    en el mismo paso porque solo tienen sentido con el ascensor en marcha o con las puertas abiertas.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li><code>masCercanaArriba()</code> (PL4) calcula la distancia a la llamada más cercana por arriba y por abajo,
+      empezando en
+      <code>PHP_INT_MAX</code>, y devuelve <code>$arriba &lt;= $abajo &amp;&amp; $arriba !== PHP_INT_MAX</code>: el
+      <code>&lt;=</code> es el <strong>empate hacia arriba</strong>
+      del enunciado, y la segunda condición descarta el caso de que no haya ninguna llamada por encima.
+    </li>
+    <li><code>hayLlamadas($ascensor, 'arriba')</code> o <code>'abajo'</code>: con ella, PL6 y PL7 son una línea cada
+      uno.</li>
+    <li><code>mover()</code> suma <code>+1</code> o <code>-1</code> y cuenta la planta; <code>parar()</code> quita la
+      llamada de esa planta con <code>array_diff()</code> y
+      cuenta la parada.</li>
+    <li>T6 y T7 comparten <code>case</code>: solo cambia el signo
+      (<code>mover($ascensor, $transicion === 6 ? 1 : -1)</code>). Y PL5 se evalúa
+      <strong>después</strong> de mover: es "hay llamada en la planta a la que <strong>acaba de llegar</strong>".
+    </li>
+    <li>T3 y T4 también comparten <code>case</code>; el camino "ya están abiertas" se distingue con
+      <code>$transicion === 4 &amp;&amp; $pl2</code>.</li>
+    <li>T8, con sus cinco caminos en el orden de la tabla de verdad:</li>
+  </ul>
+  <pre><code class="language-php">$pl6 = $ascensor['direccion'] === 'sube' &amp;&amp; hayLlamadas($ascensor, 'arriba');   // PL6: subía y hay arriba
+$pl7 = $ascensor['direccion'] === 'baja' &amp;&amp; hayLlamadas($ascensor, 'abajo');    // PL7: bajaba y hay abajo
+</code></pre>
+  <div class="caja debes">
+    <div class="titulo-caja">Debes conocer</div>
+    <p><strong>El algoritmo del ascensor colectivo está en el orden de los <code>if</code>.</strong> En T8,
+      <code>elseif ($pl6)</code> y <code>elseif ($pl7)</code> van
+      antes que <code>elseif ($pl4)</code>. Ese orden es la regla "sigue en la dirección que llevaba mientras queden
+      llamadas en
+      ella". La tabla de verdad del autómata es lo que garantiza que los cinco caminos son completos (siempre se cumple
+      uno) y excluyentes (nunca dos).</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 5 a 10, en orden: es el recorrido de RF-03. Al final deben salir "Plantas recorridas: 6" y "Paradas: 4".
+      Para
+      el empate (caso 10), lleva el ascensor a la 2.ª y deja allí las llamadas en la baja y la 4.ª (o escríbelas con
+      F12:
+      <code>estado=1</code>, <code>piso=2</code>, <code>llamadas=04</code>): debe subir. Con el depurador, pon un punto
+      de ruptura en el <code>case 8</code> y mira
+      los valores de <code>$pl3</code>, <code>$pl6</code>, <code>$pl7</code> y <code>$pl4</code> en cada parada.
+    </p>
+  </div>
+
+  <h3 id="35-paso-5-emergencia-y-rearme">3.5.- Paso 5: emergencia y rearme</h3>
+  <p><strong>Objetivo.</strong> T9 (parada de emergencia) y T10 (rearmar; fuera de servicio a la tercera) (R6).</p>
+  <p><strong>Por qué ahora.</strong> Son las transiciones que <strong>salen</strong> del ciclo normal y lo interrumpen
+    desde cualquier estado de
+    ST1 a ST4. Con el movimiento funcionando, por fin hay algo que interrumpir.</p>
+  <p><strong>Qué se escribe.</strong></p>
+  <ul>
+    <li>La constante <code>MAX_EMERGENCIAS = 3</code>, que estaba como TODO desde el paso 1.</li>
+    <li>Los botones <em>Parada de emergencia</em> (deshabilitado en ST5 y ST6) y <em>Rearmar</em> (habilitado
+      <strong>solo</strong> en ST5).
+      Deshabilitar los botones es lo que hace que las celdas <code>---</code> de la tabla no puedan darse... con un
+      cliente honrado.</li>
+    <li>T9: AC9 en cuatro líneas: <code>emergencias++</code>, llamadas a <code>[]</code>, dirección <code>''</code> y el
+      mensaje "PARADA DE EMERGENCIA en
+      la …".</li>
+    <li>T10 con PL8: <code>$pl8 = $ascensor['emergencias'] &lt; MAX_EMERGENCIAS;</code>.</li>
+  </ul>
+  <p>Fíjate en que la tercera emergencia se <strong>cuenta</strong> en T9 (el ascensor sigue en ST5) y es el
+    <em>Rearmar</em> siguiente el
+    que comprueba PL8 y lo deja fuera de servicio. Por eso el invariante general dice "emergencias de 0 a 2 (3 solo en
+    ST5)".</p>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Caso 11. Provoca una emergencia en marcha: "PARADA DE EMERGENCIA en la …", <code>llamadas</code> vacío y
+      "Emergencias: 1".
+      Rearma dos veces; a la tercera, "Fuera de servicio" (estado 6) y solo queda <em>Reiniciar</em>. Ahora la prueba
+      importante del paso: con F12 pon <code>estado=2</code>, <code>piso=4</code>, <code>llamadas</code> vacío y pulsa
+      <em>Avanzar</em>. El ascensor sube a una
+      "planta 5" que no existe y PHP avisa de <em>Undefined array key 5</em> al buscar su nombre en
+      <code>PLANTAS</code>. Es exactamente lo
+      que arregla el paso 6.</p>
+  </div>
+
+  <h3 id="36-paso-6-solucion-completa-los-invariantes">3.6.- Paso 6 (solución completa): los invariantes</h3>
+  <p><strong>Objetivo.</strong> Programar PL0: comprobar que los datos recibidos son posibles en su estado (R7).</p>
+  <p><strong>Por qué al final (y no al principio).</strong> PL0 usa <code>hayLlamadas()</code>, que no existía hasta el
+    paso 4, y la constante
+    <code>MAX_EMERGENCIAS</code>, del paso 5. Además, escribir los invariantes exige conocer <strong>todas</strong> las
+    transiciones: el de ST5
+    ("sin llamadas") solo se entiende cuando T9 ya las anula. Hasta ahora el ascensor funcionaba con un <strong>cliente
+      honrado</strong>; este paso lo prepara para uno que no lo es. Y, gracias al esqueleto, el cambio en
+    <code>index.php</code> es una sola
+    línea: <code>$pl0 = true;</code> pasa a ser <code>$pl0 = coherente($estado, $ascensor);</code>.
+  </p>
+  <p><code>coherente()</code> es casi una copia de la tabla del apartado 2.3: primero lo que vale en cualquier estado y
+    después un
+    <code>match</code> con una línea por estado.
+  </p>
+  <pre><code class="language-php">return match ($estado) {
+    ST1 =&gt; !$aqui &amp;&amp; $ascensor['direccion'] === '',                                         // parado
+    ST2 =&gt; hayLlamadas($ascensor, 'arriba') &amp;&amp; $ascensor['direccion'] === 'sube',           // subiendo
+</code></pre>
+  <p>La comprobación de las llamadas usa la expresión regular de las pistas del enunciado:
+    <code>'/^0?1?2?3?4?$/D'</code> acepta
+    <code>"024"</code> y rechaza <code>"31"</code> (desordenado), <code>"33"</code> (repetido) y
+    <code>"&lt;script&gt;"</code>, todo a la vez. El modificador <code>D</code> hace que
+    <code>$</code> no acepte un salto de línea al final. Se aplica al <strong>texto</strong> recibido
+    (<code>textoLlamadas</code>), no al array: por eso
+    <code>leerAscensor()</code> lo guardaba desde el paso 2.
+  </p>
+  <div class="caja saber">
+    <div class="titulo-caja">Para saber más</div>
+    <p>¿Por qué <code>default =&gt; false</code> en el <code>match</code>, si ST6 es un estado válido? Porque
+      <code>coherente()</code> nunca se llama en ST0
+      ni en ST6: en esos estados todas las celdas de la tabla son T1 o <code>---</code> (que también es T1), y PL0 no se
+      comprueba
+      en T1. El <code>default</code> solo recoge lo imposible.</p>
+  </div>
+  <div class="caja prueba">
+    <div class="titulo-caja">Pruébalo</div>
+    <p>Casos 12 y 13. Repite la prueba del paso 5 (<code>estado=2</code> con <code>piso=4</code>): ahora sale "Los datos
+      del ascensor no son
+      válidos (¿se han modificado los campos ocultos?). Se reinicia." Prueba también <code>piso=7</code>,
+      <code>llamadas=31</code>,
+      <code>llamadas=33</code>, <code>direccion=x</code>, <code>estado=1</code> con una llamada en su planta,
+      <code>estado=5</code> con llamadas, 3 emergencias en
+      ST1, <code>piso[]=1</code> y <code>llamadas=&lt;script&gt;alert(1)&lt;/script&gt;</code>: todas deben reiniciar
+      con el aviso, sin avisos de PHP y
+      sin que se ejecute nada.
+    </p>
+  </div>
+
+  <h2 id="4-pruebas-finales">4.- Pruebas finales</h2>
+  <p>Con la solución completa hay que volver a pasar <strong>todos</strong> los casos del apartado 1.3, no solo los del
+    último paso:
+    PL0 se comprueba antes de todas las transiciones, y un invariante demasiado estricto rompería un camino que antes
+    funcionaba. El método propone <strong>un camino por fila</strong> de la tabla de transiciones (apartado 7 del
+    autómata):</p>
+  <ul>
+    <li>☐ Cada camino de T2, T4, T5, T8 y T10 recorrido al menos una vez (los de T8, con la tabla de verdad delante).
+    </li>
+    <li>☐ El recorrido completo de RF-03: 6 plantas recorridas y 4 paradas.</li>
+    <li>☐ Casos límite: el empate de PL4; llamar desde la planta en la que está con las puertas abiertas; la tercera
+      emergencia; <em>Reiniciar</em> desde fuera de servicio.</li>
+    <li>☐ Ninguna secuencia de botones saca el ascensor del edificio (RNF-04).</li>
+    <li>☐ Maliciosos: cada invariante de la tabla incumplido por separado, arrays donde se espera un texto, HTML en
+      cualquier campo, eventos <code>---</code>.</li>
+    <li>☐ Ningún aviso de PHP con <code>error_reporting(E_ALL)</code>.</li>
+  </ul>
+  <div class="caja recomendacion">
+    <div class="titulo-caja">Recomendación</div>
+    <p>Para cada invariante, piensa la petición más pequeña que lo incumple <strong>solo a él</strong>. Si una prueba
+      incumple tres a
+      la vez, no sabrás cuál de las tres comprobaciones la ha detectado.</p>
+  </div>
+
+  <h2 id="5-refactorizacion-y-mejoras-posibles">5.- Refactorización y mejoras posibles</h2>
+  <p>La solución no tiene FIXME pendientes: los únicos valores provisionales (<code>$pl0 = true;</code> y el
+    <code>default</code> del <code>switch</code>)
+    se resuelven en el paso 6. Aun así, quedan detalles que se podrían mejorar sin cambiar el comportamiento:</p>
+  <ul>
+    <li>T2 y T3/T4 repiten las tres mismas líneas (AC2, PL1 y PL2). Como AC2 es "acción antes" de las tres
+      transiciones, se podría calcular una sola vez antes del <code>switch</code> cuando el evento es <em>Llamar</em>.
+    </li>
+    <li>Los mensajes de T5 dicen "Se cierran las puertas y arranca…", aunque en ST1 las puertas ya estaban cerradas.
+    </li>
+    <li><code>coherente()</code> no comprueba relaciones entre contadores. Por ejemplo, <code>paradas</code> solo crece
+      en <code>parar()</code>, que
+      siempre va después de <code>mover()</code>: ¿es <code>paradas &lt;= recorridas</code> un invariante de todos los
+      estados? Si lo es,
+      añadirlo detectaría una manipulación más.</li>
+    <li>Las ampliaciones del enunciado (<em>Abrir puertas</em>, <em>Sobrecarga</em>, dos ascensores) son la siguiente
+      <strong>vuelta</strong> del
+      proceso, y cada una empieza otra vez por el autómata: ¿es un evento nuevo, un predicado nuevo o un estado nuevo?
+      ¿Qué invariantes tiene?</li>
+  </ul>
+  <h2 id="6-errores-tipicos-en-esta-tarea">6.- Errores típicos en esta tarea</h2>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Consecuencia</th>
+          <th>Cómo evitarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>No guardar la dirección con las puertas abiertas</td>
+          <td>Al cerrarlas, no sabe si seguir subiendo o bajar</td>
+          <td>Variable de estado <code>direccion</code></td>
+        </tr>
+        <tr>
+          <td>Comprobar PL4 antes que PL6/PL7 en T8</td>
+          <td>Se da la vuelta con llamadas pendientes en su dirección</td>
+          <td>El orden de la tabla de verdad</td>
+        </tr>
+        <tr>
+          <td>Evaluar PL5 antes de mover</td>
+          <td>Para en la planta de la que sale, no en la que llega</td>
+          <td>AC5 es "acción antes" de T6/T7</td>
+        </tr>
+        <tr>
+          <td>Validar cada campo por separado</td>
+          <td><code>estado=2</code> con <code>piso=4</code> pasa y el ascensor sale del edificio</td>
+          <td>Invariantes por estado (PL0)</td>
+        </tr>
+        <tr>
+          <td>Usar <code>PLANTAS[$piso]</code> sin validar</td>
+          <td><em>Undefined array key</em> con <code>piso=7</code> o <code>piso[]</code></td>
+          <td>PL0 antes de cualquier transición</td>
+        </tr>
+        <tr>
+          <td>Llamadas como texto e <code>in_array</code> estricto</td>
+          <td>Nunca encuentra la planta</td>
+          <td><code>intval</code> al leerlas</td>
+        </tr>
+        <tr>
+          <td>Olvidar <code>sort()</code> en <code>anadirLlamada()</code></td>
+          <td>El propio programa guarda <code>llamadas=31</code> y PL0 lo rechaza en la petición siguiente</td>
+          <td>Guardar siempre ordenado</td>
+        </tr>
+        <tr>
+          <td>Olvidar que un <code>---</code> puede llegar</td>
+          <td><em>Rearmar</em> en ST1 hace cosas imprevistas</td>
+          <td><code>?? 1</code>: todo <code>---</code> es T1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 id="7-autoevaluacion">7.- Autoevaluación</h2>
+  <div class="caja autoeval">
+    <div class="titulo-caja">Autoevaluación</div>
+    <ul>
+      <li>¿Por qué la dirección es una variable de estado si ya hay estados <em>Subiendo</em> y <em>Bajando</em>?
+        <strong>Porque hace falta
+          también en ST4: con las puertas abiertas el ascensor no se mueve, pero al cerrarlas tiene que seguir en la
+          dirección que llevaba.</strong></li>
+      <li>Alguien envía <code>estado=2</code> con el ascensor en la 4.ª y sin llamadas. ¿Qué pasa en el paso 5? ¿Y en el
+        6? <strong>En el
+          paso 5 sube a una planta que no existe (avisos de PHP); en el paso 6 no se cumple el invariante de ST2, PL0 es
+          falso y se reinicia con un aviso.</strong></li>
+      <li>¿Por qué PL0 se comprueba una sola vez, antes del <code>switch</code>? <strong>Porque está en todas las
+          transiciones salvo T1:
+          si falla, la transición pasa a ser T1 con un aviso, y no hay que repetirlo en cada <code>case</code>.</strong>
+      </li>
+      <li>¿Qué hace <code>$automata[$estado][$evento] ?? 1</code> con una celda <code>---</code>? <strong>La celda vale
+          <code>null</code> y <code>??</code> la trata como
+          inexistente: devuelve 1, es decir, T1.</strong></li>
+      <li>¿Qué comprueba <code>/^0?1?2?3?4?$/D</code>? <strong>Que las llamadas son cifras de 0 a 4, ordenadas y sin
+          repetir, en una sola
+          expresión.</strong></li>
+      <li>¿Por qué T5…T8 se programan en el mismo paso? <strong>Porque forman un ciclo: cada una deja el ascensor en un
+          estado
+          que necesita la siguiente, y por separado no se podrían probar.</strong></li>
+    </ul>
+  </div>
+
+  <div class="pie">Explicación elaborada a partir de la solución paso a paso de la tarea, siguiendo los apuntes
+    «El proceso de desarrollo de software». Soluciones probadas con PHP 8.2.</div>
+</body>
+
+</html>
