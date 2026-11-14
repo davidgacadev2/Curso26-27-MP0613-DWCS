@@ -5,6 +5,8 @@
  * - Sin validación: "abc" -> TypeError (Fatal) y el valor se escribía sin escapar (XSS). Ahora is_numeric().
  * - Con un campo vacío se escribía value="VACIO" en el formulario.
  * - XSS: $_SERVER['PHP_SELF'] cambiado por $_SERVER['SCRIPT_NAME'].
+ * ==========
+ * ==========
  */
 ?>
 <!DOCTYPE html>
